@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — HR Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243659;--navy-dark:#121d33;
+  --green:#4AFD0E;--green-dim:#3dd40c;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--slate:#4A5568;--gold:#C9A84C;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --red:#c0392b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--offwhite);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.25)}
+.nav-logo{height:32px;display:block}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-user{font-size:12px;color:rgba(255,255,255,.5);font-family:'Montserrat',sans-serif}
+.nav-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);font-family:'Montserrat',sans-serif}
+
+/* HERO */
+.hero{background:var(--navy);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-60px;left:15%;width:240px;height:240px;background:radial-gradient(circle,rgba(74,253,14,.04) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem;letter-spacing:-.02em}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:500px;line-height:1.7}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.stat{border-left:2px solid var(--green);padding-left:1rem}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1}
+.stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+
+/* SHELL */
+.shell{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem}
+
+/* SECTION HEAD */
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.section-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;letter-spacing:-.01em}
+.section-line{flex:1;height:1px;background:var(--border)}
+.section-tag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+
+/* EMPLOYEE LOOKUP WIDGET */
+.lookup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem}
+.lookup-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.lookup-header-left h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.lookup-header-left p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.lookup-view-all{font-size:11px;font-weight:600;color:var(--green);text-decoration:none;font-family:'Montserrat',sans-serif;letter-spacing:.04em;opacity:.9}
+.lookup-view-all:hover{opacity:1}
+.lookup-body{padding:1.25rem 1.5rem}
+.lookup-search-row{display:flex;gap:10px;margin-bottom:1.25rem}
+.lookup-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:'Wix Madefor Text',sans-serif;color:var(--text);background:var(--offwhite)}
+.lookup-input:focus{outline:none;border-color:var(--navy);background:#fff}
+.lookup-btn{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.lookup-btn:hover{background:var(--navy2)}
+.lookup-result{display:none}
+.result-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap}
+.result-avatar{width:48px;height:48px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.result-info{flex:1;min-width:200px}
+.result-name{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px}
+.result-role{font-size:12px;color:var(--text2);margin-bottom:.75rem}
+.result-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+.result-meta-item{font-size:11px;color:var(--text3)}
+.result-meta-item strong{display:block;color:var(--text);font-weight:600;margin-bottom:1px}
+.result-status{flex-shrink:0}
+.status-badge{display:inline-block;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.04em}
+.status-offer-sent{background:#fff3cd;color:#856404}
+.status-offer-signed{background:#d1ecf1;color:#0c5460}
+.status-contract-sent{background:#cce5ff;color:#004085}
+.status-contract-signed{background:#d4edda;color:#155724}
+.status-complete{background:var(--green-light);color:var(--green-dark)}
+.status-draft{background:var(--surface2);color:var(--text3)}
+.result-timeline{margin-top:1rem;width:100%}
+.rt-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;font-family:'Montserrat',sans-serif}
+.rt-track{display:flex;gap:4px;align-items:center}
+.rt-step{flex:1;height:6px;border-radius:3px;background:var(--border)}
+.rt-step.done{background:var(--navy)}
+.rt-step.active{background:var(--green)}
+.rt-step-labels{display:flex;justify-content:space-between;margin-top:4px}
+.rt-step-labels span{font-size:9px;color:var(--text3)}
+.lookup-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;display:none}
+.lookup-hint{font-size:12px;color:var(--text3);text-align:center;padding:.5rem 0}
+
+/* MODULES */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;margin-bottom:2.5rem}
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;text-decoration:none;display:block}
+.module-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .18s}
+.module-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.09);transform:translateY(-2px)}
+.module-card:hover::after{transform:scaleX(1)}
+.module-card.live-card{border-color:var(--navy)}
+.module-card.live-card::after{transform:scaleX(1)}
+.module-card.placeholder{opacity:.55;cursor:default;pointer-events:none}
+.mc-icon{width:38px;height:38px;background:var(--offwhite);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.875rem}
+.mc-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.mc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:.5rem;font-family:'Montserrat',sans-serif}
+.badge-live{background:var(--green-light);color:var(--green-dark)}
+.badge-soon{background:var(--surface2);color:var(--text3)}
+
+/* WORKFLOW */
+.workflow-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem}
+.wf-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.wf-header h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.wf-header p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.wf-prog{display:flex;align-items:center;gap:10px}
+.wf-bar{width:130px;height:5px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.wf-fill{height:100%;background:var(--green);border-radius:3px;width:0%;transition:width .4s ease}
+.wf-txt{font-size:11px;color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;white-space:nowrap}
+.wf-body{padding:1.5rem}
+.wf-phase{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-dark);margin:1.25rem 0 .4rem;padding-left:2.5rem}
+.wf-phase:first-child{margin-top:0}
+.wf-step{display:flex;align-items:center;gap:.875rem;padding:.55rem .75rem;border-radius:var(--radius);cursor:pointer;transition:background .12s;user-select:none}
+.wf-step:hover{background:var(--offwhite)}
+.wf-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;font-size:9px;color:transparent;font-weight:800}
+.wf-step.s-done .wf-dot{background:var(--navy);border-color:var(--navy);color:#fff}
+.wf-step.s-done .wf-dot::after{content:'✓'}
+.wf-step.s-active .wf-dot{background:var(--green);border-color:var(--green);color:var(--navy)}
+.wf-step.s-active .wf-dot::after{content:'●';font-size:7px}
+.wf-step-text{font-size:13px;color:var(--text2);flex:1}
+.wf-step.s-done .wf-step-text{color:var(--text3);text-decoration:line-through;text-decoration-color:rgba(74,85,104,.25)}
+.wf-step.s-active .wf-step-text{color:var(--text);font-weight:600}
+.wf-tag{font-size:10px;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;font-weight:600;flex-shrink:0}
+.t-done{background:#e1f5ee;color:#085041}
+.t-active{background:rgba(74,253,14,.2);color:#1a6600}
+.t-pend{background:var(--offwhite);color:var(--text3)}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.settings-card h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text)}
+.settings-card p{font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.5}
+.staff-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:150px;overflow-y:auto}
+.staff-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
+.staff-av{width:26px;height:26px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.staff-name{flex:1;font-weight:500}
+.staff-email{color:var(--text3);font-size:11px}
+.staff-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.staff-rm:hover{color:var(--red)}
+.add-row{display:flex;gap:6px}
+.add-row input{flex:1;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;color:var(--text);min-width:0}
+.add-row input:focus{outline:none;border-color:var(--navy)}
+.btn-sm-navy{padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.btn-sm-navy:hover{background:var(--navy2)}
+.btn-export{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);margin-top:.75rem;width:100%}
+.btn-export:hover{background:#eeeee9}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s}
+.upload-zone:hover{border-color:var(--navy);background:rgba(27,42,74,.02)}
+.uz-icon{font-size:22px;margin-bottom:.25rem}
+.uz-text{font-size:12px;color:var(--text3)}
+.snippet-out{display:none;margin-top:.75rem;background:var(--offwhite);border-radius:var(--radius);padding:.75rem;font-size:10px;font-family:monospace;color:var(--slate);white-space:pre-wrap;max-height:110px;overflow-y:auto;border:1px solid var(--border)}
+.btn-green{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:.75rem;width:100%}
+.btn-green:hover{background:var(--navy2)}
+
+/* FOOTER */
+.footer{background:var(--navy);padding:1.5rem 2rem;margin-top:2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:22px;opacity:.5}
+.footer-note{font-size:11px;color:rgba(255,255,255,.25)}
+
+@media(max-width:760px){
+  .settings-grid{grid-template-columns:1fr}
+  .module-grid{grid-template-columns:1fr 1fr}
+  .hero-title{font-size:24px}
+  .hero-stats{gap:1.5rem}
+  .nav-user{display:none}
+  .shell{padding:1.5rem 1rem 4rem}
+  .result-card{flex-direction:column}
+}
+@media(max-width:440px){.module-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">HR Portal</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-user">Head of People</div>
+    <div class="nav-avatar">HP</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy CX (Pty) Ltd t/a Trilogy BPO</div>
+    <h1 class="hero-title">People Operations<br><span>Central.</span></h1>
+    <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="statActive">1</div><div class="stat-label">Active onboardings</div></div>
+      <div class="stat"><div class="stat-num" id="statPending">2</div><div class="stat-label">Pending signatures</div></div>
+      <div class="stat"><div class="stat-num" id="statStaff">0</div><div class="stat-label">Managers loaded</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- EMPLOYEE LOOKUP -->
+  <div class="section-head">
+    <h2>Employee lookup</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Search onboarding records</div>
+  </div>
+
+  <div class="lookup-card">
+    <div class="lookup-header">
+      <div class="lookup-header-left">
+        <h3>Find an employee</h3>
+        <p>Search by name or reference number — pulls from SharePoint Onboarding Cases</p>
+      </div>
+      <a href="employees.html" class="lookup-view-all">View all employees →</a>
+    </div>
+    <div class="lookup-body">
+      <div class="lookup-search-row">
+        <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. John Smith or TBP-2026-AB1234" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="lookup-btn" onclick="doLookup()">Search</button>
+      </div>
+      <div class="lookup-hint" id="lookupHint">Enter a name or reference number and press Search</div>
+      <div class="lookup-empty" id="lookupEmpty">No matching employee found. Check the name or reference and try again.</div>
+      <div class="lookup-result" id="lookupResult"></div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-head">
+    <h2>HR modules</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Select a module</div>
+  </div>
+
+  <div class="module-grid">
+    <a href="onboarding.html" class="module-card live-card">
+      <div class="mc-icon">👤</div>
+      <div class="mc-title">Employee Onboarding</div>
+      <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <div class="module-card placeholder">
+      <div class="mc-icon">📋</div>
+      <div class="mc-title">Job Requisition</div>
+      <div class="mc-desc">Create and approve job reqs, track open roles</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">🔍</div>
+      <div class="mc-title">Background Checks</div>
+      <div class="mc-desc">Criminal, credit, ID verification, qualifications</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">📄</div>
+      <div class="mc-title">Contract Generation</div>
+      <div class="mc-desc">Employment contracts, addenda, amendments</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">🧾</div>
+      <div class="mc-title">Tax Documentation</div>
+      <div class="mc-desc">IT77, IRP5 declarations, SARS submissions</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">📚</div>
+      <div class="mc-title">Policy Documents</div>
+      <div class="mc-desc">Handbook, absence, code of conduct issuance</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">💰</div>
+      <div class="mc-title">Payroll</div>
+      <div class="mc-desc">Payroll submissions, banking details, salary runs</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">🗂️</div>
+      <div class="mc-title">Personnel Files</div>
+      <div class="mc-desc">Digital employee files, document management</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+    <div class="module-card placeholder">
+      <div class="mc-icon">🎓</div>
+      <div class="mc-title">Skills Development</div>
+      <div class="mc-desc">BBBEE, SETA records, training documentation</div>
+      <div class="mc-badge badge-soon">Coming soon</div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW -->
+  <div class="section-head">
+    <h2>Employee lifecycle workflow</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Click steps to mark complete</div>
+  </div>
+
+  <div class="workflow-wrap">
+    <div class="wf-header">
+      <div>
+        <h3>Full onboarding pipeline</h3>
+        <p>From job requisition to personnel file complete</p>
+      </div>
+      <div class="wf-prog">
+        <div class="wf-bar"><div class="wf-fill" id="wfFill"></div></div>
+        <div class="wf-txt" id="wfTxt">0 / 0 complete</div>
+      </div>
+    </div>
+    <div class="wf-body"><div id="wfPhases"></div></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="section-head">
+    <h2>Portal settings</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Configuration</div>
+  </div>
+
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Reporting-to managers</h3>
+      <p>Names and emails here populate the dropdown in the onboarding form automatically.</p>
+      <div class="staff-list" id="staffList"></div>
+      <div class="add-row">
+        <input type="text" id="newName" placeholder="Full name">
+        <input type="email" id="newEmail" placeholder="email@trilogybpo.com">
+        <button class="btn-sm-navy" onclick="addStaff()">Add</button>
+      </div>
+      <button class="btn-export" onclick="exportStaff()">⬇ Export as managers.json</button>
+    </div>
+    <div class="settings-card">
+      <h3>Bulk import managers</h3>
+      <p>Upload a CSV with columns <strong>name</strong> and <strong>email</strong> to bulk-load the reporting-to list.</p>
+      <div class="upload-zone" onclick="document.getElementById('csvInput').click()">
+        <div class="uz-icon">📂</div>
+        <div class="uz-text">Click to upload CSV<br><span style="font-size:10px">name, email — one row per manager</span></div>
+        <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(this)">
+      </div>
+      <div id="importResult" style="font-size:11px;color:var(--text3);margin-top:.5rem"></div>
+      <button class="btn-green" onclick="generateSnippet()">⚙ Generate onboarding dropdown code</button>
+      <div class="snippet-out" id="snippetOut"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+// ── SAMPLE DATA (replace with live SharePoint data via Zapier) ──
+var sampleEmployees = [
+  {name:'John Smith',ref:'TBP-2026-AP8XUM',role:'CEO',start:'01/07/2026',manager:'Tanya Phillips',email:'craigs@trilogybpo.com',status:'Offer Sent',stage:2},
+  {name:'Graham Smith',ref:'TBP-2026-B3LF8D',role:'Chief Bottle Washer',start:'01/06/2026',manager:'Tanya Phillips',email:'craigs@trilogybpo.com',status:'Offer Signed',stage:3}
+];
+
+var stageLabels = ['Offer Sent','Offer Signed','Contract Sent','Contract Signed','Complete'];
+
+function statusClass(s){
+  var map={'Offer Sent':'status-offer-sent','Offer Signed':'status-offer-signed','Contract Sent':'status-contract-sent','Contract Signed':'status-contract-signed','Complete':'status-complete','Draft':'status-draft'};
+  return map[s]||'status-draft';
+}
+
+function initials(name){return name.split(' ').map(function(w){return w[0];}).slice(0,2).join('');}
+
+function renderResult(emp){
+  var steps = stageLabels.map(function(l,i){
+    var cls = i < emp.stage ? 'done' : (i === emp.stage ? 'active' : '');
+    return '<div class="rt-step '+cls+'"></div>';
+  }).join('');
+  var labels = '<span>Offer</span><span>Contract</span><span>Complete</span>';
+  return '<div class="result-card">' +
+    '<div class="result-avatar">'+initials(emp.name)+'</div>' +
+    '<div class="result-info">' +
+      '<div class="result-name">'+emp.name+'</div>' +
+      '<div class="result-role">'+emp.role+'</div>' +
+      '<div class="result-meta">' +
+        '<div class="result-meta-item"><strong>Reference</strong>'+emp.ref+'</div>' +
+        '<div class="result-meta-item"><strong>Start date</strong>'+emp.start+'</div>' +
+        '<div class="result-meta-item"><strong>Reports to</strong>'+emp.manager+'</div>' +
+        '<div class="result-meta-item"><strong>Email</strong>'+emp.email+'</div>' +
+      '</div>' +
+      '<div class="result-timeline">' +
+        '<div class="rt-label">Onboarding progress</div>' +
+        '<div class="rt-track">'+steps+'</div>' +
+        '<div class="rt-step-labels">'+labels+'</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="result-status"><span class="status-badge '+statusClass(emp.status)+'">'+emp.status+'</span></div>' +
+    '</div>';
+}
+
+window.doLookup = function(){
+  var q = document.getElementById('lookupInput').value.trim().toLowerCase();
+  document.getElementById('lookupHint').style.display = 'none';
+  document.getElementById('lookupEmpty').style.display = 'none';
+  document.getElementById('lookupResult').style.display = 'none';
+  if(!q) return;
+  var found = sampleEmployees.filter(function(e){
+    return e.name.toLowerCase().includes(q) || e.ref.toLowerCase().includes(q);
+  });
+  if(found.length === 0){
+    document.getElementById('lookupEmpty').style.display = 'block';
+  } else {
+    var html = found.map(renderResult).join('<div style="height:10px"></div>');
+    var res = document.getElementById('lookupResult');
+    res.innerHTML = html;
+    res.style.display = 'block';
+  }
+};
+
+// ── WORKFLOW ──
+var phases=[
+  {label:'Recruitment',steps:['Job requisition approved by line manager','Role advertised / sourced','CV screening & shortlisting','Interviews conducted','Assessments completed (literacy, numeracy, typing)','Reference checks completed','Candidate selected']},
+  {label:'Offer',steps:['Offer created and approved','Offer submitted to candidate','Offer accepted (verbal)','Start date confirmed']},
+  {label:'Pre-employment checks',steps:['Background check initiated (criminal, credit, ID verification)','Qualification verification','Previous employment verification','Background check results received and cleared']},
+  {label:'Contracts & documentation',steps:['Contract of employment issued','Contract signed and returned','Employee information form completed','Banking details submitted','Tax documentation completed (IT77 / IRP5 declaration)','Policy documents issued (Handbook, Absence, CoC)','Policies acknowledged and signed']},
+  {label:'Payroll & systems',steps:['Employee added to payroll','Employee number assigned','System access requested (email, CRM, diallers)','IT equipment allocated','Access credentials issued and tested']},
+  {label:'Day 1 & induction',steps:['Welcome and reception','Facility induction (H&S, floor layout, emergency)','HR induction (culture, values, policies walkthrough)','Introduction to team and line manager','Workstation setup confirmed']},
+  {label:'Training',steps:['Product / process training commences','Systems training completed','Nesting / supervised floor time','Assessments / sign-offs per training milestones']},
+  {label:'Probation',steps:['Week 1 check-in','30-day review','60-day review','End of probation assessment','Probation confirmed, extended, or exited']},
+  {label:'File & records',steps:['Personnel file complete and filed','Employee added to organogram','Skills development records updated (BBBEE)']}
+];
+var stepStates={}, totalSteps=0;
+
+function buildWorkflow(){
+  var c=document.getElementById('wfPhases'); c.innerHTML='';
+  phases.forEach(function(ph){
+    var pt=document.createElement('div'); pt.className='wf-phase'; pt.textContent=ph.label; c.appendChild(pt);
+    ph.steps.forEach(function(s){
+      totalSteps++;
+      var id='ws'+totalSteps; stepStates[id]='pend';
+      var d=document.createElement('div'); d.className='wf-step'; d.id=id;
+      d.innerHTML='<div class="wf-dot"></div><div class="wf-step-text">'+s+'</div><div class="wf-tag t-pend">Pending</div>';
+      d.onclick=function(){toggleStep(id);};
+      c.appendChild(d);
+    });
+  });
+  updateProg();
+}
+
+function toggleStep(id){
+  var el=document.getElementById(id), tag=el.querySelector('.wf-tag');
+  if(stepStates[id]==='pend'){stepStates[id]='active';el.classList.add('s-active');tag.className='wf-tag t-active';tag.textContent='In progress';}
+  else if(stepStates[id]==='active'){stepStates[id]='done';el.classList.remove('s-active');el.classList.add('s-done');tag.className='wf-tag t-done';tag.textContent='Done';}
+  else{stepStates[id]='pend';el.classList.remove('s-done','s-active');tag.className='wf-tag t-pend';tag.textContent='Pending';}
+  updateProg();
+}
+
+function updateProg(){
+  var done=Object.values(stepStates).filter(function(s){return s==='done';}).length;
+  var pct=totalSteps?Math.round((done/totalSteps)*100):0;
+  document.getElementById('wfFill').style.width=pct+'%';
+  document.getElementById('wfTxt').textContent=done+' / '+totalSteps+' complete';
+}
+
+// ── STAFF ──
+var staffData=[
+  {name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},
+  {name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},
+  {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}
+];
+
+function renderStaff(){
+  var list=document.getElementById('staffList'); list.innerHTML='';
+  staffData.forEach(function(s,i){
+    var ini=s.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('');
+    var r=document.createElement('div'); r.className='staff-row';
+    r.innerHTML='<div class="staff-av">'+ini+'</div><div style="flex:1"><div class="staff-name">'+s.name+'</div><div class="staff-email">'+s.email+'</div></div><button class="staff-rm" onclick="removeStaff('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+  document.getElementById('statStaff').textContent=staffData.length;
+}
+
+function addStaff(){
+  var n=document.getElementById('newName').value.trim(), e=document.getElementById('newEmail').value.trim();
+  if(!n||!e){alert('Please enter both name and email.');return;}
+  staffData.push({name:n,email:e});
+  document.getElementById('newName').value=''; document.getElementById('newEmail').value='';
+  renderStaff();
+}
+
+function removeStaff(i){staffData.splice(i,1);renderStaff();}
+
+function exportStaff(){
+  var json=JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='managers.json'; a.click();
+}
+
+function importCSV(input){
+  var file=input.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(Boolean), added=0;
+    lines.forEach(function(line,i){
+      if(i===0&&line.toLowerCase().includes('name'))return;
+      var parts=line.split(',');
+      var n=(parts[0]||'').replace(/"/g,'').trim(), em=(parts[1]||'').replace(/"/g,'').trim();
+      if(n&&em){staffData.push({name:n,email:em});added++;}
+    });
+    renderStaff();
+    document.getElementById('importResult').textContent=added+' manager(s) imported.';
+  };
+  reader.readAsText(file);
+}
+
+function generateSnippet(){
+  var opts=staffData.map(function(s){return '  <option value="'+s.email+'" data-name="'+s.name+'">'+s.name+'</option>';}).join('\n');
+  var snip='<select id="mgr-select" onchange="selectManager(this)">\n  <option value="">Select manager</option>\n'+opts+'\n</select>';
+  var el=document.getElementById('snippetOut'); el.style.display='block'; el.textContent=snip;
+}
+
+buildWorkflow();
+renderStaff();
+</script>
+</body>
+</html>
