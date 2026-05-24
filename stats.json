@@ -1,1 +1,23 @@
-{"active":9,"pending":3,"offer_sent":3,"offer_signed":6,"contract_sent":0,"contract_signed":0,"complete":0,"total":9,"last_updated":"2026-05-24"}
+{
+  "_links": {
+    "self": "https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/stats.json?ref=main",
+    "git": "https://api.github.com/repos/thegreatcornolio/trilogy-hr/git/blobs/08241b442c9c5e719f9403a0e49f4f1c2f6fe2b8",
+    "html": "https://github.com/thegreatcornolio/trilogy-hr/blob/main/stats.json"
+  },
+  "content": "eyJhY3RpdmUiOjksInBlbmRpbmciOjMsIm9mZmVyX3NlbnQiOjMsIm9mZmVy\nX3NpZ25lZCI6NiwiY29udHJhY3Rfc2VudCI6MCwiY29udHJhY3Rfc2lnbmVk\nIjowLCJjb21wbGV0ZSI6MCwidG90YWwiOjksImxhc3RfdXBkYXRlZCI6IjIw\nMjYtMDUtMjQifQ==\n",
+  "download_url": "https://raw.githubusercontent.com/thegreatcornolio/trilogy-hr/main/stats.json",
+  "encoding": "base64",
+  "git_url": "https://api.github.com/repos/thegreatcornolio/trilogy-hr/git/blobs/08241b442c9c5e719f9403a0e49f4f1c2f6fe2b8",
+  "html_url": "https://github.com/thegreatcornolio/trilogy-hr/blob/main/stats.json",
+  "name": "stats.json",
+  "path": "stats.json",
+  "sha": "08241b442c9c5e719f9403a0e49f4f1c2f6fe2b8",
+  "size": 145,
+  "type": "file",
+  "url": "https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/stats.json?ref=main",
+  "offer_signed": 1,
+  "total": 1,
+  "active": 1,
+  "pending": 0,
+  "last_updated": "2026-05-24"
+}
