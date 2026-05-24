@@ -1,12 +1,12 @@
 {
-  "active": 0,
-  "pending": 0,
+  "active": 1,
+  "pending": 1,
   "draft": 0,
-  "offer_sent": 0,
+  "offer_sent": 1,
   "offer_signed": 0,
   "contract_sent": 0,
   "contract_signed": 0,
   "complete": 0,
-  "total": 0,
+  "total": 1,
   "last_updated": "2026-05-24"
 }
