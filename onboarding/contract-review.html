@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Contract Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243659;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c4c3bf;--bg:#e8e7e3;
+  --surface:#fff;--surface2:#f2f1ed;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--red:#c0392b;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.shell{max-width:820px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.nav{background:var(--navy);padding:.875rem 1.75rem;display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-1.75rem -1.75rem 1.5rem}
+.nav-logo{height:26px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-back{font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.nav-badge{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(74,253,14,.2);color:var(--green);padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
+.info-banner{background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius);padding:.875rem 1.1rem;font-size:12px;color:var(--green-dark);margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1rem}
+.card-title{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'Montserrat',sans-serif;color:var(--navy)}
+.card-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.detail-item label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px;font-family:'Montserrat',sans-serif}
+.detail-item span{font-size:13px;color:var(--text);font-weight:500}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:1.25rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--green);font-family:'Montserrat',sans-serif}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:1.25rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s}
+.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-primary:hover{background:var(--navy2)}
+.btn-primary:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed}
+.spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem 1.75rem;text-align:center;display:none}
+.success-icon{width:56px;height:56px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.success-icon svg{width:28px;height:28px;stroke:var(--green-dark);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:520px){.detail-grid{grid-template-columns:1fr}.shell{padding:1rem 1rem 4rem}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="nav">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <div class="nav-right">
+    <a href="../" class="nav-back">← Portal</a>
+    <div class="nav-badge">Head of People</div>
+  </div>
+</div>
+
+<div id="reviewCard">
+  <div class="info-banner">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>This candidate has accepted their letter of offer. Review the contract details below and send the contract of employment when ready.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Contract review — <span id="candidateName">Loading…</span></div>
+    <p class="card-sub">Review all details before sending the contract of employment to the candidate.</p>
+
+    <div class="section-label">Candidate details</div>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Full name</label><span id="dName">—</span></div>
+      <div class="detail-item"><label>SA ID number</label><span id="dId">—</span></div>
+      <div class="detail-item"><label>Email</label><span id="dEmail">—</span></div>
+      <div class="detail-item"><label>Mobile</label><span id="dMobile">—</span></div>
+      <div class="detail-item"><label>Address</label><span id="dAddr">—</span></div>
+      <div class="detail-item"><label>Reports to</label><span id="dMgr">—</span></div>
+    </div>
+
+    <div class="section-label">Position details</div>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Job title</label><span id="dJt">—</span></div>
+      <div class="detail-item"><label>Monthly salary</label><span id="dSal">—</span></div>
+      <div class="detail-item"><label>Start date</label><span id="dSd">—</span></div>
+      <div class="detail-item"><label>Offer reference</label><span id="dRef">—</span></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="sendBtn" onclick="sendContract()">
+        <span id="sendBtnLabel">Send contract to candidate</span>
+        <div class="spinner" id="sendSpinner"></div>
+      </button>
+      <a href="../" class="btn">← Back to portal</a>
+    </div>
+  </div>
+</div>
+
+<div class="success-card" id="successCard">
+  <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:.5rem;font-family:'Montserrat',sans-serif;color:var(--navy)">Contract sent successfully</div>
+  <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem" id="successMsg"></p>
+  <a href="../" class="btn btn-primary">← Back to portal</a>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var ZAPIER_SEND_CONTRACT = 'YOUR_ZAP1_SEND_CONTRACT_WEBHOOK_HERE';
+  var BASE = 'https://thegreatcornolio.github.io/trilogy-hr';
+
+  function gi(id){ return document.getElementById(id); }
+  function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
+  function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
+
+  var D = {
+    fn:gp('fn'), ln:gp('ln'), id:gp('id'), mob:gp('mob'),
+    em:gp('em'), addr:gp('addr'), jt:gp('jt'), sal:gp('sal'),
+    sd:gp('sd'), od:gp('od'), mgr:gp('mgr'), mgrem:gp('mgrem'),
+    ref:gp('ref'), token:gp('token')
+  };
+
+  // Populate fields
+  gi('candidateName').textContent = cap(D.fn)+' '+cap(D.ln);
+  gi('dName').textContent = cap(D.fn)+' '+cap(D.ln);
+  gi('dId').textContent = D.id;
+  gi('dEmail').textContent = D.em;
+  gi('dMobile').textContent = D.mob;
+  gi('dAddr').textContent = D.addr;
+  gi('dMgr').textContent = D.mgr;
+  gi('dJt').textContent = D.jt;
+  gi('dSal').textContent = 'R '+D.sal;
+  gi('dSd').textContent = D.sd;
+  gi('dRef').textContent = D.ref;
+
+  window.sendContract = function(){
+    var btn=gi('sendBtn'), lbl=gi('sendBtnLabel'), spin=gi('sendSpinner');
+    btn.disabled=true; lbl.textContent='Sending…'; spin.style.display='block';
+
+    // Build contract signing URL
+    var contractUrl = BASE+'/onboarding/contract.html?'+[
+      'token='+encodeURIComponent(D.token),
+      'ref='+encodeURIComponent(D.ref),
+      'fn='+encodeURIComponent(D.fn),
+      'ln='+encodeURIComponent(D.ln),
+      'id='+encodeURIComponent(D.id),
+      'mob='+encodeURIComponent(D.mob),
+      'em='+encodeURIComponent(D.em),
+      'addr='+encodeURIComponent(D.addr),
+      'jt='+encodeURIComponent(D.jt),
+      'sal='+encodeURIComponent(D.sal),
+      'sd='+encodeURIComponent(D.sd),
+      'od='+encodeURIComponent(D.od),
+      'mgr='+encodeURIComponent(D.mgr),
+      'mgrem='+encodeURIComponent(D.mgrem)
+    ].join('&');
+
+    var payload={
+      action:'send_contract',
+      ref:D.ref, token:D.token,
+      candidate_first:D.fn, candidate_last:D.ln,
+      candidate_email:D.em, candidate_id:D.id,
+      candidate_mobile:D.mob, candidate_address:D.addr,
+      job_title:D.jt, salary:D.sal,
+      start_date:D.sd, offer_date:D.od,
+      reports_to:D.mgr, reports_to_email:D.mgrem,
+      rudi_email:'rudij@trilogybpo.com',
+      contract_url:contractUrl
+    };
+
+    var body=Object.keys(payload).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);}).join('&');
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',ZAPIER_SEND_CONTRACT,true);
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.send(body);
+
+    gi('reviewCard').style.display='none';
+    gi('successCard').style.display='block';
+    gi('successMsg').textContent='Contract sent to '+cap(D.fn)+' '+cap(D.ln)+' ('+D.em+'). They will receive an email with a link to review and sign. Ref: '+D.ref;
+  };
+})();
+</script>
+</body>
+</html>
