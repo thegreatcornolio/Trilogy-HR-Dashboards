@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Contract of Employment</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243659;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c4c3bf;--bg:#e8e7e3;
+  --surface:#fff;--surface2:#f2f1ed;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--red:#c0392b;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.shell{max-width:820px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.nav{background:var(--navy);padding:.875rem 1.75rem;display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-1.75rem -1.75rem 1.5rem}
+.nav-logo{height:26px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-badge{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(74,253,14,.2);color:var(--green);padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
+.badge-ref{font-size:10px;font-weight:600;letter-spacing:.05em;background:var(--surface2);color:var(--text3);padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
+.info-banner{background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius);padding:.875rem 1.1rem;font-size:12px;color:var(--green-dark);margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1rem}
+.card-title{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'Montserrat',sans-serif;color:var(--navy)}
+.card-sub{font-size:12px;color:var(--text2);margin-bottom:1.5rem}
+
+/* CONTRACT DOCUMENT */
+.doc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12.5px;line-height:1.9;margin-bottom:1.25rem;overflow:hidden}
+.doc-header{background:var(--navy);padding:1.5rem 2rem;display:flex;align-items:flex-start;justify-content:space-between}
+.doc-header-logo{height:28px}
+.doc-header-ref{text-align:right;font-size:11px;color:rgba(255,255,255,.5)}
+.doc-header-ref strong{color:#fff;font-family:'Montserrat',sans-serif}
+.doc-body{padding:2rem}
+.doc-title{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--navy);text-align:center;margin-bottom:.5rem}
+.doc-subtitle{font-size:12px;color:var(--text3);text-align:center;margin-bottom:1.5rem;border-bottom:2px solid var(--navy);padding-bottom:1rem}
+.doc-parties{background:var(--surface2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:12px}
+.doc-parties strong{color:var(--navy)}
+.clause-num{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);margin:1.25rem 0 .4rem;border-bottom:1.5px solid var(--border);padding-bottom:.3rem}
+.doc-body p{margin-bottom:.6rem;font-size:12.5px}
+.doc-body ul{margin:.4rem 0 .6rem 1.5rem}
+.doc-body ul li{margin-bottom:.3rem;font-size:12.5px}
+.schedule{background:var(--navy);color:#fff;margin:1.5rem -2rem -2rem;padding:1.5rem 2rem}
+.schedule-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;margin-bottom:1rem;color:var(--green)}
+.schedule-table{width:100%;border-collapse:collapse}
+.schedule-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.1);font-size:12px;vertical-align:top}
+.schedule-table td:first-child{font-weight:600;color:rgba(255,255,255,.6);width:40%;font-family:'Montserrat',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.schedule-table td:last-child{color:#fff}
+.schedule-table tr:last-child td{border-bottom:none}
+.doc-footer{font-size:11px;color:var(--text3);padding:1rem 2rem;border-top:1px solid var(--border);background:var(--surface2)}
+
+/* SIGNATURE */
+.sig-box{border:1px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.sig-label{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.sig-tabs{display:flex;gap:6px;margin-bottom:10px}
+.sig-tab{font-size:11px;padding:4px 13px;border:1px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--surface2);color:var(--text2);font-weight:500;transition:all .12s}
+.sig-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius);background:#fff;cursor:crosshair;touch-action:none;width:100%;height:100px}
+.sig-typed{font-family:'Palatino Linotype',Palatino,Georgia,serif;font-size:30px;color:var(--text);padding:8px 4px;border-bottom:1.5px solid var(--border2);min-height:52px}
+.sig-hint{font-size:11px;color:var(--text3);margin-top:5px}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:.75rem}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s}
+.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-primary:hover{background:var(--navy2)}
+.btn-primary:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed}
+.spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CONFIRM */
+.confirm-screen{display:none}
+.confirm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem 1.75rem;text-align:center}
+.confirm-icon{width:64px;height:64px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
+.confirm-icon svg{width:32px;height:32px;stroke:var(--green-dark);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.confirm-title{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:.4rem;color:var(--navy)}
+.confirm-sub{font-size:13px;color:var(--text2);max-width:420px;margin:0 auto 1.5rem}
+.ref-badge{display:inline-block;background:var(--green-light);color:var(--green-dark);font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;margin-bottom:1.25rem;font-family:'Montserrat',sans-serif}
+.summary-table{width:100%;border-collapse:collapse;font-size:12px;text-align:left;margin-top:1rem}
+.summary-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.summary-table td:first-child{color:var(--text3);font-weight:600;width:45%;text-transform:uppercase;font-size:10px;letter-spacing:.04em;font-family:'Montserrat',sans-serif}
+.summary-table tr:last-child td{border-bottom:none}
+.legal-note{font-size:11px;color:var(--text3);margin-top:1.5rem;line-height:1.7;text-align:left;background:var(--surface2);border-radius:var(--radius);padding:.875rem 1rem;border:1px solid var(--border)}
+
+@media(max-width:520px){.shell{padding:1rem 1rem 4rem}.doc-body{padding:1.25rem}.schedule{margin:1rem -1.25rem -1.25rem;padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="nav">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <div class="nav-right">
+    <div class="badge-ref" id="refBadge">Loading…</div>
+    <div class="nav-badge">Candidate Portal</div>
+  </div>
+</div>
+
+<div id="signingScreen">
+  <div class="info-banner">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>Please read your contract of employment carefully before signing. By signing you confirm you have read, understood and accept all terms. This is a legally binding document.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Contract of Employment</div>
+    <p class="card-sub">Review your contract from Trilogy CX (Pty) Ltd t/a Trilogy BPO.</p>
+
+    <div class="doc">
+      <div class="doc-header">
+        <img src="../trilogy-logo.png" alt="Trilogy BPO" class="doc-header-logo">
+        <div class="doc-header-ref">Ref: <strong id="docRef">—</strong><br>Date: <span id="docDate">—</span></div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-title">CONTRACT OF EMPLOYMENT</div>
+        <div class="doc-subtitle">Trilogy CX (Pty) Ltd (Reg. No. 2024/457320/07) t/a Trilogy BPO — hereinafter "the Company"<br>and the Employee whose details appear in Schedule A hereto</div>
+
+        <div class="doc-parties">
+          <strong>Entered into between:</strong><br>
+          Trilogy CX (Pty) Ltd (Registration Number: 2024/457320/07), hereinafter referred to as the <strong>"Company"</strong><br><br>
+          <strong>And:</strong> <span id="partyEmployee">—</span>, hereinafter referred to as the <strong>"Employee"</strong>
+        </div>
+
+        <div class="clause-num">1. Appointment &amp; Position</div>
+        <p>The Company appoints the Employee in the position and campaign/project as set out in Schedule A with effect from the commencement date set out in Schedule A.</p>
+        <p>The Employee shall perform the functions associated with and ancillary to the position set out in Schedule A, and any other functions that the Company may reasonably request from time to time.</p>
+        <p>The Employee's formal place of work will be at the Company's premises stipulated in Schedule A or at such other premises as the Company may occupy or relocate to from time to time.</p>
+
+        <div class="clause-num">2. Termination, Period of Employment and Suspension</div>
+        <p>Either party shall be entitled to terminate this agreement on written notice: one week if employed less than 3 months; two weeks if employed for 3–6 months; one month if employed more than 6 months.</p>
+        <p>The Company shall be entitled to terminate the Employee's employment summarily if the Employee is guilty of conduct justifying summary dismissal, convicted of fraud/dishonesty/theft, fails to perform duties satisfactorily, or for any other reason justified in law.</p>
+        <p>The Company may suspend the Employee pending investigation into alleged misconduct for a period not exceeding 30 days, during which the Employee shall be entitled to their salary.</p>
+
+        <div class="clause-num">3. Duties of Employee</div>
+        <p>The Employee shall satisfactorily and lawfully perform all duties reasonably assigned, devote their full time and attention during hours of work, obey orders and directions of the Company, use company assets with utmost care, and maintain confidentiality of all company records and affairs.</p>
+        <p>The Employee shall not exceed the express limits of authority attendant to their position, shall use utmost endeavours to protect and promote the business interests of the Company, and shall disclose any potential conflicts of interest at the earliest opportunity.</p>
+
+        <div class="clause-num">4. Remuneration</div>
+        <p>As remuneration for the Employee's services, the Company shall pay the Employee the remuneration package as set out in Schedule A. The Employee's gross monthly salary shall be paid by electronic funds transfer into the Employee's bank account before the last day of each month.</p>
+        <p>The Company shall review the Employee's remuneration package from time to time and it shall be within the sole and absolute discretion of the Company whether or not to grant any increase.</p>
+
+        <div class="clause-num">5. Medical Aid, Provident Fund &amp; Group Life Cover</div>
+        <p>The Company does not currently offer a medical aid scheme, provident fund or group life cover. The Employee is made aware that the costs for any such schemes are for the sole cost of the Employee.</p>
+
+        <div class="clause-num">6. Hours of Work</div>
+        <p>The Employee will be required to work the minimum number of hours during the days and times set out in Schedule A. Hours may vary depending on operational requirements. The Employee may also be required to work overtime, nightshift and/or over weekends if and when required by the Company.</p>
+
+        <div class="clause-num">7. Annual Leave</div>
+        <p>The Employee will be entitled to 15 working days leave on full pay per completed year of service as set out in Schedule A. Leave must be taken within 6 months after completion of the annual leave cycle in which it accrues, on dates agreed by both parties as mutually convenient.</p>
+
+        <div class="clause-num">8. Sick Leave</div>
+        <p>The Employee is entitled to sick leave in accordance with the provisions of the Basic Conditions of Employment Act 75 of 1997. The Employee must inform the Company immediately upon absence due to illness and must provide a medical certificate for absences exceeding two consecutive days or more than two occasions in an eight-week period.</p>
+
+        <div class="clause-num">9. Consent to Credit and Criminal Checks &amp; POPIA</div>
+        <p>By signing this agreement, the Employee consents to the Company accessing their credit profile, conducting fraud and criminal checks, and furnishing personal information to suppliers and professional advisors who render services to the Company, in accordance with the Protection of Personal Information Act 4 of 2013.</p>
+
+        <div class="clause-num">10. Confidentiality</div>
+        <p>The Employee undertakes not to disclose confidential information to any third party, to use utmost endeavours to maintain confidentiality, and to return all confidential information upon demand. These obligations shall survive termination of employment.</p>
+
+        <div class="clause-num">11. Incompatible Activities and Non-Solicitation</div>
+        <p>The Employee shall not, without the Company's prior written consent, be engaged in any business other than that of the Company. For the duration of employment and 12 months thereafter, the Employee shall not solicit or induce any Company employee to leave or join a competing business.</p>
+
+        <div class="clause-num">12. Restraint of Trade</div>
+        <p>The Employee undertakes, while employed and for the restraint period set out in Schedule A (6 months after termination), not to carry on or be engaged in any business competitive with the Company's business in the Republic of South Africa, nor to solicit clients, customers, suppliers or employees of the Company.</p>
+
+        <div class="clause-num">13. Intellectual Property</div>
+        <p>The Employee shall immediately disclose all discoveries, inventions, improvements and designs made in the course of employment, all of which shall belong to and be the sole property of the Company. The Employee cedes and assigns all copyright and intellectual property rights to the Company. These obligations continue after termination of employment.</p>
+
+        <div class="clause-num">14. Company Property and Communications</div>
+        <p>The Company's IT systems and all communications made using them are the property of the Company. The Company is entitled to monitor, access and intercept the Employee's communications. IT systems must only be used for purposes of conducting the Company's business.</p>
+
+        <div class="clause-num">15. General</div>
+        <p>This document constitutes the sole record of the agreement between the parties. No addition, variation or cancellation shall be of force or effect unless in writing and signed by both parties. This agreement may be signed in counterparts, including electronic form.</p>
+
+        <div class="clause-num">16. Addresses</div>
+        <p><strong>The Company:</strong> 3rd Floor, Old Mutual Park, Jan Smuts Avenue, Pinelands, Cape Town, 7450</p>
+        <p><strong>The Employee:</strong> As set out in Schedule A</p>
+
+        <div class="schedule">
+          <div class="schedule-title">Schedule A — Employee Details</div>
+          <table class="schedule-table" id="scheduleTable"></table>
+        </div>
+      </div>
+      <div class="doc-footer">Trilogy CX (Pty) Ltd t/a Trilogy BPO &nbsp;·&nbsp; Reg. No. 2024/457320/07 &nbsp;·&nbsp; This contract is binding upon electronic signature by both parties.</div>
+    </div>
+
+    <div class="sig-box">
+      <div class="sig-label">Employee signature</div>
+      <div class="sig-tabs">
+        <div class="sig-tab active" onclick="switchTab(this,'drawPanel','typePanel')">Draw</div>
+        <div class="sig-tab" onclick="switchTab(this,'typePanel','drawPanel')">Type</div>
+      </div>
+      <div id="drawPanel">
+        <canvas id="sigCanvas"></canvas>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+          <button class="btn" style="border:none;color:var(--text3);font-size:11px;padding:2px 0" onclick="clrCanvas()">&#8635; Clear</button>
+          <span class="sig-hint">Sign in the box above using your mouse or finger</span>
+        </div>
+      </div>
+      <div id="typePanel" style="display:none">
+        <input type="text" id="typedSig" placeholder="Type your full name" oninput="updateTyped()" style="width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;margin-bottom:8px;font-family:inherit">
+        <div class="sig-typed" id="typedDisplay"></div>
+        <div class="sig-hint" style="margin-top:6px">Type your name exactly as it appears in the contract above</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="signBtn" onclick="submitSignature()">
+        <span id="signBtnLabel">Accept &amp; sign contract</span>
+        <div class="spinner" id="signSpinner"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="confirm-screen" id="confirmScreen">
+  <div class="confirm-card">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="confirm-title">Contract signed</div>
+    <p class="confirm-sub">Thank you. Your signed contract of employment has been sent to Trilogy BPO. A copy has been forwarded to your line manager.</p>
+    <div class="ref-badge" id="confirmRef"></div>
+    <table class="summary-table" id="summaryTable"></table>
+    <div class="legal-note">By signing this contract you have confirmed your acceptance of the terms of employment set out above. This document is electronically signed and legally binding under South African law. Signed on <span id="signedDate"></span>.</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var ZAPIER_CONTRACT_WEBHOOK = 'YOUR_ZAP4_WEBHOOK_URL_HERE';
+
+  function gi(id){ return document.getElementById(id); }
+  function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
+  function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
+  function isDrawMode(){ return gi('drawPanel').style.display !== 'none'; }
+
+  var D = {
+    fn:gp('fn'), ln:gp('ln'), id:gp('id'), mob:gp('mob'),
+    em:gp('em'), addr:gp('addr'), jt:gp('jt'), sal:gp('sal'),
+    sd:gp('sd'), od:gp('od'), mgr:gp('mgr'), mgrem:gp('mgrem'),
+    ref:gp('ref'), token:gp('token')
+  };
+
+  // Populate header
+  gi('refBadge').textContent = D.ref || 'REF–';
+  gi('docRef').textContent = D.ref || '—';
+  gi('docDate').textContent = D.od || '—';
+  gi('partyEmployee').textContent = cap(D.fn) + ' ' + cap(D.ln);
+
+  // Populate Schedule A
+  var scheduleRows = [
+    ['Name of Employee', cap(D.fn)+' '+cap(D.ln)],
+    ['Identity Number', D.id],
+    ['Position', D.jt],
+    ['Place of Work', D.addr],
+    ['Commencement Date', D.sd],
+    ['Remuneration', D.sal+' per month (basic salary)'],
+    ['Working Hours', 'SA and UK Operating Hours'],
+    ['Annual Leave', '15 working days per completed year of service'],
+    ['Notice Period', 'As per Clause 2.1.1'],
+    ['Restraint Period', '6 months after Termination Date'],
+    ['Reports To', D.mgr],
+    ['Employee Address', D.addr]
+  ];
+  gi('scheduleTable').innerHTML = scheduleRows.map(function(r){
+    return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';
+  }).join('');
+
+  // Canvas
+  var canvas = gi('sigCanvas');
+  var ctx = canvas.getContext('2d');
+  var drawing = false, lx = 0, ly = 0, hasSig = false;
+
+  function resizeCanvas(){
+    var w = canvas.parentElement.offsetWidth || 600;
+    canvas.width = w; canvas.height = 100;
+    ctx.strokeStyle = '#1B2A4A'; ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e){
+    var r=canvas.getBoundingClientRect();
+    var sx=canvas.width/r.width, sy=canvas.height/r.height;
+    var cx=e.touches?e.touches[0].clientX:e.clientX;
+    var cy=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(cx-r.left)*sx,y:(cy-r.top)*sy};
+  }
+  canvas.onmousedown=function(e){drawing=true;hasSig=true;var p=getPos(e);lx=p.x;ly=p.y;};
+  canvas.onmousemove=function(e){if(!drawing)return;var p=getPos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  canvas.onmouseup=function(){drawing=false;};
+  canvas.onmouseleave=function(){drawing=false;};
+  canvas.ontouchstart=function(e){e.preventDefault();drawing=true;hasSig=true;var p=getPos(e);lx=p.x;ly=p.y;};
+  canvas.ontouchmove=function(e){e.preventDefault();if(!drawing)return;var p=getPos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  canvas.ontouchend=function(){drawing=false;};
+
+  window.clrCanvas=function(){ctx.clearRect(0,0,canvas.width,canvas.height);hasSig=false;};
+  window.updateTyped=function(){gi('typedDisplay').textContent=gi('typedSig').value;};
+  window.switchTab=function(el,showId,hideId){
+    el.parentElement.querySelectorAll('.sig-tab').forEach(function(t){t.classList.remove('active');});
+    el.classList.add('active');
+    gi(showId).style.display=''; gi(hideId).style.display='none';
+  };
+
+  window.submitSignature=function(){
+    var sigData='', sigHtml='';
+    if(isDrawMode()){
+      if(!hasSig){alert('Please draw your signature before signing.');return;}
+      sigData=canvas.toDataURL('image/png');
+      sigHtml='<img src="'+sigData+'" style="height:60px;display:block;margin-top:8px" alt="Signature">';
+    } else {
+      var typed=gi('typedSig').value.trim();
+      if(!typed){alert('Please type your full name as your signature.');return;}
+      sigData='TYPED:'+typed;
+      sigHtml='<span style="font-family:Georgia,serif;font-size:28px;color:#1B2A4A">'+typed+'</span>';
+    }
+
+    var btn=gi('signBtn'), lbl=gi('signBtnLabel'), spin=gi('signSpinner');
+    btn.disabled=true; lbl.textContent='Submitting…'; spin.style.display='block';
+
+    var now=new Date();
+    var signedAt=now.toLocaleDateString('en-ZA')+' '+now.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+
+    // Build signed contract HTML
+    var scheduleHtml=scheduleRows.map(function(r){
+      return '<tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.1);font-weight:600;color:rgba(255,255,255,.6);width:40%;font-size:11px;text-transform:uppercase;letter-spacing:.04em">'+r[0]+'</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-size:12px">'+r[1]+'</td></tr>';
+    }).join('');
+
+    var docHtml='<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+      '<title>Signed Contract — '+cap(D.fn)+' '+cap(D.ln)+'</title>'+
+      '<style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;color:#1B2A4A;font-size:13px;line-height:1.8}'+
+      '.hd{background:#1B2A4A;color:#fff;padding:20px 24px;margin:-40px -20px 24px;display:flex;justify-content:space-between;align-items:center}'+
+      '.title{font-size:20px;font-weight:800;text-align:center;margin-bottom:6px}.sub{font-size:11px;color:#888;text-align:center;border-bottom:2px solid #1B2A4A;padding-bottom:12px;margin-bottom:20px}'+
+      '.clause{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#1B2A4A;margin:20px 0 6px;border-bottom:1.5px solid #ddd;padding-bottom:4px}'+
+      'p{margin-bottom:8px}.schedule{background:#1B2A4A;color:#fff;padding:20px 24px;margin:24px -20px -40px}'+
+      '.sig-block{margin-top:32px;padding-top:20px;border-top:2px solid #1B2A4A}'+
+      '.stamp{background:#E1F5EE;border:1px solid #9FE1CB;border-radius:6px;padding:10px 16px;font-size:12px;color:#085041;margin-top:20px}'+
+      '</style></head><body>'+
+      '<div class="hd"><div style="font-size:18px;font-weight:800">Trilogy BPO</div>'+
+      '<div style="font-size:11px;text-align:right;opacity:.6">Ref: <strong style="color:#fff">'+D.ref+'</strong><br>Date: '+D.od+'</div></div>'+
+      '<div class="title">CONTRACT OF EMPLOYMENT</div>'+
+      '<div class="sub">Trilogy CX (Pty) Ltd (Reg. No. 2024/457320/07) t/a Trilogy BPO</div>'+
+      document.querySelector('.doc-body').innerHTML.replace(/<div class="schedule">[\s\S]*<\/div>/, '')+
+      '<div class="sig-block"><div style="font-size:11px;color:#888;margin-bottom:4px">Employee signature</div>'+
+      sigHtml+
+      '<div style="margin-top:12px;font-size:12px"><strong>'+cap(D.fn)+' '+cap(D.ln)+'</strong><br>'+
+      'Signed on: '+signedAt+'<br>ID number: '+D.id+'</div></div>'+
+      '<p style="margin-top:16px;font-size:12px"><strong>For and on behalf of Trilogy CX (Pty) Ltd:</strong><br>'+
+      'Rudi Jansen — People Director</p>'+
+      '<div class="stamp">&#10003; This contract was electronically signed on '+signedAt+' — Reference: '+D.ref+'</div>'+
+      '<div class="schedule"><div style="font-size:13px;font-weight:700;color:#4AFD0E;margin-bottom:12px">Schedule A — Employee Details</div>'+
+      '<table style="width:100%;border-collapse:collapse">'+scheduleHtml+'</table></div>'+
+      '</body></html>';
+
+    var payload={
+      action:'contract_signed',
+      ref:D.ref, token:D.token, signed_at:signedAt,
+      candidate_first:D.fn, candidate_last:D.ln,
+      candidate_email:D.em, candidate_id:D.id,
+      candidate_mobile:D.mob, candidate_address:D.addr,
+      job_title:D.jt, salary:D.sal,
+      start_date:D.sd, offer_date:D.od,
+      reports_to:D.mgr, reports_to_email:D.mgrem,
+      rudi_email:'rudij@trilogybpo.com',
+      signature_data:sigData,
+      signed_document_html:btoa(unescape(encodeURIComponent(docHtml))),
+      document_filename:D.ref+'_'+cap(D.fn)+'_'+cap(D.ln)+'_ContractOfEmployment_Signed.html'
+    };
+
+    var body=Object.keys(payload).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);}).join('&');
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',ZAPIER_CONTRACT_WEBHOOK,true);
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.send(body);
+
+    // Show confirmation
+    gi('signingScreen').style.display='none';
+    gi('confirmScreen').style.display='block';
+    gi('confirmRef').textContent=D.ref;
+    gi('signedDate').textContent=signedAt;
+
+    var rows=[
+      ['Full name',cap(D.fn)+' '+cap(D.ln)],
+      ['ID number',D.id],
+      ['Position',D.jt],
+      ['Start date',D.sd],
+      ['Monthly salary',D.sal],
+      ['Reports to',D.mgr],
+      ['Signed on',signedAt],
+      ['Document','Contract of Employment'],
+      ['Reference',D.ref]
+    ];
+    gi('summaryTable').innerHTML=rows.map(function(r){
+      return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';
+    }).join('');
+    window.scrollTo(0,0);
+  };
+})();
+</script>
+</body>
+</html>
