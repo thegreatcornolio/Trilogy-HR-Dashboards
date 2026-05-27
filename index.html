@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — HR Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy-dark:#121212;
+  --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--slate:#4A5568;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --red:#c0392b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
+.nav-logo{height:30px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);font-family:'Montserrat',sans-serif}
+.hero{background:var(--navy);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem;letter-spacing:-.02em}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:500px;line-height:1.7}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.stat{border-left:2px solid var(--green);padding-left:1rem}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1}
+.stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.shell{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.section-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--border)}
+.section-tag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+
+/* LOOKUP */
+.lookup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem}
+.lookup-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.lookup-header h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.lookup-header p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.lookup-view-all{font-size:11px;font-weight:600;color:var(--green);text-decoration:none;font-family:'Montserrat',sans-serif}
+.lookup-view-all:hover{opacity:.8}
+.lookup-body{padding:1.25rem 1.5rem}
+.lookup-row{display:flex;gap:10px;margin-bottom:1rem}
+.lookup-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--offwhite)}
+.lookup-input:focus{outline:none;border-color:var(--navy);background:#fff}
+.lookup-btn{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif}
+.lookup-btn:hover{background:var(--navy2)}
+.lookup-hint{font-size:12px;color:var(--text3);text-align:center;padding:.25rem 0}
+.lookup-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;display:none}
+.lookup-result{display:none}
+.result-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;flex-wrap:wrap}
+.result-avatar{width:46px;height:46px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.result-info{flex:1;min-width:180px}
+.result-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.result-role{font-size:12px;color:var(--text2);margin-bottom:.75rem}
+.result-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+.rmi{font-size:11px;color:var(--text3)}
+.rmi strong{display:block;color:var(--text);font-weight:600;margin-bottom:1px}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;font-family:'Montserrat',sans-serif}
+.s-offer-sent{background:#fff3cd;color:#856404}
+.s-offer-signed{background:#d1ecf1;color:#0c5460}
+.s-contract-sent{background:#cce5ff;color:#004085}
+.s-contract-signed{background:#d4edda;color:#155724}
+.s-complete{background:var(--green-light);color:var(--green-dark)}
+.s-draft{background:var(--surface2);color:var(--text3)}
+.rt-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin:.75rem 0 .4rem;font-family:'Montserrat',sans-serif;width:100%}
+.rt-track{display:flex;gap:4px}
+.rt-step{flex:1;height:6px;border-radius:3px;background:var(--border)}
+.rt-step.done{background:var(--navy)}
+.rt-step.active{background:var(--green)}
+
+/* MODULES */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;margin-bottom:2.5rem}
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;transition:all .18s;position:relative;overflow:hidden;text-decoration:none;display:block}
+.module-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .18s}
+.module-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.08);transform:translateY(-2px)}
+.module-card:hover::after{transform:scaleX(1)}
+.module-card.live-card{border-color:#515151}
+.module-card.live-card::after{transform:scaleX(1)}
+.module-card.placeholder{opacity:.5;pointer-events:none}
+.mc-icon{width:38px;height:38px;background:var(--offwhite);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.875rem}
+.mc-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.mc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:.5rem;font-family:'Montserrat',sans-serif}
+.badge-live{background:var(--green-light);color:var(--green-dark)}
+.badge-soon{background:var(--surface2);color:var(--text3)}
+
+/* SETTINGS CARDS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.settings-card h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text)}
+.settings-card p{font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.5}
+.staff-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
+.staff-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
+.staff-av{width:26px;height:26px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.staff-name{flex:1;font-weight:500;color:var(--text)}
+.staff-email{color:var(--text3);font-size:11px}
+.staff-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.staff-rm:hover{color:var(--red)}
+.dept-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
+.dept-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
+.dept-icon{width:26px;height:26px;background:#515151;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.dept-name{flex:1;font-weight:500;color:var(--text)}
+.dept-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.dept-rm:hover{color:var(--red)}
+.add-row{display:flex;gap:6px;margin-bottom:.75rem}
+.add-row input{flex:1;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;color:var(--text);min-width:0;background:var(--offwhite)}
+.add-row input:focus{outline:none;border-color:#515151;background:#fff}
+.btn-navy{padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.btn-navy:hover{background:var(--navy2)}
+.btn-full{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;width:100%;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);background:var(--offwhite);margin-bottom:8px}
+.btn-full:hover{background:#dddcda}
+.btn-full.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-full.primary:hover{background:var(--navy2)}
+.btn-full.green{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+.divider-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;margin:.75rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--offwhite)}
+.upload-zone:hover{border-color:#515151;background:#e2e1dd}
+.uz-icon{font-size:22px;margin-bottom:.25rem}
+.uz-text{font-size:12px;color:var(--text3)}
+.import-result{font-size:11px;color:var(--text3);margin-top:.5rem;min-height:16px;text-align:center}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px;margin:.75rem 0;max-height:140px;display:block;overflow-y:auto}
+.preview-table th{background:var(--navy);color:#fff;padding:5px 10px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0}
+.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border);color:var(--text2)}
+.preview-table tr:last-child td{border-bottom:none}
+
+/* VIBECHECK SECTION HEADER LINK */
+.section-head a.vibecheck-link{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--green-dark);text-decoration:none;border:1px solid var(--green-dark);padding:3px 10px;border-radius:20px}
+.section-head a.vibecheck-link:hover{background:var(--green-light)}
+
+/* FOOTER */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:20px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+@media(max-width:760px){.settings-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr 1fr}.hero-title{font-size:22px}.shell{padding:1.5rem 1rem 4rem}}
+@media(max-width:440px){.module-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">HR Portal</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">HP</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO</div>
+    <h1 class="hero-title">People Operations<br><span>Central.</span></h1>
+    <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
+    <p class="hero-sub">Please note that stats are only updated every hour</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active onboardings</div></div>
+      <div class="stat"><div class="stat-num" id="statPending">—</div><div class="stat-label">Awaiting signature</div></div>
+      <div class="stat"><div class="stat-num" id="statComplete">—</div><div class="stat-label">Completed</div></div>
+      <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- EMPLOYEE LOOKUP -->
+  <div class="section-head"><h2>Employee lookup</h2><div class="section-line"></div><div class="section-tag">Quick search</div></div>
+  <div class="lookup-card">
+    <div class="lookup-header">
+      <div><h3>Find an employee</h3><p>Search by name or reference number</p></div>
+      <a href="employees/" class="lookup-view-all">View all records →</a>
+    </div>
+    <div class="lookup-body">
+      <div class="lookup-row">
+        <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. John Smith or TBP-2026-AB1234" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="lookup-btn" onclick="doLookup()">Search</button>
+      </div>
+      <div class="lookup-hint" id="lookupHint">Enter a name or reference number and press Search</div>
+      <div class="lookup-empty" id="lookupEmpty">No matching record found.</div>
+      <div class="lookup-result" id="lookupResult"></div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
+  <div class="module-grid">
+    <a href="onboarding/" class="module-card live-card">
+      <div class="mc-icon">👤</div>
+      <div class="mc-title">Employee Onboarding</div>
+      <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="employees/" class="module-card live-card">
+      <div class="mc-icon">🗃️</div>
+      <div class="mc-title">Employee Records</div>
+      <div class="mc-desc">Search, track and manage all onboarding cases</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="surveys/" class="module-card live-card">
+      <div class="mc-icon">✌️</div>
+      <div class="mc-title">#vibecheck</div>
+      <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="https://app.powerbi.com/groups/me/datasets/22618f3a-f2fe-4aa6-b15c-647d3ed7c065?experience=power-bi" target="_blank" class="module-card live-card">
+      <div class="mc-icon">📊</div>
+      <div class="mc-title">#vibecheck Reporting</div>
+      <div class="mc-desc">Power BI dashboard — weekly trends, scores by campaign</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">🔍</div><div class="mc-title">Background Checks</div><div class="mc-desc">Criminal, credit, ID verification, qualifications</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">🧾</div><div class="mc-title">Tax Documentation</div><div class="mc-desc">IT77, IRP5 declarations, SARS submissions</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">📚</div><div class="mc-title">Policy Documents</div><div class="mc-desc">Handbook, absence, code of conduct issuance</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">🎓</div><div class="mc-title">Skills Development</div><div class="mc-desc">BBBEE, SETA records, training documentation</div><div class="mc-badge badge-soon">Coming soon</div></div>
+  </div>
+
+  <!-- MANAGERS SETTINGS -->
+  <div class="section-head"><h2>Reporting-to managers</h2><div class="section-line"></div><div class="section-tag">Manage list</div></div>
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Current managers</h3>
+      <p>Add or remove managers below. When done, click <strong>Save to GitHub</strong> to update the onboarding dropdown for everyone instantly.</p>
+      <div class="staff-list" id="staffList"></div>
+      <div class="add-row">
+        <input type="text" id="newName" placeholder="Full name">
+        <input type="email" id="newEmail" placeholder="email@trilogybpo.com">
+        <button class="btn-navy" onclick="addStaff()">Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-full" onclick="exportJSON()" style="margin-bottom:0">⬇ Download managers.json</button>
+        <button class="btn-full primary" onclick="saveToGitHub('managers')" style="margin-bottom:0" id="saveBtn">☁ Save to GitHub</button>
+      </div>
+      <div id="saveResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
+    </div>
+    <div class="settings-card">
+      <h3>CSV import</h3>
+      <p>Download the blank template, fill it in Excel with your managers, then upload it here. Once imported click <strong>Save to GitHub</strong> on the left.</p>
+      <button class="btn-full" onclick="downloadTemplate()">⬇ Download CSV template</button>
+      <div class="divider-label">upload completed CSV</div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
+        <div class="uz-icon">📂</div>
+        <div class="uz-text" id="uzText">Click to select your completed CSV file</div>
+        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(this)">
+      </div>
+      <div class="import-result" id="importResult"></div>
+      <div id="previewWrap" style="display:none">
+        <table class="preview-table"><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody id="previewBody"></tbody></table>
+        <button class="btn-full green" onclick="applyImport()">✓ Apply — then Save to GitHub</button>
+      </div>
+      <div class="divider-label" style="margin-top:1rem">github settings</div>
+      <div style="margin-bottom:6px">
+        <label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">GitHub Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;background:var(--offwhite);color:var(--text)">
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Stored in your browser only. Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HR+Portal" target="_blank" style="color:#515151">Generate one here →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIBECHECK DEPARTMENTS -->
+  <div class="section-head">
+    <h2>#vibecheck campaigns</h2>
+    <div class="section-line"></div>
+    <a href="surveys/" class="vibecheck-link" target="_blank">Open survey ↗</a>
+  </div>
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Current campaigns / departments</h3>
+      <p>Add or remove campaigns below. Click <strong>Save to GitHub</strong> to update the dropdown in the #vibecheck survey instantly.</p>
+      <div class="dept-list" id="deptList"></div>
+      <div class="add-row">
+        <input type="text" id="newDept" placeholder="Campaign or department name">
+        <button class="btn-navy" onclick="addDept()">Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-full" onclick="exportDeptJSON()" style="margin-bottom:0">⬇ Download departments.json</button>
+        <button class="btn-full primary" onclick="saveToGitHub('departments')" style="margin-bottom:0" id="saveDeptBtn">☁ Save to GitHub</button>
+      </div>
+      <div id="saveDeptResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
+    </div>
+    <div class="settings-card">
+      <h3>CSV import</h3>
+      <p>Download the blank template, add your campaign names, then upload. Once imported click <strong>Save to GitHub</strong> on the left.</p>
+      <button class="btn-full" onclick="downloadDeptTemplate()">⬇ Download CSV template</button>
+      <div class="divider-label">upload completed CSV</div>
+      <div class="upload-zone" onclick="document.getElementById('deptCsvFile').click()">
+        <div class="uz-icon">📂</div>
+        <div class="uz-text" id="deptUzText">Click to select your completed CSV file</div>
+        <input type="file" id="deptCsvFile" accept=".csv" style="display:none" onchange="handleDeptCSV(this)">
+      </div>
+      <div class="import-result" id="deptImportResult"></div>
+      <div id="deptPreviewWrap" style="display:none">
+        <table class="preview-table"><thead><tr><th>Campaign / Department</th></tr></thead><tbody id="deptPreviewBody"></tbody></table>
+        <button class="btn-full green" onclick="applyDeptImport()">✓ Apply — then Save to GitHub</button>
+      </div>
+      <div class="divider-label" style="margin-top:1rem">note</div>
+      <p style="font-size:11px;color:var(--text3);line-height:1.6">Uses the same GitHub token entered in the Managers section above. Make sure it's filled in before saving.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+var BASE = 'https://thegreatcornolio.github.io/trilogy-hr';
+var MANAGERS_URL = BASE + '/managers.json';
+var DEPARTMENTS_URL = BASE + '/departments.json';
+
+/* ── EMPLOYEES ── */
+var employees = [
+  {name:'John Smith',ref:'TBP-2026-AP8XUM',role:'CEO',start:'01/07/2026',manager:'Tanya Phillips',status:'Offer Sent',stage:1},
+  {name:'Graham Smith',ref:'TBP-2026-B3LF8D',role:'Chief Bottle Washer',start:'01/06/2026',manager:'Tanya Phillips',status:'Offer Signed',stage:2}
+];
+
+function statusClass(s){var m={'Offer Sent':'s-offer-sent','Offer Signed':'s-offer-signed','Contract Sent':'s-contract-sent','Contract Signed':'s-contract-signed','Complete':'s-complete'};return m[s]||'s-draft';}
+function initials(n){return n.split(' ').map(function(w){return w[0];}).slice(0,2).join('');}
+
+window.doLookup = function(){
+  var q=document.getElementById('lookupInput').value.trim().toLowerCase();
+  document.getElementById('lookupHint').style.display='none';
+  document.getElementById('lookupEmpty').style.display='none';
+  document.getElementById('lookupResult').style.display='none';
+  if(!q)return;
+  var found=employees.filter(function(e){return e.name.toLowerCase().includes(q)||e.ref.toLowerCase().includes(q);});
+  if(!found.length){document.getElementById('lookupEmpty').style.display='block';return;}
+  var html=found.map(function(e){
+    var steps=[0,1,2,3,4].map(function(i){return '<div class="rt-step'+(i<e.stage?' done':i===e.stage?' active':'')+'"></div>';}).join('');
+    return '<div class="result-card">'+
+      '<div class="result-avatar">'+initials(e.name)+'</div>'+
+      '<div class="result-info">'+
+        '<div class="result-name">'+e.name+'</div>'+
+        '<div class="result-role">'+e.role+'</div>'+
+        '<div class="result-meta">'+
+          '<div class="rmi"><strong>Reference</strong>'+e.ref+'</div>'+
+          '<div class="rmi"><strong>Start date</strong>'+e.start+'</div>'+
+          '<div class="rmi"><strong>Manager</strong>'+e.manager+'</div>'+
+        '</div>'+
+        '<div class="rt-label">Progress</div><div class="rt-track">'+steps+'</div>'+
+      '</div>'+
+      '<div><span class="status-pill '+statusClass(e.status)+'">'+e.status+'</span></div>'+
+      '</div>';
+  }).join('<div style="height:8px"></div>');
+  var r=document.getElementById('lookupResult'); r.innerHTML=html; r.style.display='block';
+};
+
+/* ── MANAGERS ── */
+var staffData=[];
+var importBuffer=[];
+
+function loadManagers(){
+  fetch(MANAGERS_URL+'?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){staffData=d;renderStaff();})
+    .catch(function(){
+      staffData=[{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},{name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},{name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}];
+      renderStaff();
+    });
+}
+
+function renderStaff(){
+  var list=document.getElementById('staffList'); list.innerHTML='';
+  staffData.forEach(function(s,i){
+    var ini=s.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('');
+    var r=document.createElement('div'); r.className='staff-row';
+    r.innerHTML='<div class="staff-av">'+ini+'</div>'+
+      '<div style="flex:1"><div class="staff-name">'+s.name+'</div><div class="staff-email">'+s.email+'</div></div>'+
+      '<button class="staff-rm" onclick="removeStaff('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+  document.getElementById('statManagers').textContent=staffData.length;
+}
+
+window.addStaff=function(){
+  var n=document.getElementById('newName').value.trim(), e=document.getElementById('newEmail').value.trim();
+  if(!n||!e){alert('Please enter both a name and email address.');return;}
+  staffData.push({name:n,email:e});
+  document.getElementById('newName').value=''; document.getElementById('newEmail').value='';
+  renderStaff();
+};
+window.removeStaff=function(i){staffData.splice(i,1);renderStaff();};
+window.exportJSON=function(){
+  var json=JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='managers.json'; a.click();
+};
+window.downloadTemplate=function(){
+  var csv='name,email\nTanya Phillips,tanyap@trilogybpo.com\nRudi Jacobs,rudij@trilogybpo.com\n';
+  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='managers_template.csv'; a.click();
+};
+window.handleCSV=function(input){
+  var file=input.files[0]; if(!file)return;
+  document.getElementById('uzText').textContent='📄 '+file.name;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(Boolean);
+    importBuffer=[];
+    lines.forEach(function(line,i){
+      if(i===0&&line.toLowerCase().includes('name'))return;
+      var parts=line.split(',');
+      var n=(parts[0]||'').replace(/"/g,'').trim(), em=(parts[1]||'').replace(/"/g,'').trim();
+      if(n&&em) importBuffer.push({name:n,email:em});
+    });
+    if(!importBuffer.length){document.getElementById('importResult').textContent='No valid rows found.';document.getElementById('previewWrap').style.display='none';return;}
+    document.getElementById('importResult').textContent=importBuffer.length+' manager(s) found — preview below:';
+    var tbody=document.getElementById('previewBody'); tbody.innerHTML='';
+    importBuffer.forEach(function(m){var tr=document.createElement('tr');tr.innerHTML='<td>'+m.name+'</td><td>'+m.email+'</td>';tbody.appendChild(tr);});
+    document.getElementById('previewWrap').style.display='block';
+  };
+  reader.readAsText(file);
+};
+window.applyImport=function(){
+  staffData=importBuffer.slice(); importBuffer=[];
+  renderStaff();
+  document.getElementById('importResult').textContent='✓ '+staffData.length+' managers imported. Click Save to GitHub to publish.';
+  document.getElementById('previewWrap').style.display='none';
+  document.getElementById('uzText').textContent='Click to select your completed CSV file';
+  document.getElementById('csvFile').value='';
+};
+
+/* ── DEPARTMENTS ── */
+var deptData=[];
+var deptImportBuffer=[];
+
+function loadDepartments(){
+  fetch(DEPARTMENTS_URL+'?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){deptData=d;renderDepts();})
+    .catch(function(){deptData=[{name:'NADClinic'}];renderDepts();});
+}
+
+function renderDepts(){
+  var list=document.getElementById('deptList'); list.innerHTML='';
+  deptData.forEach(function(d,i){
+    var r=document.createElement('div'); r.className='dept-row';
+    r.innerHTML='<div class="dept-icon">🏷</div>'+
+      '<div class="dept-name">'+d.name+'</div>'+
+      '<button class="dept-rm" onclick="removeDept('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+}
+
+window.addDept=function(){
+  var n=document.getElementById('newDept').value.trim();
+  if(!n){alert('Please enter a campaign or department name.');return;}
+  deptData.push({name:n});
+  document.getElementById('newDept').value='';
+  renderDepts();
+};
+window.removeDept=function(i){deptData.splice(i,1);renderDepts();};
+window.exportDeptJSON=function(){
+  var json=JSON.stringify(deptData,null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='departments.json'; a.click();
+};
+window.downloadDeptTemplate=function(){
+  var csv='department\nNADClinic\n';
+  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='departments_template.csv'; a.click();
+};
+window.handleDeptCSV=function(input){
+  var file=input.files[0]; if(!file)return;
+  document.getElementById('deptUzText').textContent='📄 '+file.name;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(Boolean);
+    deptImportBuffer=[];
+    lines.forEach(function(line,i){
+      if(i===0&&line.toLowerCase().includes('department'))return;
+      var n=line.replace(/"/g,'').trim();
+      if(n) deptImportBuffer.push({name:n});
+    });
+    if(!deptImportBuffer.length){document.getElementById('deptImportResult').textContent='No valid rows found.';document.getElementById('deptPreviewWrap').style.display='none';return;}
+    document.getElementById('deptImportResult').textContent=deptImportBuffer.length+' campaign(s) found — preview below:';
+    var tbody=document.getElementById('deptPreviewBody'); tbody.innerHTML='';
+    deptImportBuffer.forEach(function(d){var tr=document.createElement('tr');tr.innerHTML='<td>'+d.name+'</td>';tbody.appendChild(tr);});
+    document.getElementById('deptPreviewWrap').style.display='block';
+  };
+  reader.readAsText(file);
+};
+window.applyDeptImport=function(){
+  deptData=deptImportBuffer.slice(); deptImportBuffer=[];
+  renderDepts();
+  document.getElementById('deptImportResult').textContent='✓ '+deptData.length+' campaigns imported. Click Save to GitHub to publish.';
+  document.getElementById('deptPreviewWrap').style.display='none';
+  document.getElementById('deptUzText').textContent='Click to select your completed CSV file';
+  document.getElementById('deptCsvFile').value='';
+};
+
+/* ── SHARED GITHUB SAVE ── */
+window.saveToGitHub=function(type){
+  var token=document.getElementById('ghToken').value.trim();
+  if(!token){alert('Please enter your GitHub Personal Access Token.\n\nClick the "Generate one here" link in the Managers section.');return;}
+
+  var isManagers=(type==='managers');
+  var filename=isManagers?'managers.json':'departments.json';
+  var payload=isManagers
+    ? JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2)
+    : JSON.stringify(deptData,null,2);
+  var encoded=btoa(unescape(encodeURIComponent(payload)));
+  var btn=document.getElementById(isManagers?'saveBtn':'saveDeptBtn');
+  var res=document.getElementById(isManagers?'saveResult':'saveDeptResult');
+  btn.textContent='Saving…'; btn.disabled=true; res.textContent='';
+
+  fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
+    headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    return fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'Update '+filename+' via HR Portal',content:encoded,sha:data.sha})
+    });
+  })
+  .then(function(r){
+    if(r.ok){
+      res.innerHTML='<span style="color:var(--green-dark)">✓ Saved to GitHub. Will update within 60 seconds.</span>';
+    } else {return r.json().then(function(e){throw new Error(e.message);});}
+    btn.textContent=isManagers?'☁ Save to GitHub':'☁ Save to GitHub'; btn.disabled=false;
+  })
+  .catch(function(err){
+    res.innerHTML='<span style="color:var(--red)">✗ '+err.message+'</span>';
+    btn.textContent='☁ Save to GitHub'; btn.disabled=false;
+  });
+};
+
+/* ── STATS ── */
+function loadStats(){
+  fetch(BASE+'/stats.json?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){
+      document.getElementById('statActive').textContent=typeof d.active!=='undefined'?d.active:0;
+      document.getElementById('statPending').textContent=typeof d.pending!=='undefined'?d.pending:0;
+      document.getElementById('statComplete').textContent=typeof d.complete!=='undefined'?d.complete:0;
+    })
+    .catch(function(){
+      document.getElementById('statActive').textContent='0';
+      document.getElementById('statPending').textContent='0';
+      document.getElementById('statComplete').textContent='0';
+    });
+}
+
+loadStats();
+loadManagers();
+loadDepartments();
+</script>
+</body>
+</html>
