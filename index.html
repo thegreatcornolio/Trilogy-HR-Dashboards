@@ -139,6 +139,10 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 .section-head a.vibecheck-link{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--green-dark);text-decoration:none;border:1px solid var(--green-dark);padding:3px 10px;border-radius:20px}
 .section-head a.vibecheck-link:hover{background:var(--green-light)}
 
+
+.btn-send-vibe{padding:12px 24px;background:var(--green);color:#111;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-send-vibe:hover{background:#5fff1a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,253,14,.3)}
+.btn-send-vibe:disabled{opacity:.5;pointer-events:none}
 /* FOOTER */
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -276,10 +280,24 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 
   <!-- VIBECHECK DEPARTMENTS -->
   <div class="section-head">
-    <h2>#vibecheck campaigns</h2>
+    <h2>#vibecheck</h2>
     <div class="section-line"></div>
     <a href="surveys/" class="vibecheck-link" target="_blank">Open survey ↗</a>
   </div>
+  <!-- VIBECHECK SEND BUTTON -->
+  <div class="settings-card" style="margin-bottom:1rem;background:var(--navy);border-color:rgba(74,253,14,.4)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h3 style="color:#fff;font-size:15px">📲 Send this week's #vibecheck</h3>
+        <p style="color:rgba(255,255,255,.5);margin-bottom:0">Sends a WhatsApp to all employees with Contract Signed status. Every Thursday — or whenever you're ready.</p>
+      </div>
+      <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
+        <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
+      </button>
+    </div>
+    <div id="sendVibeResult" style="font-size:12px;margin-top:.75rem;min-height:16px;text-align:right;color:rgba(255,255,255,.6)"></div>
+  </div>
+
   <div class="settings-grid">
     <div class="settings-card">
       <h3>Current campaigns / departments</h3>
@@ -559,6 +577,37 @@ function loadStats(){
       document.getElementById('statComplete').textContent='0';
     });
 }
+
+
+/* ── SEND VIBECHECK ── */
+var VIBECHECK_TRIGGER_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/417488f694614043990624dcb3b111d5/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iM6fMXsu4X9BiK8bFba9pDYQhxsdWw34KHzH9x0QSqQ';
+
+window.sendVibecheck = function(){
+  var btn = document.getElementById('sendVibeBtn');
+  var lbl = document.getElementById('sendVibeBtnLabel');
+  var res = document.getElementById('sendVibeResult');
+  if(!confirm('Send this week\'s #vibecheck WhatsApp to all active employees now?')) return;
+  btn.disabled = true;
+  lbl.textContent = 'Sending…';
+  res.textContent = '';
+  fetch(VIBECHECK_TRIGGER_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({triggered_by: 'hr_portal', triggered_at: new Date().toISOString()})
+  })
+  .then(function(r){
+    if(r.ok || r.status === 202){
+      lbl.textContent = '✌️ Send #vibecheck now';
+      res.innerHTML = '<span style="color:var(--green)">✓ #vibecheck sent! Employees will receive their WhatsApp shortly.</span>';
+    } else { throw new Error('Status '+r.status); }
+    btn.disabled = false;
+  })
+  .catch(function(err){
+    lbl.textContent = '✌️ Send #vibecheck now';
+    res.innerHTML = '<span style="color:var(--red)">✗ Something went wrong — '+err.message+'</span>';
+    btn.disabled = false;
+  });
+};
 
 loadStats();
 loadManagers();
