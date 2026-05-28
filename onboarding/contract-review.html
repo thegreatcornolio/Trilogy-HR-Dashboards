@@ -200,14 +200,25 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
     };
 
     var body=Object.keys(payload).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);}).join('&');
-    var xhr=new XMLHttpRequest();
-    xhr.open('POST',ZAPIER_SEND_CONTRACT,true);
-    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    xhr.send(body);
 
-    gi('reviewCard').style.display='none';
-    gi('successCard').style.display='block';
-    gi('successMsg').textContent='Contract sent to '+cap(D.fn)+' '+cap(D.ln)+' ('+D.em+'). They will receive an email with a link to review and sign. Ref: '+D.ref;
+    fetch(ZAPIER_SEND_CONTRACT, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body
+    })
+    .then(function(r){
+      if(!r.ok) throw new Error('Status '+r.status);
+      gi('reviewCard').style.display='none';
+      gi('successCard').style.display='block';
+      gi('successMsg').textContent='Contract sent to '+cap(D.fn)+' '+cap(D.ln)+' ('+D.em+'). They will receive an email with a link to review and sign. Ref: '+D.ref;
+    })
+    .catch(function(err){
+      btn.disabled=false;
+      lbl.textContent='Send contract to candidate';
+      spin.style.display='none';
+      alert('Something went wrong sending the contract. Please try again.\n\nError: '+err.message);
+      console.error('Contract send error:', err);
+    });
   };
 })();
 </script>
