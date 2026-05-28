@@ -234,7 +234,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
 <script>
 (function(){
   var ZAPIER = 'https://hooks.zapier.com/hooks/catch/6391188/4oaqqzu/';
-  var BASE   = 'https://thegreatcornolio.github.io/trilogy-hr';
+  var BASE   = '';
   var MANAGERS_URL = BASE + '/managers.json';
   var managersData = [];
   var bulkRows = [];
@@ -304,8 +304,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
         managersData=[
           {name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},
           {name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},
-          {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'},
-          {name:'Craig Shalekoff',email:'craigs@trilogybpo.com'}
+          {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}
         ];
         populateManagerSelect(managersData);
         gi('mgrStatus').innerHTML='<span style="color:var(--text3)">Using cached list</span>';
@@ -412,8 +411,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       var lines=e.target.result.split('\n').filter(Boolean);
       if(lines.length<2){alert('No data found in file.');return;}
       var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s/g,'_');});
-      var sep=lines[0].indexOf('\t')>=0?'\t':',';
-      var vals=parseCSVLine(lines[1], sep);
+      var vals=parseCSVLine(lines[1]);
       function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
       gi('fn').value=get('first_name');
       gi('ln').value=get('last_name');
@@ -424,8 +422,8 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       gi('jt').value=get('job_title');
       gi('campaign').value=get('campaign')||'';
       gi('sal').value=get('salary');
-      gi('sd').value=fmtDateFromCSV(get('start_date'));
-      gi('offerdate').value=fmtDateFromCSV(get('offer_date'))||new Date().toISOString().slice(0,10);
+      gi('sd').value=get('start_date');
+      gi('offerdate').value=get('offer_date')||new Date().toISOString().slice(0,10);
       // Match manager by name or email
       var mgrName=get('reports_to_name'), mgrEmail=get('reports_to_email');
       var sel=gi('mgrSelect');
@@ -449,8 +447,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
   };
 
-  function parseCSVLine(line, sep){
-    if(sep==='\t') return line.split('\t').map(function(v){return v.replace(/"/g,'').trim();});
+  function parseCSVLine(line){
     var result=[],cur='',inQ=false;
     for(var i=0;i<line.length;i++){
       var c=line[i];
@@ -462,38 +459,16 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     return result;
   }
 
-  function fmtDateFromCSV(v){
-    if(!v)return'';
-    // Already ISO format
-    if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
-    // M/D/YY or M/D/YYYY
-    var m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-    if(m){
-      var yr=parseInt(m[3]); if(yr<100)yr+=2000;
-      return yr+'-'+('0'+m[1]).slice(-2)+'-'+('0'+m[2]).slice(-2);
-    }
-    // D/M/YYYY
-    var m2=v.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-    if(m2) return m2[3]+'-'+('0'+m2[2]).slice(-2)+'-'+('0'+m2[1]).slice(-2);
-    return v;
-  }
-
   function parseCSV(text){
     var lines=text.split('\n').filter(Boolean);
     if(lines.length<2)return[];
-    // Auto-detect separator: tab or comma
-    var sep=lines[0].indexOf('\t')>=0?'\t':',';
-    var headers=lines[0].split(sep).map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
+    var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
     var rows=[];
     for(var i=1;i<lines.length;i++){
-      var vals=parseCSVLine(lines[i], sep);
+      var vals=parseCSVLine(lines[i]);
       if(vals.every(function(v){return!v.trim();}))continue;
       var row={};
-      headers.forEach(function(h,j){
-        var v=(vals[j]||'').replace(/"/g,'').trim();
-        if(h==='start_date'||h==='offer_date') v=fmtDateFromCSV(v);
-        row[h]=v;
-      });
+      headers.forEach(function(h,j){row[h]=(vals[j]||'').replace(/"/g,'').trim();});
       rows.push(row);
     }
     return rows;
