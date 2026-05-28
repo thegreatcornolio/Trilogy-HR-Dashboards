@@ -146,13 +146,19 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
   gi('dAddr').textContent = D.addr;
   gi('dMgr').textContent = D.mgr;
   gi('dJt').textContent = D.jt;
-  gi('dSal').textContent = 'R '+D.sal;
+  gi('dSal').textContent = 'R '+D.sal.toString().replace(/^R\s*/i,'');
   gi('dSd').textContent = D.sd;
   gi('dRef').textContent = D.ref;
 
   window.sendContract = function(){
     var btn=gi('sendBtn'), lbl=gi('sendBtnLabel'), spin=gi('sendSpinner');
     btn.disabled=true; lbl.textContent='Sending…'; spin.style.display='block';
+
+    // Get form values FIRST before building URL
+    var placeOfWork = gi('placeOfWork').value.trim();
+    var workingHours = gi('workingHours').value.trim();
+    var annualLeave = gi('annualLeave').value.trim();
+    var restraint = gi('restraint').value.trim();
 
     // Build contract signing URL
     var contractUrl = SITE_URL+'/onboarding/contract.html?'+[
@@ -175,11 +181,6 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
       'al='+encodeURIComponent(annualLeave),
       'restraint='+encodeURIComponent(restraint)
     ].join('&');
-
-    var placeOfWork = gi('placeOfWork').value.trim();
-    var workingHours = gi('workingHours').value.trim();
-    var annualLeave = gi('annualLeave').value.trim();
-    var restraint = gi('restraint').value.trim();
 
     var payload={
       action:'send_contract',
