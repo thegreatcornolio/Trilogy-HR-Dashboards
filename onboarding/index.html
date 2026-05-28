@@ -241,6 +241,15 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
 
   // ── UTILS ──
   function gi(id){ return document.getElementById(id); }
+  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
+  function fixIdNumber(val){
+    if(!val) return '';
+    val = val.toString().trim();
+    if(val.toUpperCase().indexOf('E+') > -1){
+      try { return parseInt(parseFloat(val)).toString(); } catch(e){ return val; }
+    }
+    return val;
+  }
   function fmtDate(v){ if(!v)return''; var p=v.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
   function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
   function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
@@ -415,7 +424,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
       gi('fn').value=get('first_name');
       gi('ln').value=get('last_name');
-      gi('idno').value=get('id_number');
+      gi('idno').value=fixIdNumber(get('id_number'));
       gi('mob').value=get('mobile');
       gi('em').value=get('email');
       gi('addr').value=get('address');
@@ -572,7 +581,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       function fmt(v){if(!v)return'';if(v.includes('/'))return v;var p=v.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v;}
       var fmtSd=fmt(sd), fmtOd=fmt(od);
       var tr=buildRef();
-      var payload_data={fn:d.first_name,ln:d.last_name,idno:d.id_number||'',mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:d.salary||'',sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email};
+      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:d.salary||'',sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email};
       var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
       var payload={
         action:'send_offer', ref:tr.ref,
