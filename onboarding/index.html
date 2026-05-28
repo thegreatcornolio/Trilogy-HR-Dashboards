@@ -260,8 +260,10 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6).toUpperCase()};
   }
 
+  var SITE_URL = 'https://hr.trilogybpo.com';
+
   function buildSigningUrl(d, token, ref){
-    return BASE+'/onboarding/offer.html?'+[
+    return SITE_URL+'/onboarding/offer.html?'+[
       'token='+encodeURIComponent(token),
       'ref='+encodeURIComponent(ref),
       'fn='+encodeURIComponent(d.fn),

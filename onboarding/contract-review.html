@@ -124,6 +124,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 (function(){
   var ZAPIER_SEND_CONTRACT = 'https://hooks.zapier.com/hooks/catch/6391188/4opdi3u/';
   var BASE = '';
+  var SITE_URL = 'https://hr.trilogybpo.com';
 
   function gi(id){ return document.getElementById(id); }
   function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
@@ -154,7 +155,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
     btn.disabled=true; lbl.textContent='Sending…'; spin.style.display='block';
 
     // Build contract signing URL
-    var contractUrl = BASE+'/onboarding/contract.html?'+[
+    var contractUrl = SITE_URL+'/onboarding/contract.html?'+[
       'token='+encodeURIComponent(D.token),
       'ref='+encodeURIComponent(D.ref),
       'fn='+encodeURIComponent(D.fn),
