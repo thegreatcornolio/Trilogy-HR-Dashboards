@@ -144,7 +144,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
         <p>The Employee will be required to work the minimum number of hours during the days and times set out in Schedule A. Hours may vary depending on operational requirements. The Employee may also be required to work overtime, nightshift and/or over weekends if and when required by the Company.</p>
 
         <div class="clause-num">7. Annual Leave</div>
-        <p>The Employee will be entitled to 15 working days leave on full pay per completed year of service as set out in Schedule A. Leave must be taken within 6 months after completion of the annual leave cycle in which it accrues, on dates agreed by both parties as mutually convenient.</p>
+        <p id="annualLeaveClause">The Employee will be entitled to 15 working days leave on full pay per completed year of service as set out in Schedule A. Leave must be taken within 6 months after completion of the annual leave cycle in which it accrues, on dates agreed by both parties as mutually convenient.</p>
 
         <div class="clause-num">8. Sick Leave</div>
         <p>The Employee is entitled to sick leave in accordance with the provisions of the Basic Conditions of Employment Act 75 of 1997. The Employee must inform the Company immediately upon absence due to illness and must provide a medical certificate for absences exceeding two consecutive days or more than two occasions in an eight-week period.</p>
@@ -237,7 +237,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     fn:gp('fn'), ln:gp('ln'), id:gp('id'), mob:gp('mob'),
     em:gp('em'), addr:gp('addr'), jt:gp('jt'), sal:gp('sal'),
     sd:gp('sd'), od:gp('od'), mgr:gp('mgr'), mgrem:gp('mgrem'),
-    ref:gp('ref'), token:gp('token')
+    ref:gp('ref'), token:gp('token'),
+    al:gp('al')||'15', pow:gp('pow'), wh:gp('wh'), restraint:gp('restraint')
   };
 
   // Populate header
@@ -245,6 +246,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   gi('docRef').textContent = D.ref || '—';
   gi('docDate').textContent = D.od || '—';
   gi('partyEmployee').textContent = cap(D.fn) + ' ' + cap(D.ln);
+
+  // Update annual leave clause dynamically
+  gi('annualLeaveClause').textContent = 'The Employee will be entitled to '+D.al+' working days leave on full pay per completed year of service as set out in Schedule A. Leave must be taken within 6 months after completion of the annual leave cycle in which it accrues, on dates agreed by both parties as mutually convenient.';
 
   // Populate Schedule A
   var scheduleRows = [
@@ -254,10 +258,10 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     ['Place of Work', D.addr],
     ['Commencement Date', D.sd],
     ['Remuneration', 'R '+D.sal.toString().replace(/^R\s*/i,'')+' per month (basic salary)'],
-    ['Working Hours', 'SA and UK Operating Hours'],
-    ['Annual Leave', '15 working days per completed year of service'],
+    ['Working Hours', D.wh || 'SA and UK Operating Hours'],
+    ['Annual Leave', D.al+' working days per completed year of service'],
     ['Notice Period', 'As per Clause 2'],
-    ['Restraint Period', '6 months after Termination Date'],
+    ['Restraint Period', D.restraint || '6 months after Termination Date'],
     ['Reports To', D.mgr],
     ['Employee Address', D.addr]
   ];
