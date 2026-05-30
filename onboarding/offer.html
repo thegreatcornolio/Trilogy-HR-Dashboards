@@ -83,6 +83,13 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 </div>
 
 <div id="signingScreen">
+<!-- EXPIRED SCREEN -->
+<div id="expiredScreen" style="display:none;text-align:center;padding:3rem 1.5rem">
+  <div style="font-size:56px;margin-bottom:1rem">🔒</div>
+  <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:.75rem">This link has expired</div>
+  <div style="font-size:14px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem">This offer link has already been actioned. If you believe this is an error, please contact your HR representative at Trilogy BPO.</div>
+  <div style="font-size:12px;color:var(--text3)">Ref: <strong id="expiredRef"></strong></div>
+</div>
 
   <div class="info-banner">
     <div class="info-icon">
@@ -193,6 +200,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
   function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
 
+  var TOKEN_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ffa9da21036a4af1b4c33e26a61e6879/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5iYg_qzJ8_gIMvNQDiIe5M1a4rhSPsz-9GN1tkjzHnc';
+
   var D = {
     fn: gp('fn'), ln: gp('ln'), id: gp('id'), mob: gp('mob'),
     em: gp('em'), addr: gp('addr'), jt: gp('jt'), sal: gp('sal'),
@@ -201,6 +210,24 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     pow: gp('pow') || 'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town',
     al: gp('al') || '15'
   };
+
+  // Check token on load
+  if(D.token){
+    fetch(TOKEN_CHECK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token: D.token})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.used && data.used.toLowerCase() === 'used'){
+        gi('signingScreen').style.display = 'none';
+        gi('expiredScreen').style.display = 'block';
+        if(gi('expiredRef')) gi('expiredRef').textContent = D.ref;
+      }
+    })
+    .catch(function(err){ console.error('Token check error:', err); });
+  }
 
   gi('refBadge').textContent = D.ref || 'REF–';
   gi('docRef').innerHTML = 'Ref: <strong>' + (D.ref||'') + '</strong><br>Date: ' + (D.od||'');
