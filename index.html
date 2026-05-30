@@ -569,9 +569,10 @@ function loadStats(){
   fetch(STATS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'get_stats'})})
     .then(function(r){return r.json();})
     .then(function(d){
-      document.getElementById('statActive').textContent=typeof d.active!=='undefined'?d.active:0;
-      document.getElementById('statPending').textContent=typeof d.pending!=='undefined'?d.pending:0;
-      document.getElementById('statComplete').textContent=typeof d.complete!=='undefined'?d.complete:0;
+      var data = d.body && d.body.body ? (typeof d.body.body === 'string' ? JSON.parse(d.body.body) : d.body.body) : d;
+      document.getElementById('statActive').textContent=typeof data.active!=='undefined'?data.active:0;
+      document.getElementById('statPending').textContent=typeof data.pending!=='undefined'?data.pending:0;
+      document.getElementById('statComplete').textContent=typeof data.complete!=='undefined'?data.complete:0;
     })
     .catch(function(){
       document.getElementById('statActive').textContent='0';
