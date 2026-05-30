@@ -564,8 +564,9 @@ window.saveToGitHub=function(type){
 };
 
 /* ── STATS ── */
+var STATS_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e54b6a40ef5d4efab809ff93acf7def5/triggers/manual/paths/invoke?api-version=1';
 function loadStats(){
-  fetch(BASE+'/stats.json?v='+Date.now())
+  fetch(STATS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'get_stats'})})
     .then(function(r){return r.json();})
     .then(function(d){
       document.getElementById('statActive').textContent=typeof d.active!=='undefined'?d.active:0;
