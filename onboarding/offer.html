@@ -135,19 +135,20 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
     <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
       <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:.5rem">Not accepting this offer?</div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <select id="declineReason" style="flex:1;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);min-width:200px">
-          <option value="">Select a reason…</option>
-          <option value="Accepted another offer">Accepted another offer</option>
-          <option value="Salary not competitive">Salary not competitive</option>
-          <option value="Benefits not worth it">Benefits not worth it</option>
-          <option value="Location">Location</option>
-        </select>
-        <button class="btn" id="declineBtn" onclick="submitDecline()" style="border-color:var(--red);color:var(--red);white-space:nowrap">
-          <span id="declineBtnLabel">Decline offer</span>
-          <div class="spinner" id="declineSpinner"></div>
-        </button>
-      </div>
+      <select id="declineReason" style="width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);margin-bottom:8px">
+        <option value="">Select a reason…</option>
+        <option value="Incorrect Information">Incorrect Information</option>
+        <option value="Accepted another offer">Accepted another offer</option>
+        <option value="Salary not competitive">Salary not competitive</option>
+        <option value="Benefits not worth it">Benefits not worth it</option>
+        <option value="Location">Location</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="declineNote" placeholder="Please provide more detail (e.g. which information is incorrect)…" style="width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);resize:vertical;min-height:80px;margin-bottom:8px"></textarea>
+      <button class="btn" id="declineBtn" style="width:100%;border-color:var(--red);color:var(--red);justify-content:center" onclick="submitDecline()">
+        <span id="declineBtnLabel">Decline offer</span>
+        <div class="spinner" id="declineSpinner"></div>
+      </button>
       <div style="font-size:11px;color:var(--text3);margin-top:.5rem">Declining will notify Trilogy BPO and close this offer.</div>
     </div>
   </div>
@@ -196,7 +197,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     fn: gp('fn'), ln: gp('ln'), id: gp('id'), mob: gp('mob'),
     em: gp('em'), addr: gp('addr'), jt: gp('jt'), sal: gp('sal'),
     sd: gp('sd'), od: gp('od'), mgr: gp('mgr'), mgrem: gp('mgrem'),
-    ref: gp('ref'), token: gp('token')
+    ref: gp('ref'), token: gp('token'),
+    pow: gp('pow') || 'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town',
+    al: gp('al') || '15'
   };
 
   gi('refBadge').textContent = D.ref || 'REF–';
@@ -208,8 +211,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     '<p>We are pleased to offer you the position of <strong>' + D.jt + '</strong> at Trilogy CX (Pty) Ltd, trading as Trilogy BPO, a registered South African company.</p>' +
     '<div class="doc-section">Terms of offer</div>' +
     '<p><strong>Commencement date:</strong> ' + D.sd + '<br>' +
-    '<strong>Monthly basic salary:</strong> R ' + D.sal + '<br>' +
-   '<strong>Place of work:</strong> 3rd Floor, Old Mutual Park, Jan Smuts Avenue, Pinelands, Cape Town, 7450<br>' +
+    '<strong>Monthly basic salary:</strong> R ' + D.sal.toString().replace(/^R\s*/i,'') + '<br>' +
+    '<strong>Place of work:</strong> ' + D.pow + '<br>' +
+    '<strong>Annual leave:</strong> ' + D.al + ' working days per completed year of service<br>' +
     '<strong>Reporting to:</strong> ' + D.mgr + '</p>' +
     '<div class="doc-section">Conditions</div>' +
     '<p>This offer is subject to: (a) satisfactory completion of all pre-employment verification checks, including identity verification, reference checks, and any applicable background checks; and (b) your execution of a formal contract of employment.</p>' +
@@ -271,6 +275,12 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   }
 
   window.submitSignature = function(){
+    // Check if already used
+    if(sessionStorage.getItem('offer_used_'+D.token)){
+      alert('This offer link has already been used. Please contact Trilogy BPO if you need assistance.');
+      return;
+    }
+
     var sigData = '';
     var sigHtml = '';
     if(isDrawMode()){
@@ -335,6 +345,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       offer_date: D.od,
       reports_to: D.mgr,
       reports_to_email: D.mgrem,
+      place_of_work: D.pow,
+      annual_leave: D.al,
       rudi_email: 'rudij@trilogybpo.com',
       signature_data: sigData.length > 50000 ? '[canvas_signature_captured]' : sigData,
       signed_document_html: btoa(unescape(encodeURIComponent(docHtml))),
@@ -346,6 +358,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     xhr.open("POST", ZAPIER_SIGNED_WEBHOOK, true);
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     xhr.send(body);
+    // Mark token as used to prevent resubmission
+    sessionStorage.setItem('offer_used_'+D.token, '1');
     showConfirm(signedAt);
 
   };
@@ -375,9 +389,18 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   }
   window.submitDecline = function(){
     var reason = gi('declineReason').value;
+    var note = gi('declineNote').value.trim();
     if(!reason){ alert('Please select a reason for declining before continuing.'); return; }
 
-    if(!confirm('Are you sure you want to decline this offer? This action cannot be undone.')){ return; }
+    // Mobile-safe confirm
+    var confirmed = window.confirm('Are you sure you want to decline this offer? This action cannot be undone.');
+    if(!confirmed){ return; }
+
+    // Check if already used
+    if(sessionStorage.getItem('offer_used_'+D.token)){
+      alert('This offer link has already been used. Please contact Trilogy BPO if you need assistance.');
+      return;
+    }
 
     var btn = gi('declineBtn');
     var lbl = gi('declineBtnLabel');
@@ -395,6 +418,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       token: D.token,
       declined_at: declinedAt,
       decline_reason: reason,
+      decline_note: note,
       candidate_first: D.fn,
       candidate_last: D.ln,
       candidate_email: D.em,
@@ -413,12 +437,15 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k]);
     }).join('&');
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', ZAPIER_DECLINE_WEBHOOK, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(body);
+    fetch(ZAPIER_DECLINE_WEBHOOK, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body
+    }).catch(function(err){ console.error('Decline webhook error:', err); });
 
-    // Show decline confirmation
+    // Mark as used
+    sessionStorage.setItem('offer_used_'+D.token, '1');
+
     gi('signingScreen').style.display = 'none';
     gi('declineScreen').style.display = 'block';
     gi('declineRef').textContent = D.ref;
@@ -427,6 +454,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       ['Full name', cap(D.fn) + ' ' + cap(D.ln)],
       ['Position', D.jt],
       ['Reason', reason],
+      ['Notes', note || '—'],
       ['Declined on', declinedAt],
       ['Reference', D.ref]
     ];

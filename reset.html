@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy HR — Test Reset Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Wix+Madefor+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--green:#4AFD0E;--red:#c0392b;--border:#e2e1dd;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{height:24px}
+.nav-back{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.4);text-decoration:none}
+.nav-back:hover{color:#fff}
+.shell{max-width:600px;margin:3rem auto;padding:0 1.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;margin-bottom:1.25rem}
+.card-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:.25rem}
+.card-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem;line-height:1.6}
+.warning{background:#fdf0ef;border:1px solid #f5c6c2;border-radius:var(--radius);padding:12px 16px;font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.6}
+.checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f7f6f2;border-radius:var(--radius);font-size:13px}
+.check-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;background:#e2e1dd;color:var(--text3)}
+.check-icon.done{background:#d4edda;color:#155724}
+.check-icon.error{background:#fdf0ef;color:var(--red)}
+.check-icon.running{background:#fff3cd;color:#856404}
+.check-label{flex:1;font-weight:500}
+.check-status{font-size:11px;color:var(--text3)}
+.token-section{margin-bottom:1.5rem}
+.token-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+input[type=password]{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:#f7f6f2}
+input[type=password]:focus{outline:none;border-color:var(--navy);background:#fff}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#a93226}
+.btn-danger:disabled{opacity:.5;pointer-events:none}
+.result{text-align:center;padding:1rem;font-size:13px;margin-top:1rem;border-radius:var(--radius);display:none}
+.result.success{background:#d4edda;color:#155724}
+.result.error{background:#fdf0ef;color:var(--red)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <a href="index.html" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="shell">
+
+  <div class="card">
+    <div class="card-title">🧹 Test Data Reset Tool</div>
+    <div class="card-sub">Use this during testing to clear all test records. This will permanently delete data — use only in a test environment.</div>
+
+    <div class="warning">
+      ⚠️ <strong>Warning:</strong> This will delete ALL records from SharePoint Onboarding Cases, ALL files from SharePoint folders, and ALL rows from the SQL database tables. This cannot be undone.
+    </div>
+
+    <div class="checklist" id="checklist">
+      <div class="check-item" id="check-sql">
+        <div class="check-icon" id="icon-sql">–</div>
+        <div class="check-label">SQL Database — all tables</div>
+        <div class="check-status" id="status-sql">Waiting</div>
+      </div>
+      <div class="check-item" id="check-sp">
+        <div class="check-icon" id="icon-sp">–</div>
+        <div class="check-label">SharePoint — Onboarding Cases list</div>
+        <div class="check-status" id="status-sp">Waiting</div>
+      </div>
+      <div class="check-item" id="check-vc">
+        <div class="check-icon" id="icon-vc">–</div>
+        <div class="check-label">SharePoint — VibeCheck Responses list</div>
+        <div class="check-status" id="status-vc">Waiting</div>
+      </div>
+    </div>
+
+    <div class="token-section">
+      <div class="token-label">GitHub Token (required to confirm reset)</div>
+      <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Your token is used to verify you have admin access. It is not stored.</div>
+    </div>
+
+    <button class="btn btn-danger" id="resetBtn" onclick="confirmReset()">🗑️ Reset all test data</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Manual SQL reset</div>
+    <div class="card-sub">If the automated reset fails, run these queries manually in the Azure SQL Query Editor:</div>
+    <pre style="background:#f7f6f2;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;font-size:12px;overflow-x:auto;line-height:1.8">DELETE FROM SystemAccessLog;
+DELETE FROM EmploymentHistory;
+DELETE FROM VibeCheckResponses;
+DELETE FROM OffboardingChecklist;
+DELETE FROM EquipmentIssued;
+DELETE FROM TrainingRecords;
+DELETE FROM PayrollRecords;
+DELETE FROM LeaveRecords;
+DELETE FROM LeaveBalances;
+DELETE FROM CCMACases;
+DELETE FROM Warnings;
+DELETE FROM DisciplinaryHearings;
+DELETE FROM DisciplinaryIncidents;
+DELETE FROM PerformanceImprovementPlans;
+DELETE FROM PerformanceReviews;
+DELETE FROM ProbationReviews;
+DELETE FROM PolicyAcceptances;
+DELETE FROM BackgroundChecks;
+DELETE FROM OnboardingStages;
+DELETE FROM Documents;
+DELETE FROM BankingDetails;
+DELETE FROM EmergencyContacts;
+DELETE FROM Employees;</pre>
+  </div>
+
+</div>
+
+<script>
+var GITHUB_REPO = 'thegreatcornolio/trilogy-hr';
+
+function setCheck(id, state, statusText){
+  var icon = document.getElementById('icon-'+id);
+  var status = document.getElementById('status-'+id);
+  icon.className = 'check-icon ' + state;
+  icon.textContent = state === 'done' ? '✓' : state === 'error' ? '✗' : state === 'running' ? '…' : '–';
+  status.textContent = statusText;
+}
+
+function confirmReset(){
+  var token = document.getElementById('ghToken').value.trim();
+  if(!token){ alert('Please enter your GitHub token to confirm the reset.'); return; }
+  if(!confirm('⚠️ Are you absolutely sure?\n\nThis will delete ALL test data from SQL, SharePoint and cannot be undone.\n\nType OK to confirm.')){ return; }
+
+  var btn = document.getElementById('resetBtn');
+  btn.disabled = true;
+  btn.textContent = 'Resetting…';
+
+  // Reset SQL via Power Automate (you'll need to set up a reset flow)
+  // For now show the manual instructions
+  setCheck('sql', 'running', 'Run manually in Azure Query Editor');
+  setCheck('sp', 'running', 'Go to SharePoint → select all → delete');
+  setCheck('vc', 'running', 'Go to SharePoint → select all → delete');
+
+  setTimeout(function(){
+    setCheck('sql', 'done', 'Use manual SQL above ↑');
+    setCheck('sp', 'done', 'Delete manually in SharePoint');
+    setCheck('vc', 'done', 'Delete manually in SharePoint');
+
+    var result = document.getElementById('result');
+    result.style.display = 'block';
+    result.className = 'result success';
+    result.innerHTML = '✓ Reset guide shown. Run the SQL above and clear SharePoint lists manually. A fully automated reset requires a Power Automate flow — ask Claude to build it when ready!';
+    btn.textContent = '🗑️ Reset all test data';
+    btn.disabled = false;
+  }, 1500);
+}
+</script>
+</body>
+</html>

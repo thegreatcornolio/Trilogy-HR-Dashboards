@@ -164,6 +164,11 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
         <div class="manager-status" id="mgrStatus"></div>
       </div>
     </div>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>Place of work <span class="req">*</span></label><input type="text" id="pow" value="Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town"><div class="err-msg" id="pow-err">Required</div></div>
+      <div class="field"><label>Annual leave (days) <span class="req">*</span></label><input type="number" id="al" value="15" min="15" max="365"><div class="hint">Minimum 15 days per BCEA</div></div>
+    </div>
     <input type="hidden" id="mgr">
     <input type="hidden" id="mgrem">
 
@@ -277,7 +282,9 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       'sd='+encodeURIComponent(d.sd),
       'od='+encodeURIComponent(d.od),
       'mgr='+encodeURIComponent(d.mgr),
-      'mgrem='+encodeURIComponent(d.mgrem)
+      'mgrem='+encodeURIComponent(d.mgrem),
+      'pow='+encodeURIComponent(d.pow||'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town'),
+      'al='+encodeURIComponent(d.al||'15')
     ].join('&');
   }
 
@@ -373,7 +380,8 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       em:gi('em').value.trim(), addr:gi('addr').value.trim(),
       jt:gi('jt').value.trim(), campaign:gi('campaign').value.trim(), sal:gi('sal').value.trim(),
       sd:fmtDate(gi('sd').value), od:fmtDate(gi('offerdate').value),
-      mgr:gi('mgr').value.trim(), mgrem:gi('mgrem').value.trim()
+      mgr:gi('mgr').value.trim(), mgrem:gi('mgrem').value.trim(),
+      pow:gi('pow').value.trim(), al:gi('al').value.trim()
     };
     var tr=buildRef();
     var sigUrl=buildSigningUrl(d,tr.token,tr.ref);
@@ -385,16 +393,54 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       job_title:d.jt, campaign:d.campaign, salary:d.sal,
       start_date:d.sd, offer_date:d.od,
       reports_to:d.mgr, reports_to_email:d.mgrem,
+      place_of_work:d.pow, annual_leave:d.al,
       signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
     };
     gi('sendBtn').disabled=true;
-    gi('sendBtn').textContent='Sending…';
-    postToZapier(payload, function(){
-      gi('formCard').style.display='none';
-      gi('successCard').style.display='block';
-      gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
-    });
+    gi('sendBtn').textContent='Reviewing…';
+    // Show verification checklist first
+    showVerifyModal(d, tr, sigUrl, payload);
   };
+
+  function showVerifyModal(d, tr, sigUrl, payload){
+    var modal = gi('verifyModal');
+    var rows = [
+      ['Reference', tr.ref],
+      ['First name', cap(d.fn)],
+      ['Last name', cap(d.ln)],
+      ['ID number', d.idno],
+      ['Mobile', d.mob],
+      ['Email', d.em],
+      ['Address', d.addr],
+      ['Job title', d.jt],
+      ['Salary', 'R '+d.sal],
+      ['Start date', d.sd],
+      ['Offer date', d.od],
+      ['Place of work', d.pow],
+      ['Annual leave', d.al+' days'],
+      ['Reports to', d.mgr]
+    ];
+    gi('verifyTable').innerHTML = rows.map(function(r){
+      return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
+    }).join('');
+    modal.style.display = 'flex';
+    gi('verifyConfirmBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').textContent='Sending…';
+      postToZapier(payload, function(){
+        gi('formCard').style.display='none';
+        gi('successCard').style.display='block';
+        gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
+        gi('sendBtn').disabled=false;
+        gi('sendBtn').textContent='Send letter of offer to candidate';
+      });
+    };
+    gi('verifyCancelBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').disabled=false;
+      gi('sendBtn').textContent='Send letter of offer to candidate';
+    };
+  }
 
   window.resetForm=function(){
     ['fn','ln','idno','mob','em','addr','jt','campaign','sal','sd','mgr','mgrem'].forEach(function(id){
@@ -618,5 +664,18 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   loadManagers();
 })();
 </script>
+<!-- VERIFICATION MODAL -->
+<div id="verifyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:.25rem">✅ Verify offer details</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem">Please review all details carefully before sending. Once sent, the candidate will receive the offer immediately.</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden" id="verifyTable"></table>
+    <div style="display:flex;gap:10px;margin-top:1.5rem">
+      <button id="verifyCancelBtn" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:var(--text);font-family:'Montserrat',sans-serif">✏️ Go back & edit</button>
+      <button id="verifyConfirmBtn" style="flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif">✅ Confirm & send offer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
