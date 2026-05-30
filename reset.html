@@ -67,10 +67,10 @@ input[type=password]:focus{outline:none;border-color:var(--navy);background:#fff
         <div class="check-label">SharePoint — Onboarding Cases list</div>
         <div class="check-status" id="status-sp">Waiting</div>
       </div>
-      <div class="check-item" id="check-vc">
-        <div class="check-icon" id="icon-vc">–</div>
-        <div class="check-label">SharePoint — VibeCheck Responses list</div>
-        <div class="check-status" id="status-vc">Waiting</div>
+      <div class="check-item" id="check-files">
+        <div class="check-icon" id="icon-files">–</div>
+        <div class="check-label">SharePoint — Signed Offers, Contracts &amp; Rejected folders</div>
+        <div class="check-status" id="status-files">Waiting</div>
       </div>
     </div>
 
@@ -115,11 +115,12 @@ DELETE FROM Employees;</pre>
 </div>
 
 <script>
-var GITHUB_REPO = 'thegreatcornolio/trilogy-hr';
+var RESET_FLOW_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a827124002b84cbe8bda38da096cbe20/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4IET_81ZGaZiY-vSKXSD8qEK7tD6MuPgX8KAaTst0r8';
 
 function setCheck(id, state, statusText){
   var icon = document.getElementById('icon-'+id);
   var status = document.getElementById('status-'+id);
+  if(!icon || !status) return;
   icon.className = 'check-icon ' + state;
   icon.textContent = state === 'done' ? '✓' : state === 'error' ? '✗' : state === 'running' ? '…' : '–';
   status.textContent = statusText;
@@ -128,30 +129,51 @@ function setCheck(id, state, statusText){
 function confirmReset(){
   var token = document.getElementById('ghToken').value.trim();
   if(!token){ alert('Please enter your GitHub token to confirm the reset.'); return; }
-  if(!confirm('⚠️ Are you absolutely sure?\n\nThis will delete ALL test data from SQL, SharePoint and cannot be undone.\n\nType OK to confirm.')){ return; }
+  if(!confirm('⚠️ Are you absolutely sure?\n\nThis will delete ALL test data from SQL, SharePoint lists and document folders. This cannot be undone.\n\nClick OK to confirm.')){ return; }
 
   var btn = document.getElementById('resetBtn');
   btn.disabled = true;
   btn.textContent = 'Resetting…';
 
-  // Reset SQL via Power Automate (you'll need to set up a reset flow)
-  // For now show the manual instructions
-  setCheck('sql', 'running', 'Run manually in Azure Query Editor');
-  setCheck('sp', 'running', 'Go to SharePoint → select all → delete');
-  setCheck('vc', 'running', 'Go to SharePoint → select all → delete');
+  setCheck('sql', 'running', 'Run manually in Azure Query Editor ↓');
+  setCheck('sp', 'running', 'Calling Power Automate…');
+  setCheck('files', 'running', 'Deleting files…');
 
-  setTimeout(function(){
-    setCheck('sql', 'done', 'Use manual SQL above ↑');
-    setCheck('sp', 'done', 'Delete manually in SharePoint');
-    setCheck('vc', 'done', 'Delete manually in SharePoint');
+  fetch(RESET_FLOW_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      action: 'reset_test_data',
+      triggered_by: 'reset_tool',
+      triggered_at: new Date().toISOString()
+    })
+  })
+  .then(function(r){
+    if(r.ok || r.status === 202){
+      setCheck('sql', 'running', 'Run manually ↓');
+      setCheck('sp', 'done', 'Deleted via Power Automate');
+      setCheck('files', 'done', 'Deleted via Power Automate');
 
-    var result = document.getElementById('result');
-    result.style.display = 'block';
-    result.className = 'result success';
-    result.innerHTML = '✓ Reset guide shown. Run the SQL above and clear SharePoint lists manually. A fully automated reset requires a Power Automate flow — ask Claude to build it when ready!';
+      var result = document.getElementById('result');
+      result.style.display = 'block';
+      result.className = 'result success';
+      result.innerHTML = '✓ SharePoint lists and files cleared! Now run the SQL script below to clear the database.';
+    } else {
+      throw new Error('Flow returned status ' + r.status);
+    }
     btn.textContent = '🗑️ Reset all test data';
     btn.disabled = false;
-  }, 1500);
+  })
+  .catch(function(err){
+    setCheck('sp', 'error', 'Failed — ' + err.message);
+    setCheck('files', 'error', 'Failed');
+    var result = document.getElementById('result');
+    result.style.display = 'block';
+    result.className = 'result error';
+    result.innerHTML = '✗ SharePoint reset failed: ' + err.message + '. Try manually.';
+    btn.textContent = '🗑️ Reset all test data';
+    btn.disabled = false;
+  });
 }
 </script>
 </body>
