@@ -712,10 +712,23 @@ function confirmSendConsent() {
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
+  var token = 'BGC-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  var consentUrl = 'https://hr.trilogybpo.com/onboarding/bg-consent.html?' + [
+    'token=' + encodeURIComponent(token),
+    'ref=' + encodeURIComponent(selectedEmp.EmployeeID),
+    'fn=' + encodeURIComponent(selectedEmp.FirstName||''),
+    'ln=' + encodeURIComponent(selectedEmp.LastName||''),
+    'id=' + encodeURIComponent(selectedEmp.IDNumber||''),
+    'mob=' + encodeURIComponent(selectedEmp.Mobile||''),
+    'addr=' + encodeURIComponent(selectedEmp.Address||''),
+    'em=' + encodeURIComponent(selectedEmp.PersonalEmail||selectedEmp.WorkEmail||'')
+  ].join('&');
+
   fetch(SEND_CONSENT_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
+      action: 'send_consent',
       employee_id: selectedEmp.EmployeeID,
       first_name: selectedEmp.FirstName,
       last_name: selectedEmp.LastName,
@@ -723,6 +736,7 @@ function confirmSendConsent() {
       email: selectedEmp.PersonalEmail || selectedEmp.WorkEmail,
       mobile: selectedEmp.Mobile,
       address: selectedEmp.Address,
+      consent_url: consentUrl,
       note: document.getElementById('consentNote').value
     })
   })
