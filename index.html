@@ -569,7 +569,9 @@ function loadStats(){
   fetch(STATS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'get_stats'})})
     .then(function(r){return r.json();})
     .then(function(d){
+      console.log('Stats raw response:', JSON.stringify(d));
       var data = d.body && d.body.body ? (typeof d.body.body === 'string' ? JSON.parse(d.body.body) : d.body.body) : d;
+      console.log('Stats parsed data:', JSON.stringify(data));
       document.getElementById('statActive').textContent=typeof data.active!=='undefined'?data.active:0;
       document.getElementById('statPending').textContent=typeof data.pending!=='undefined'?data.pending:0;
       document.getElementById('statComplete').textContent=typeof data.complete!=='undefined'?data.complete:0;
