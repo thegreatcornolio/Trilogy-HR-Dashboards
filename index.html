@@ -143,6 +143,12 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 .btn-send-vibe{padding:12px 24px;background:var(--green);color:#111;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s}
 .btn-send-vibe:hover{background:#5fff1a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,253,14,.3)}
 .btn-send-vibe:disabled{opacity:.5;pointer-events:none}
+
+.pipe-step{display:flex;align-items:center;gap:0;position:relative}
+.pipe-step .pipe-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1;min-width:40px}
+.pipe-step .pipe-label{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px;margin-right:4px}
+.pipe-step .pipe-arrow{font-size:18px;color:var(--green);margin:0 12px;font-weight:700}
+.pipe-step.last .pipe-num{color:var(--green)}
 /* FOOTER */
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -170,13 +176,25 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
     <div class="hero-label">Trilogy BPO</div>
     <h1 class="hero-title">People Operations<br><span>Central.</span></h1>
     <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
-    <p class="hero-sub">Please note that stats are only updated every hour</p>
     <div class="hero-stats">
-      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active onboardings</div></div>
-      <div class="stat"><div class="stat-num" id="statPending">—</div><div class="stat-label">Awaiting signature</div></div>
-      <div class="stat"><div class="stat-num" id="statComplete">—</div><div class="stat-label">Completed</div></div>
       <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
+      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees</div></div>
+      <div class="stat"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total in system</div></div>
     </div>
+  </div>
+</div>
+
+<!-- PIPELINE SECTION -->
+<div style="background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+      <div class="pipe-step"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step last"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></div>
+    </div>
+  </div>
   </div>
 </div>
 
@@ -573,13 +591,19 @@ function loadStats(){
       var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
       console.log('Stats parsed data:', JSON.stringify(data));
       document.getElementById('statActive').textContent=typeof data.active!=='undefined'?data.active:0;
-      document.getElementById('statPending').textContent=typeof data.pending!=='undefined'?data.pending:0;
-      document.getElementById('statComplete').textContent=typeof data.complete!=='undefined'?data.complete:0;
+      document.getElementById('statTotal').textContent=typeof data.total!=='undefined'?data.total:0;
+      document.getElementById('statOfferSent').textContent=typeof data.offer_sent!=='undefined'?data.offer_sent:0;
+      document.getElementById('statOfferSigned').textContent=typeof data.offer_signed!=='undefined'?data.offer_signed:0;
+      document.getElementById('statContractSent').textContent=typeof data.contract_sent!=='undefined'?data.contract_sent:0;
+      document.getElementById('statContractSigned').textContent=typeof data.contract_signed!=='undefined'?data.contract_signed:0;
     })
     .catch(function(){
       document.getElementById('statActive').textContent='0';
-      document.getElementById('statPending').textContent='0';
-      document.getElementById('statComplete').textContent='0';
+      document.getElementById('statTotal').textContent='0';
+      document.getElementById('statOfferSent').textContent='0';
+      document.getElementById('statOfferSigned').textContent='0';
+      document.getElementById('statContractSent').textContent='0';
+      document.getElementById('statContractSigned').textContent='0';
     });
 }
 
