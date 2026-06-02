@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Employee Information</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Wix+Madefor+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--green:#4AFD0E;--red:#c0392b;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--bg:#e8e7e3;--offwhite:#f7f6f2;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--navy);padding:0 1.5rem;height:56px;display:flex;align-items:center}
+.nav-logo{height:22px}
+.shell{max-width:760px;margin:2rem auto;padding:0 1.5rem 4rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;margin-bottom:1.25rem}
+.hero{text-align:center;margin-bottom:1.5rem}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:.5rem}
+.hero-sub{font-size:13px;color:var(--text3);line-height:1.6}
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid var(--green)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:.875rem}
+.field label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.field label .req{color:var(--red)}
+.field input,.field select,.field textarea{padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy)}
+.field input.prefilled{background:var(--offwhite);color:var(--text2)}
+.field .hint{font-size:11px;color:var(--text3)}
+.sig-wrap{border:1px solid var(--border2);border-radius:var(--radius);background:#fafafa;overflow:hidden}
+canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
+.sig-toolbar{display:flex;justify-content:flex-end;padding:6px 10px;border-top:1px solid var(--border);background:#fff}
+.sig-clear{font-size:11px;color:var(--text3);border:none;background:none;cursor:pointer}
+.submit-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.submit-btn:disabled{opacity:.5;pointer-events:none}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.screen{display:none;text-align:center;padding:3rem 1.5rem}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo"></nav>
+
+<div class="shell">
+
+  <!-- LOADING -->
+  <div class="card screen" id="loadingScreen" style="display:block">
+    <div style="width:36px;height:36px;border:3px solid #e2e1dd;border-top-color:#1e1e1e;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem"></div>
+    <div style="font-size:13px;color:var(--text3)">Verifying your link…</div>
+  </div>
+
+  <!-- EXPIRED -->
+  <div class="card screen" id="expiredScreen">
+    <div style="font-size:48px;margin-bottom:1rem">🔒</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:.75rem">This link has expired</div>
+    <div style="font-size:13px;color:var(--text3)">You have already completed your employee information form. Contact <a href="mailto:onboarding@trilogybpo.com">onboarding@trilogybpo.com</a> if you need to make changes.</div>
+  </div>
+
+  <!-- MAIN FORM -->
+  <div id="mainForm" style="display:none">
+
+    <div class="card">
+      <div class="hero">
+        <div class="hero-title">Employee Information</div>
+        <div class="hero-sub">Welcome to Trilogy BPO, <strong id="welcomeName"></strong>! Please complete your details below to finalise your onboarding. This should take about 5 minutes.</div>
+      </div>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="card">
+      <div class="section-label">Personal details</div>
+      <div class="grid3">
+        <div class="field"><label>Title <span class="req">*</span></label>
+          <select id="title"><option value="">Select…</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option><option>Dr</option><option>Prof</option></select>
+        </div>
+        <div class="field"><label>Initials <span class="req">*</span></label><input type="text" id="initials" placeholder="e.g. D.B." maxlength="10"></div>
+        <div class="field"><label>Preferred name</label><input type="text" id="preferredName" placeholder="Known as"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>First name</label><input type="text" id="firstName" class="prefilled" readonly></div>
+        <div class="field"><label>Last name</label><input type="text" id="lastName" class="prefilled" readonly></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>ID / Passport number</label><input type="text" id="idNumber" class="prefilled" readonly></div>
+        <div class="field"><label>Date of birth</label><input type="text" id="dob" class="prefilled" readonly><div class="hint" id="dobHint"></div></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Gender <span class="req">*</span></label>
+          <select id="gender"><option value="">Select…</option><option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option></select>
+        </div>
+        <div class="field"><label>Race <span class="req">*</span></label>
+          <select id="race"><option value="">Select…</option><option>African</option><option>Coloured</option><option>Indian</option><option>White</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Home language <span class="req">*</span></label><input type="text" id="homeLanguage" placeholder="e.g. English"></div>
+        <div class="field" id="nationalityField" style="display:none"><label>Nationality <span class="req">*</span></label><input type="text" id="nationality" placeholder="e.g. Zimbabwean"></div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="card">
+      <div class="section-label">Contact details</div>
+      <div class="grid2">
+        <div class="field"><label>Cell number</label><input type="text" id="mobile" class="prefilled" readonly></div>
+        <div class="field"><label>Home number (if applicable)</label><input type="text" id="homeNumber" placeholder="Optional"></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="email" class="prefilled" readonly></div>
+      <div class="field"><label>Postal address</label><input type="text" id="address" class="prefilled" readonly></div>
+    </div>
+
+    <!-- EMERGENCY -->
+    <div class="card">
+      <div class="section-label">Emergency contact</div>
+      <div class="grid2">
+        <div class="field"><label>Full name <span class="req">*</span></label><input type="text" id="ecName" placeholder="Emergency contact name"></div>
+        <div class="field"><label>Contact number <span class="req">*</span></label><input type="text" id="ecNumber" placeholder="Phone number"></div>
+      </div>
+      <div class="field"><label>Relationship <span class="req">*</span></label><input type="text" id="ecRelationship" placeholder="e.g. Spouse, Parent, Sibling"></div>
+    </div>
+
+    <!-- BANKING -->
+    <div class="card">
+      <div class="section-label">Banking details</div>
+      <div class="hint" style="margin-bottom:1rem">Your salary will be paid into this account. Please ensure all details are correct.</div>
+      <div class="grid2">
+        <div class="field"><label>Bank name <span class="req">*</span></label>
+          <select id="bankName"><option value="">Select bank…</option><option>Absa</option><option>African Bank</option><option>Capitec</option><option>Discovery Bank</option><option>FNB</option><option>Investec</option><option>Nedbank</option><option>Standard Bank</option><option>TymeBank</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>Account holder <span class="req">*</span></label><input type="text" id="accountHolder" placeholder="Name on the account"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Account type <span class="req">*</span></label>
+          <select id="accountType"><option value="">Select…</option><option>Savings</option><option>Cheque / Current</option><option>Transmission</option></select>
+        </div>
+        <div class="field"><label>Account number <span class="req">*</span></label><input type="text" id="accountNumber" placeholder="Account number"></div>
+      </div>
+    </div>
+
+    <!-- STATUTORY -->
+    <div class="card">
+      <div class="section-label">Statutory details</div>
+      <div class="field"><label>Tax number <span class="req">*</span></label><input type="text" id="taxNumber" placeholder="SARS tax reference number"><div class="hint">If you don't have one, enter "Applied for" and we will assist you</div></div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="card">
+      <div class="section-label">Confirm &amp; sign</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem">I verify that the above information is accurate and complete.</div>
+      <div class="sig-wrap">
+        <canvas id="sigCanvas" width="700" height="150"></canvas>
+        <div class="sig-toolbar"><button class="sig-clear" onclick="clearSig()">Clear signature</button></div>
+      </div>
+      <div id="sigError" style="font-size:11px;color:var(--red);margin-top:4px;display:none">Please provide your signature.</div>
+      <div style="margin-top:1.25rem">
+        <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+          <span id="submitLabel">Submit my information</span>
+          <div class="spinner" id="submitSpinner"></div>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="card screen" id="successScreen">
+    <div style="font-size:48px;margin-bottom:1rem">🎉</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:.75rem">Onboarding complete!</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem;line-height:1.7">Thank you <strong id="successName"></strong>. Your information has been submitted and your onboarding is now complete. We look forward to welcoming you to the team!</div>
+    <div style="font-size:12px;color:var(--text3)">You may close this window.</div>
+  </div>
+
+</div>
+
+<script>
+var SUBMIT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca3acd1371c642deb0e3244b96a47875/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4GrSOQGwS9HY-OJAZKI6W_-m4u8ZtwpbUHwkj939AIU';
+var TOKEN_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/038f0669bf7d479ea7bd8a67430c0b46/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=E_6JhcrOJ_Y3HHwN6RHXUMcr_zpiJlvsE_XuSN5SqiQ';
+
+function gi(id){ return document.getElementById(id); }
+function gp(k){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(k)||''); }
+function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+var D = {
+  fn: gp('fn'), ln: gp('ln'), id: gp('id'), mob: gp('mob'),
+  em: gp('em'), addr: gp('addr'), ref: gp('ref'), token: gp('token')
+};
+
+// ── Derive DOB and nationality from SA ID ──
+function deriveFromID(idNum){
+  var result = { dob: '', isSA: false, dobValid: false };
+  var clean = (idNum||'').replace(/\s/g,'');
+  if(clean.length === 13 && /^\d{13}$/.test(clean)){
+    result.isSA = true;
+    var yy = parseInt(clean.substring(0,2),10);
+    var mm = clean.substring(2,4);
+    var dd = clean.substring(4,6);
+    // <=26 = 20xx, >26 = 19xx (we are in 2026)
+    var fullYear = yy <= 26 ? 2000 + yy : 1900 + yy;
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var mi = parseInt(mm,10) - 1;
+    if(mi >= 0 && mi < 12){
+      result.dob = dd + ' ' + months[mi] + ' ' + fullYear;
+      result.dobValid = true;
+    }
+  }
+  return result;
+}
+
+// Prefill
+gi('welcomeName').textContent = cap(D.fn);
+gi('firstName').value = cap(D.fn);
+gi('lastName').value = cap(D.ln);
+gi('idNumber').value = D.id;
+gi('mobile').value = D.mob;
+gi('email').value = D.em;
+gi('address').value = D.addr;
+
+var derived = deriveFromID(D.id);
+if(derived.dobValid){
+  gi('dob').value = derived.dob;
+  gi('dobHint').textContent = 'Auto-calculated from your SA ID';
+} else {
+  gi('dob').readOnly = false;
+  gi('dob').classList.remove('prefilled');
+  gi('dob').placeholder = 'DD Month YYYY';
+  gi('dobHint').textContent = 'Please enter your date of birth';
+}
+if(!derived.isSA){
+  gi('nationalityField').style.display = 'flex';
+}
+
+// ── Token check ──
+if(D.ref){
+  fetch(TOKEN_CHECK_URL, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ref: D.ref})
+  })
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    gi('loadingScreen').style.display = 'none';
+    var used = false;
+    try {
+      var data = JSON.parse(txt);
+      if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
+      var v = (data.form_used || '').toString().toLowerCase();
+      used = (v === 'used' || v === 'true');
+    } catch(e){ console.error(e); }
+    if(used){ gi('expiredScreen').style.display = 'block'; }
+    else { gi('mainForm').style.display = 'block'; }
+  })
+  .catch(function(){ gi('loadingScreen').style.display = 'none'; gi('mainForm').style.display = 'block'; });
+} else {
+  gi('loadingScreen').style.display = 'none';
+  gi('mainForm').style.display = 'block';
+}
+
+// ── Signature ──
+var canvas = gi('sigCanvas'), ctx = canvas.getContext('2d'), drawing=false, hasSig=false;
+function pos(e){ var r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height; if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy}; return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy}; }
+canvas.addEventListener('mousedown',function(e){drawing=true;ctx.beginPath();var p=pos(e);ctx.moveTo(p.x,p.y);hasSig=true;});
+canvas.addEventListener('mousemove',function(e){if(!drawing)return;var p=pos(e);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#1B2A4A';ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();});
+canvas.addEventListener('mouseup',function(){drawing=false;});
+canvas.addEventListener('mouseleave',function(){drawing=false;});
+canvas.addEventListener('touchstart',function(e){e.preventDefault();drawing=true;ctx.beginPath();var p=pos(e);ctx.moveTo(p.x,p.y);hasSig=true;});
+canvas.addEventListener('touchmove',function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#1B2A4A';ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();});
+canvas.addEventListener('touchend',function(){drawing=false;});
+window.clearSig=function(){ctx.clearRect(0,0,canvas.width,canvas.height);hasSig=false;};
+
+// ── Submit ──
+window.submitForm=function(){
+  if(sessionStorage.getItem('empform_used_'+D.ref)){ alert('This form has already been submitted.'); return; }
+
+  var required = [
+    ['title','Title'],['initials','Initials'],['gender','Gender'],['race','Race'],
+    ['homeLanguage','Home language'],['ecName','Emergency contact name'],
+    ['ecNumber','Emergency contact number'],['ecRelationship','Emergency contact relationship'],
+    ['bankName','Bank name'],['accountHolder','Account holder'],['accountType','Account type'],
+    ['accountNumber','Account number'],['taxNumber','Tax number']
+  ];
+  for(var i=0;i<required.length;i++){
+    if(!gi(required[i][0]).value.trim()){ alert('Please complete: '+required[i][1]); gi(required[i][0]).focus(); return; }
+  }
+  if(gi('nationalityField').style.display !== 'none' && !gi('nationality').value.trim()){ alert('Please enter your nationality.'); return; }
+  if(!gi('dob').value.trim()){ alert('Please enter your date of birth.'); return; }
+  if(!hasSig){ gi('sigError').style.display='block'; return; }
+
+  var btn=gi('submitBtn'), lbl=gi('submitLabel'), spin=gi('submitSpinner');
+  btn.disabled=true; lbl.style.display='none'; spin.style.display='block';
+
+  var payload = {
+    action:'employee_form_submitted',
+    employee_id: D.ref, token: D.token,
+    title: gi('title').value, initials: gi('initials').value,
+    preferred_name: gi('preferredName').value,
+    date_of_birth: gi('dob').value,
+    gender: gi('gender').value, race: gi('race').value,
+    home_language: gi('homeLanguage').value,
+    nationality: gi('nationalityField').style.display !== 'none' ? gi('nationality').value : 'South African',
+    home_number: gi('homeNumber').value,
+    emergency_name: gi('ecName').value,
+    emergency_number: gi('ecNumber').value,
+    emergency_relationship: gi('ecRelationship').value,
+    bank_name: gi('bankName').value,
+    account_holder: gi('accountHolder').value,
+    account_type: gi('accountType').value,
+    account_number: gi('accountNumber').value,
+    tax_number: gi('taxNumber').value,
+    submitted_at: new Date().toLocaleDateString('en-ZA'),
+    signature_data: canvas.toDataURL('image/png')
+  };
+
+  fetch(SUBMIT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+  .then(function(){
+    sessionStorage.setItem('empform_used_'+D.ref,'1');
+    gi('mainForm').style.display='none';
+    gi('successScreen').style.display='block';
+    gi('successName').textContent = cap(D.fn);
+  })
+  .catch(function(err){
+    sessionStorage.setItem('empform_used_'+D.ref,'1');
+    gi('mainForm').style.display='none';
+    gi('successScreen').style.display='block';
+    gi('successName').textContent = cap(D.fn);
+    console.error(err);
+  });
+};
+</script>
+</body>
+</html>
