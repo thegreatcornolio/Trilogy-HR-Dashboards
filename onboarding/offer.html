@@ -227,10 +227,19 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({token: D.token})
     })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
       gi('loadingScreen').style.display = 'none';
-      if(data.used && data.used.toLowerCase() === 'used'){
+      var used = false;
+      try {
+        var data = JSON.parse(txt);
+        // Handle nested Power Automate response: {body: "{...}"} or {body: {...}}
+        if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
+        var usedVal = (data.used || '').toString().toLowerCase();
+        used = (usedVal === 'used' || usedVal === 'true');
+      } catch(e){ console.error('Token parse error:', e, txt); }
+
+      if(used){
         gi('expiredScreen').style.display = 'block';
         if(gi('expiredRef')) gi('expiredRef').textContent = D.ref;
       } else {
@@ -238,7 +247,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       }
     })
     .catch(function(err){
-      // On error show the form (fail open — better UX than blocking)
+      // On error show the form (fail open)
       console.error('Token check error:', err);
       gi('loadingScreen').style.display = 'none';
       gi('offerContent').style.display = 'block';
@@ -413,7 +422,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   };
 
   function showConfirm(signedAt){
-    gi('signingScreen').style.display = 'none';
+    gi('offerContent').style.display = 'none';
+    gi('loadingScreen').style.display = 'none';
+    gi('expiredScreen').style.display = 'none';
     gi('confirmScreen').style.display = 'block';
     gi('confirmRef').textContent = D.ref;
     gi('signedDate').textContent = signedAt;
@@ -493,10 +504,10 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
     // Mark as used
     sessionStorage.setItem('offer_used_'+D.token, '1');
-    // Hide offer content immediately
+    // Hide offer content, show decline confirmation
     gi('offerContent').style.display = 'none';
-
-    gi('signingScreen').style.display = 'block';
+    gi('loadingScreen').style.display = 'none';
+    gi('expiredScreen').style.display = 'none';
     gi('declineScreen').style.display = 'block';
     gi('declineRef').textContent = D.ref;
 
