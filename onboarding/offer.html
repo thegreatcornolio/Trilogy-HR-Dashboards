@@ -229,14 +229,16 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     })
     .then(function(r){ return r.text(); })
     .then(function(txt){
+      console.log('TOKEN CHECK raw response:', txt);
       gi('loadingScreen').style.display = 'none';
       var used = false;
       try {
         var data = JSON.parse(txt);
-        // Handle nested Power Automate response: {body: "{...}"} or {body: {...}}
         if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
+        console.log('TOKEN CHECK parsed:', JSON.stringify(data));
         var usedVal = (data.used || '').toString().toLowerCase();
         used = (usedVal === 'used' || usedVal === 'true');
+        console.log('TOKEN CHECK usedVal:', usedVal, '→ used:', used);
       } catch(e){ console.error('Token parse error:', e, txt); }
 
       if(used){
