@@ -3,679 +3,598 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilogy BPO — Employee Onboarding</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Trilogy BPO — Employee Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;
   --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
-  --navy:#1B2A4A;--navy2:#243659;
-  --border:#dddcda;--border2:#c4c3bf;--bg:#e8e7e3;--surface:#ffffff;--surface2:#f2f1ed;
-  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;
-  --red:#c0392b;
+  --offwhite:#F7F6F2;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --red:#c0392b;--orange:#e67e22;--blue:#2980b9;
 }
-body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-.shell{max-width:740px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
-.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--navy);padding:1rem 1.75rem;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-1.75rem -1.75rem 1.5rem}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-sub{font-size:11px;color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;letter-spacing:.04em}
-.badge-hop{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(74,253,14,.2);color:var(--green);padding:4px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+
+/* HERO */
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+
+/* SHELL */
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start}
+.shell-left{min-width:0}
+@media(max-width:900px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.search-wrap input:focus{outline:none;border-color:var(--navy);background:#fff}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
+.filter-sel:focus{outline:none;border-color:var(--navy)}
+.count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.clickable{cursor:pointer;transition:background .12s}
+tr.clickable:hover td{background:#f7f6f2}
+tr.selected td{background:#edffd6}
+.emp-name{font-weight:700;color:var(--text)}
+.emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.s-contract-signed{background:#d4edda;color:#155724}
+.s-active{background:var(--green-light);color:var(--green-dark)}
+.s-bg-pending{background:#fff3cd;color:#856404}
+.s-bg-passed{background:#d4edda;color:#155724}
+.s-bg-failed{background:#fdf0ef;color:var(--red)}
+.emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+
+/* LOADING / EMPTY */
+.loading-row td{text-align:center;padding:3rem;color:var(--text3)}
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.no-results{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+
+/* DETAIL PANEL */
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
+.detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.detail-empty-icon{font-size:40px;margin-bottom:.75rem}
+.panel-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:12px}
+.panel-avatar{width:44px;height:44px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#111;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.panel-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.panel-ref{font-size:11px;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif}
+.panel-body{padding:1.25rem;max-height:calc(100vh - 160px);overflow-y:auto}
 
 /* TABS */
-.tabs{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.tab{flex:1;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text2);text-align:center;border-right:1px solid var(--border);transition:all .15s;font-family:'Montserrat',sans-serif}
-.tab:last-child{border-right:none}
-.tab.active{background:var(--navy);color:#fff}
-.tab:hover:not(.active){background:var(--border)}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+.tab-btn{padding:8px 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy)}
+.tab-content{display:none}
+.tab-content.active{display:block}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1rem}
-.card-title{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'Montserrat',sans-serif;color:var(--navy)}
-.card-sub{font-size:12px;color:var(--text2);margin-bottom:1.5rem}
-.section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:1.5rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--green);font-family:'Montserrat',sans-serif}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.field{margin-bottom:0}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
-.field label .req{color:var(--red);margin-left:2px}
-.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);font-family:inherit}
-.field input:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,42,74,.1)}
-.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-.field select.err,.field input.err{border-color:var(--red)}
-.err-msg{font-size:11px;color:var(--red);margin-top:3px;display:none}
-.err-msg.show{display:block}
-.hint{font-size:11px;color:var(--text3);margin-top:3px}
-.manager-status{font-size:11px;color:var(--text3);margin-top:4px}
-.btn-row{display:flex;gap:10px;align-items:center;margin-top:1.5rem;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s}
-.btn:hover{background:var(--surface2)}
-.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy);font-family:'Montserrat',sans-serif}
-.btn-primary:hover{background:var(--navy2)}
-.btn-primary:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed}
-.btn-outline{background:var(--surface);color:var(--navy);border-color:var(--navy);font-family:'Montserrat',sans-serif}
-.btn-outline:hover{background:var(--surface2)}
-.global-err{background:#fdf0ef;border:1px solid #f5c0bb;border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--red);margin-bottom:1rem;display:none}
-.global-err.show{display:block}
-.success-icon{width:56px;height:56px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-.success-icon svg{width:28px;height:28px;stroke:var(--green-dark);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+/* FIELDS */
+.field-group{margin-bottom:1rem}
+.field-group label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.field-val{font-size:13px;color:var(--text);background:var(--offwhite);border-radius:var(--radius);padding:8px 10px;border:1px solid var(--border)}
+.field-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.field-input:focus{outline:none;border-color:var(--navy);background:#fff}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.save-field-btn{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border:none;border-radius:var(--radius);background:var(--navy);color:#fff;cursor:pointer;margin-top:6px}
+.save-field-btn:hover{background:#2a2a2a}
+.save-result{font-size:11px;color:var(--green-dark);margin-top:4px;min-height:14px}
 
-/* CSV UPLOAD AREA */
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:2rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2);margin-bottom:1rem}
-.upload-zone:hover{border-color:var(--navy);background:var(--surface)}
-.upload-zone.dragover{border-color:var(--green);background:var(--green-light)}
-.uz-icon{font-size:32px;margin-bottom:.5rem}
-.uz-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Montserrat',sans-serif}
-.uz-sub{font-size:12px;color:var(--text3)}
+/* BG CHECK */
+.bg-status-card{border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem;border:1px solid}
+.bg-none{background:#f7f6f2;border-color:var(--border)}
+.bg-pending{background:#fff3cd;border-color:#ffc107}
+.bg-passed{background:#d4edda;border-color:#28a745}
+.bg-failed{background:#fdf0ef;border-color:var(--red)}
+.bg-status-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;margin-bottom:4px}
+.bg-check-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
+.bg-check-row:last-child{border-bottom:none}
+.bg-check-name{color:var(--text2)}
+.bg-check-result{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.res-confirmed{background:#d4edda;color:#155724}
+.res-clear{background:#d4edda;color:#155724}
+.res-failed{background:#fdf0ef;color:var(--red)}
+.res-pending{background:#fff3cd;color:#856404}
 
-/* PREVIEW TABLE */
-.preview-wrap{display:none;margin-top:1rem}
-.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
-.preview-header h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
-.preview-counts{display:flex;gap:10px}
-.preview-count{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;font-family:'Montserrat',sans-serif}
-.pc-valid{background:var(--green-light);color:var(--green-dark)}
-.pc-error{background:#fdf0ef;color:var(--red)}
-.preview-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
-.preview-table{width:100%;border-collapse:collapse;font-size:12px}
-.preview-table thead tr{background:var(--navy)}
-.preview-table thead th{padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.6);text-align:left;white-space:nowrap}
-.preview-table tbody tr{border-bottom:1px solid var(--border)}
-.preview-table tbody tr:last-child{border-bottom:none}
-.preview-table tbody tr.row-error{background:#fdf0ef}
-.preview-table td{padding:8px 12px;color:var(--text2);vertical-align:middle}
-.preview-table td.td-name{font-weight:600;color:var(--text)}
-.row-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
-.rs-valid{background:var(--green-light);color:var(--green-dark)}
-.rs-error{background:#fdf0ef;color:var(--red)}
-.rs-sent{background:#d1ecf1;color:#0c5460}
-.rs-sending{background:#fff3cd;color:#856404}
-.bulk-progress{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--text2);margin-top:.75rem;display:none}
-.bulk-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-top:.5rem;overflow:hidden}
-.bulk-bar{height:100%;background:var(--green-dark);border-radius:3px;width:0%;transition:width .3s}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:#2a2a2a}
+.btn-green{background:var(--green);color:#111}
+.btn-green:hover{background:#5fff1a}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
+.btn-outline:hover{background:var(--offwhite)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#a93226}
+.btn-sm{padding:7px 12px;font-size:11px}
+.btn-block{width:100%;justify-content:center;margin-bottom:8px}
 
-@media(max-width:520px){.grid2{grid-template-columns:1fr}.shell{padding:1rem 1rem 4rem}}
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--offwhite)}
+.upload-zone:hover{border-color:var(--navy);background:#e2e1dd}
+.upload-zone input{display:none}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:.25rem}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem;line-height:1.6}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
+
+/* STAGE TRACKER */
+.stage-track{display:flex;margin-bottom:1.25rem;gap:4px}
+.stage-dot{flex:1;height:6px;border-radius:3px;background:var(--border)}
+.stage-dot.done{background:var(--navy)}
+.stage-dot.active{background:var(--green)}
+.stage-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em;margin-bottom:1rem}
+
+/* FOOTER */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
 </style>
 </head>
 <body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Employee Records</div>
+  </div>
+  <a href="../" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO</div>
+    <div class="hero-title">Employee Records</div>
+    <div class="hero-sub">Search, manage and progress employee onboarding. Employees are defined as anyone who has signed a contract.</div>
+  </div>
+</div>
+
 <div class="shell">
 
-<div class="topbar">
-  <div class="brand">
-    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:28px;display:block">
-    <div style="width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 6px"></div>
-    <div class="brand-sub">Onboarding Portal</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <a href="../" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
-    <div class="badge-hop">Head of People</div>
-  </div>
-</div>
-
-<!-- TABS -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('single')">Single offer</div>
-  <div class="tab" onclick="switchTab('bulk')">Bulk offers (CSV)</div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     TAB 1 — SINGLE OFFER
-══════════════════════════════════════════════ -->
-<div class="tab-panel active" id="panel-single">
-
-  <div id="formCard" class="card">
-    <div class="card-title">New employee — letter of offer</div>
-    <p class="card-sub">Complete all fields or <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="downloadSingleTemplate()">⬇ Download CSV template</button> to pre-fill from a file <input type="file" id="singleCsvFile" accept=".csv" style="display:none" onchange="loadSingleCSV(this)"> <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="document.getElementById('singleCsvFile').click()">📂 Upload filled CSV</button></p>
-
-    <div class="global-err" id="globalErr">Please fill in all required fields before sending.</div>
-
-    <div class="section-label">Candidate details</div>
-    <div class="grid2">
-      <div class="field"><label>First name <span class="req">*</span></label><input type="text" id="fn" placeholder="e.g. Thandi"><div class="err-msg" id="fn-err">Required</div></div>
-      <div class="field"><label>Last name <span class="req">*</span></label><input type="text" id="ln" placeholder="e.g. Mokoena"><div class="err-msg" id="ln-err">Required</div></div>
-    </div>
-    <div style="height:14px"></div>
-    <div class="grid2">
-      <div class="field"><label>SA ID number <span class="req">*</span></label><input type="text" id="idno" placeholder="13-digit RSA ID" maxlength="13"><div class="err-msg" id="idno-err">Required</div></div>
-      <div class="field"><label>Mobile number <span class="req">*</span></label><input type="text" id="mob" placeholder="+27 81 234 5678"><div class="err-msg" id="mob-err">Required</div></div>
-    </div>
-    <div style="height:14px"></div>
-    <div class="field"><label>Candidate email address <span class="req">*</span></label><input type="email" id="em" placeholder="candidate@email.com"><div class="err-msg" id="em-err">Enter a valid email address</div></div>
-    <div style="height:14px"></div>
-    <div class="field"><label>Physical / residential address <span class="req">*</span></label><input type="text" id="addr" placeholder="Street, Suburb, City, Postal Code"><div class="err-msg" id="addr-err">Required</div></div>
-
-    <div class="section-label">Position details</div>
-    <div class="grid2" style="margin-bottom:14px">
-      <div class="field"><label>Job title <span class="req">*</span></label><input type="text" id="jt" placeholder="e.g. Customer Service Agent"><div class="err-msg" id="jt-err">Required</div></div>
-      <div class="field"><label>Campaign / Project</label><input type="text" id="campaign" placeholder="e.g. UK Telco Campaign"></div>
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Monthly salary (ZAR) <span class="req">*</span></label><input type="text" id="sal" placeholder="e.g. 8 500"><div class="err-msg" id="sal-err">Required</div></div>
-      <div class="field"><label>Start date <span class="req">*</span></label><input type="date" id="sd"><div class="err-msg" id="sd-err">Required</div></div>
-    </div>
-    <div style="height:14px"></div>
-    <div class="grid2">
-      <div class="field"><label>Date of offer <span class="req">*</span></label><input type="date" id="offerdate"><div class="hint">Defaults to today</div></div>
-      <div class="field">
-        <label>Reporting to <span class="req">*</span></label>
-        <select id="mgrSelect" onchange="onManagerSelect(this)">
-          <option value="">Loading managers…</option>
-        </select>
-        <div class="err-msg" id="mgrSelect-err">Please select a manager</div>
-        <div class="manager-status" id="mgrStatus"></div>
+  <!-- LEFT: TABLE -->
+  <div class="shell-left">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, reference or job title…" oninput="filterTable()">
       </div>
+      <select class="filter-sel" id="statusFilter" onchange="filterTable()">
+        <option value="">All statuses</option>
+        <option value="Contract Signed">Contract Signed</option>
+        <option value="Active">Active</option>
+        <option value="Resigned">Resigned</option>
+        <option value="Dismissed">Dismissed</option>
+      </select>
+      <select class="filter-sel" id="bgFilter" onchange="filterTable()">
+        <option value="">All checks</option>
+        <option value="none">No check yet</option>
+        <option value="pending">Check pending</option>
+        <option value="passed">Check passed</option>
+        <option value="failed">Check failed</option>
+      </select>
+      <span class="count-badge" id="countBadge">Loading…</span>
     </div>
-    <div style="height:14px"></div>
-    <div class="grid2">
-      <div class="field"><label>Place of work <span class="req">*</span></label><input type="text" id="pow" value="Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town"><div class="err-msg" id="pow-err">Required</div></div>
-      <div class="field"><label>Annual leave (days) <span class="req">*</span></label><input type="number" id="al" value="15" min="15" max="365"><div class="hint">Minimum 15 days per BCEA</div></div>
-    </div>
-    <input type="hidden" id="mgr">
-    <input type="hidden" id="mgrem">
 
-    <div class="btn-row">
-      <button class="btn btn-primary" id="sendBtn" onclick="submitForm()">Send letter of offer to candidate</button>
+    <div class="tbl-wrap">
+      <table id="empTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Employee</th>
+            <th>Job title</th>
+            <th>Start date</th>
+            <th>Status</th>
+            <th>Background check</th>
+          </tr>
+        </thead>
+        <tbody id="empBody">
+          <tr class="loading-row"><td colspan="6"><div class="spinner"></div>Loading employees…</td></tr>
+        </tbody>
+      </table>
     </div>
+    <div class="no-results" id="noResults" style="display:none">No employees match your search.</div>
   </div>
 
-  <div id="successCard" class="card" style="display:none;text-align:center;padding:2.5rem 1.75rem">
-    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-    <div style="font-size:18px;font-weight:700;margin-bottom:.5rem;font-family:'Montserrat',sans-serif">Offer sent successfully</div>
-    <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem" id="successMsg"></p>
-    <button class="btn btn-primary" onclick="resetForm()">+ Start another onboarding</button>
-  </div>
-
-</div>
-
-<!-- ══════════════════════════════════════════════
-     TAB 2 — BULK CSV
-══════════════════════════════════════════════ -->
-<div class="tab-panel" id="panel-bulk">
-  <div class="card">
-    <div class="card-title">Bulk offer letters — CSV upload</div>
-    <p class="card-sub">Download the template, fill in one row per candidate, upload it here, review the list, then send all offers in one go.</p>
-
-    <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap">
-      <button class="btn btn-outline" onclick="downloadBulkTemplate()">⬇ Download CSV template</button>
+  <!-- RIGHT: DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty" id="detailEmpty">
+      <div class="detail-empty-icon">👤</div>
+      <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:.25rem">Select an employee</div>
+      <div style="font-size:12px;color:var(--text3)">Click any row to view and manage their record</div>
     </div>
-
-    <div class="upload-zone" id="bulkDropZone" onclick="document.getElementById('bulkCsvFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-      <div class="uz-icon">📂</div>
-      <div class="uz-title" id="uzTitle">Drop your CSV here or click to browse</div>
-      <div class="uz-sub">Accepted format: .csv — one candidate per row</div>
-      <input type="file" id="bulkCsvFile" accept=".csv" style="display:none" onchange="loadBulkCSV(this)">
-    </div>
-
-    <div class="preview-wrap" id="previewWrap">
-      <div class="preview-header">
-        <h3>Preview — review before sending</h3>
-        <div class="preview-counts">
-          <span class="preview-count pc-valid" id="validCount">0 valid</span>
-          <span class="preview-count pc-error" id="errorCount" style="display:none">0 errors</span>
+    <div id="detailContent" style="display:none">
+      <div class="panel-header">
+        <div class="panel-avatar" id="panelAvatar">—</div>
+        <div>
+          <div class="panel-name" id="panelName">—</div>
+          <div class="panel-ref" id="panelRef">—</div>
         </div>
       </div>
-      <div class="preview-table-wrap">
-        <table class="preview-table">
-          <thead><tr>
-            <th>#</th><th>Name</th><th>Email</th><th>Job title</th>
-            <th>Start date</th><th>Salary</th><th>Reports to</th><th>Status</th>
-          </tr></thead>
-          <tbody id="previewBody"></tbody>
-        </table>
-      </div>
-      <div class="bulk-progress" id="bulkProgress">
-        <span id="bulkProgressText">Sending offers…</span>
-        <div class="bulk-bar-wrap"><div class="bulk-bar" id="bulkBar"></div></div>
-      </div>
-      <div class="btn-row" style="margin-top:1rem">
-        <button class="btn btn-primary" id="sendAllBtn" onclick="sendAllOffers()">Send all valid offers</button>
-        <button class="btn" onclick="clearBulk()">Clear</button>
+      <div class="panel-body">
+
+        <!-- STAGE TRACKER -->
+        <div class="stage-labels">
+          <span>Offer</span><span>Contract</span><span>Background</span><span>Banking</span><span>Active</span>
+        </div>
+        <div class="stage-track">
+          <div class="stage-dot" id="st1"></div>
+          <div class="stage-dot" id="st2"></div>
+          <div class="stage-dot" id="st3"></div>
+          <div class="stage-dot" id="st4"></div>
+          <div class="stage-dot" id="st5"></div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('details',this)">Details</button>
+          <button class="tab-btn" onclick="switchTab('background',this)">Background check</button>
+          <button class="tab-btn" onclick="switchTab('edit',this)">Edit record</button>
+        </div>
+
+        <!-- TAB: DETAILS -->
+        <div class="tab-content active" id="tab-details">
+          <div class="field-row">
+            <div class="field-group"><label>First name</label><div class="field-val" id="d-fn">—</div></div>
+            <div class="field-group"><label>Last name</label><div class="field-val" id="d-ln">—</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>ID number</label><div class="field-val" id="d-id">—</div></div>
+            <div class="field-group"><label>Mobile</label><div class="field-val" id="d-mob">—</div></div>
+          </div>
+          <div class="field-group"><label>Email</label><div class="field-val" id="d-email">—</div></div>
+          <div class="field-group"><label>Address</label><div class="field-val" id="d-addr">—</div></div>
+          <div class="field-row">
+            <div class="field-group"><label>Job title</label><div class="field-val" id="d-jt">—</div></div>
+            <div class="field-group"><label>Campaign</label><div class="field-val" id="d-camp">—</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Salary</label><div class="field-val" id="d-sal">—</div></div>
+            <div class="field-group"><label>Start date</label><div class="field-val" id="d-sd">—</div></div>
+          </div>
+          <div class="field-group"><label>Reports to</label><div class="field-val" id="d-mgr">—</div></div>
+          <div class="field-group"><label>Status</label><div class="field-val" id="d-status">—</div></div>
+        </div>
+
+        <!-- TAB: BACKGROUND CHECK -->
+        <div class="tab-content" id="tab-background">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem;line-height:1.6">Mark the background check status for this employee before proceeding to the next onboarding step.</div>
+
+          <div style="background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem">
+            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.875rem">Background check status</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:#fff;border:2px solid var(--border);border-radius:var(--radius);transition:all .15s" id="bgOptComplete">
+                <input type="radio" name="bgStatus" value="Complete" onchange="setBgStatus(this)" style="width:16px;height:16px;accent-color:var(--navy)">
+                <div>
+                  <div style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text)">✅ Completed</div>
+                  <div style="font-size:11px;color:var(--text3)">Background check has been conducted and passed</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:#fff;border:2px solid var(--border);border-radius:var(--radius);transition:all .15s" id="bgOptNA">
+                <input type="radio" name="bgStatus" value="Not Applicable" onchange="setBgStatus(this)" style="width:16px;height:16px;accent-color:var(--navy)">
+                <div>
+                  <div style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text)">⚪ Not Applicable</div>
+                  <div style="font-size:11px;color:var(--text3)">Background check not required for this role</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="btnSaveBgStatus" onclick="saveBgStatus()" style="display:none">Save background check status</button>
+          <div id="bgSaveResult" style="font-size:12px;text-align:center;margin-top:.5rem;min-height:16px"></div>
+        </div>
+
+        <!-- TAB: EDIT -->
+        <div class="tab-content" id="tab-edit">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:1rem;line-height:1.6">Edit individual fields. Changes are saved immediately to the database.</div>
+
+          <div class="field-group">
+            <label>Job title</label>
+            <input type="text" class="field-input" id="edit-jt" placeholder="Job title">
+            <button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button>
+            <div class="save-result" id="save-jt"></div>
+          </div>
+          <div class="field-group">
+            <label>Campaign / Department</label>
+            <input type="text" class="field-input" id="edit-camp" placeholder="Campaign">
+            <button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button>
+            <div class="save-result" id="save-camp"></div>
+          </div>
+          <div class="field-group">
+            <label>Work email</label>
+            <input type="email" class="field-input" id="edit-wemail" placeholder="name@trilogybpo.com">
+            <button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button>
+            <div class="save-result" id="save-wemail"></div>
+          </div>
+          <div class="field-group">
+            <label>Mobile</label>
+            <input type="text" class="field-input" id="edit-mob" placeholder="27821234567">
+            <button class="save-field-btn" onclick="saveField('Mobile','edit-mob')">Save</button>
+            <div class="save-result" id="save-mob"></div>
+          </div>
+          <div class="field-group">
+            <label>Address</label>
+            <input type="text" class="field-input" id="edit-addr" placeholder="Address">
+            <button class="save-field-btn" onclick="saveField('Address','edit-addr')">Save</button>
+            <div class="save-result" id="save-addr"></div>
+          </div>
+          <div class="field-group">
+            <label>Status</label>
+            <select class="field-input" id="edit-status">
+              <option value="Contract Signed">Contract Signed</option>
+              <option value="Active">Active</option>
+              <option value="Resigned">Resigned</option>
+              <option value="Dismissed">Dismissed</option>
+              <option value="Retrenched">Retrenched</option>
+              <option value="AWOL">AWOL</option>
+            </select>
+            <button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button>
+            <div class="save-result" id="save-status"></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
 
-</div><!-- end shell -->
+<!-- MODALS REMOVED -->
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
 
 <script>
-(function(){
-  var ZAPIER = 'https://hooks.zapier.com/hooks/catch/6391188/4oaqqzu/';
-  var BASE   = '';
-  var MANAGERS_URL = BASE + '/managers.json';
-  var managersData = [];
-  var bulkRows = [];
+// ── POWER AUTOMATE URLS ──
+// TODO: Replace with real URLs after creating PA flows
+var GET_EMPLOYEES_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var UPDATE_EMPLOYEE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
+var SAVE_BG_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/969398241b124bf0bbe26357f4288543/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=f_OV1TcJgHxqYM2lyprF2YrmVTPNv9E1Gc8GItk9dJM';
+var GET_BG_CHECKS_URL = '';
+var SEND_CONSENT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0e2cebdc80cd4cd8814c58a558a8609e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=D5JWazjceUM8IKhBmGsANIioqLhNCRVrbvnN0Q7EDJU';
 
-  // ── UTILS ──
-  function gi(id){ return document.getElementById(id); }
-  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
-  function fixIdNumber(val){
-    if(!val) return '';
-    val = val.toString().trim();
-    if(val.toUpperCase().indexOf('E+') > -1){
-      try { return parseInt(parseFloat(val)).toString(); } catch(e){ return val; }
-    }
-    return val;
-  }
-  function fmtDate(v){ if(!v)return''; var p=v.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
-  function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
-  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-  function buildToken(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+var GITHUB_TOKEN = '';  // Set in session — not stored
 
-  function buildRef(){
-    var t=buildToken();
-    return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6).toUpperCase()};
-  }
+var allEmployees = [];
+var bgChecks = {};
+var selectedEmp = null;
 
-  var SITE_URL = 'https://hr.trilogybpo.com';
+// ── LOAD EMPLOYEES ──
+function loadEmployees() {
+  fetch(GET_EMPLOYEES_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({action: 'get_employees'})
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
+    allEmployees = Array.isArray(data) ? data : (data.employees || []);
+    renderTable(allEmployees);
+  })
+  .catch(function(err) {
+    document.getElementById('empBody').innerHTML = '<tr class="loading-row"><td colspan="6">⚠️ Could not load employees. Check Power Automate flow.<br><small>' + err.message + '</small></td></tr>';
+  });
+}
 
-  function buildSigningUrl(d, token, ref){
-    return SITE_URL+'/onboarding/offer.html?'+[
-      'token='+encodeURIComponent(token),
-      'ref='+encodeURIComponent(ref),
-      'fn='+encodeURIComponent(d.fn),
-      'ln='+encodeURIComponent(d.ln),
-      'id='+encodeURIComponent(d.idno),
-      'mob='+encodeURIComponent(d.mob),
-      'em='+encodeURIComponent(d.em),
-      'addr='+encodeURIComponent(d.addr),
-      'jt='+encodeURIComponent(d.jt),
-      'sal='+encodeURIComponent(d.sal),
-      'sd='+encodeURIComponent(d.sd),
-      'od='+encodeURIComponent(d.od),
-      'mgr='+encodeURIComponent(d.mgr),
-      'mgrem='+encodeURIComponent(d.mgrem),
-      'pow='+encodeURIComponent(d.pow||'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town'),
-      'al='+encodeURIComponent(d.al||'15')
-    ].join('&');
+// ── RENDER TABLE ──
+function renderTable(list) {
+  var tbody = document.getElementById('empBody');
+  document.getElementById('countBadge').textContent = list.length + ' employee' + (list.length !== 1 ? 's' : '');
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="6">No employees found</td></tr>';
+    return;
   }
 
-  function postToZapier(payload, cb){
-    var body=Object.keys(payload).map(function(k){
-      return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);
-    }).join('&');
-    var xhr=new XMLHttpRequest();
-    xhr.open('POST',ZAPIER,true);
-    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    xhr.onreadystatechange=function(){ if(xhr.readyState===4) cb(); };
-    xhr.onerror=function(){ cb(); };
-    xhr.send(body);
-  }
+  tbody.innerHTML = list.map(function(e) {
+    var ini = ((e.FirstName||'')[0]||'') + ((e.LastName||'')[0]||'');
+    var bgStatus = getBgStatus(e.EmployeeID);
+    var bgPill = bgStatus === 'passed' ? '<span class="status-pill s-bg-passed">✓ Passed</span>' :
+                 bgStatus === 'failed' ? '<span class="status-pill s-bg-failed">✗ Failed</span>' :
+                 bgStatus === 'pending' ? '<span class="status-pill s-bg-pending">In progress</span>' :
+                 '<span class="status-pill" style="background:#f0f0f0;color:#888">Not started</span>';
+    var statusClass = e.Status === 'Active' ? 's-active' : 's-contract-signed';
+    return '<tr class="clickable' + (selectedEmp && selectedEmp.EmployeeID === e.EmployeeID ? ' selected' : '') + '" onclick="selectEmployee(\'' + e.EmployeeID + '\')">' +
+      '<td><div class="emp-avatar">' + ini.toUpperCase() + '</div></td>' +
+      '<td><div class="emp-name">' + (e.FirstName||'') + ' ' + (e.LastName||'') + '</div><div class="emp-ref">' + (e.EmployeeID||'') + '</div></td>' +
+      '<td>' + (e.JobTitle||'—') + '</td>' +
+      '<td>' + (e.StartDate ? e.StartDate.split('T')[0] : '—') + '</td>' +
+      '<td><span class="status-pill ' + statusClass + '">' + (e.Status||'—') + '</span></td>' +
+      '<td>' + bgPill + '</td>' +
+      '</tr>';
+  }).join('');
+}
 
-  // ── TABS ──
-  window.switchTab=function(tab){
-    document.querySelectorAll('.tab').forEach(function(t,i){
-      t.classList.toggle('active', (tab==='single'&&i===0)||(tab==='bulk'&&i===1));
-    });
-    gi('panel-single').classList.toggle('active', tab==='single');
-    gi('panel-bulk').classList.toggle('active', tab==='bulk');
-  };
+// ── FILTER ──
+function filterTable() {
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var sf = document.getElementById('statusFilter').value;
+  var bf = document.getElementById('bgFilter').value;
+  var filtered = allEmployees.filter(function(e) {
+    var name = ((e.FirstName||'') + ' ' + (e.LastName||'')).toLowerCase();
+    var matchQ = !q || name.includes(q) || (e.EmployeeID||'').toLowerCase().includes(q) || (e.JobTitle||'').toLowerCase().includes(q) || (e.IDNumber||'').includes(q);
+    var matchS = !sf || e.Status === sf;
+    var matchB = !bf || getBgStatus(e.EmployeeID) === bf;
+    return matchQ && matchS && matchB;
+  });
+  renderTable(filtered);
+}
 
-  // ── MANAGERS ──
-  function loadManagers(){
-    fetch(MANAGERS_URL+'?v='+Date.now())
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        managersData=data;
-        populateManagerSelect(data);
-        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">✓ '+data.length+' managers loaded</span>';
-      })
-      .catch(function(){
-        managersData=[
-          {name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},
-          {name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},
-          {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}
-        ];
-        populateManagerSelect(managersData);
-        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">Using cached list</span>';
-      });
-  }
+// ── SELECT EMPLOYEE ──
+function selectEmployee(id) {
+  var e = allEmployees.find(function(x) { return x.EmployeeID === id; });
+  if (!e) return;
+  selectedEmp = e;
 
-  function populateManagerSelect(data){
-    var sel=gi('mgrSelect');
-    sel.innerHTML='<option value="">Select reporting-to manager…</option>';
-    data.forEach(function(m){
-      var opt=document.createElement('option');
-      opt.value=m.email; opt.setAttribute('data-name',m.name); opt.textContent=m.name;
-      sel.appendChild(opt);
-    });
-  }
+  document.getElementById('detailEmpty').style.display = 'none';
+  document.getElementById('detailContent').style.display = 'block';
 
-  window.onManagerSelect=function(sel){
-    var opt=sel.options[sel.selectedIndex];
-    gi('mgr').value=opt.getAttribute('data-name')||'';
-    gi('mgrem').value=opt.value||'';
-    var st=gi('mgrStatus');
-    st.innerHTML=opt.value?'<span style="color:var(--green-dark)">✓ '+opt.value+'</span>':'';
-    sel.classList.remove('err');
-    var e=gi('mgrSelect-err'); if(e) e.classList.remove('show');
-  };
+  // Header
+  var ini = ((e.FirstName||'')[0]||'') + ((e.LastName||'')[0]||'');
+  document.getElementById('panelAvatar').textContent = ini.toUpperCase();
+  document.getElementById('panelName').textContent = (e.FirstName||'') + ' ' + (e.LastName||'');
+  document.getElementById('panelRef').textContent = e.EmployeeID;
 
-  // ── SINGLE OFFER ──
-  gi('offerdate').value=new Date().toISOString().slice(0,10);
+  // Stage tracker
+  var stages = ['Contract Signed','Active'];
+  var bgStatus = getBgStatus(id);
+  var stageIdx = stages.indexOf(e.Status);
+  ['st1','st2','st3','st4','st5'].forEach(function(s,i) {
+    var el = document.getElementById(s);
+    el.className = 'stage-dot' + (i < 2 ? ' done' : (i === 2 && bgStatus === 'passed' ? ' done' : (i === 2 ? ' active' : '')));
+  });
 
-  function validate(){
-    var ok=true;
-    ['fn','ln','idno','mob','em','addr','jt','sal','sd','offerdate'].forEach(function(id){
-      var el=gi(id), val=el.value.trim(), fail=!val;
-      if(id==='em'&&val&&!isEmail(val)) fail=true;
-      el.classList.toggle('err',fail);
-      var e=gi(id+'-err'); if(e) e.classList.toggle('show',fail);
-      if(fail) ok=false;
-    });
-    return ok;
-  }
+  // Details tab
+  document.getElementById('d-fn').textContent = e.FirstName||'—';
+  document.getElementById('d-ln').textContent = e.LastName||'—';
+  document.getElementById('d-id').textContent = e.IDNumber||'—';
+  document.getElementById('d-mob').textContent = e.Mobile||'—';
+  document.getElementById('d-email').textContent = e.PersonalEmail||e.WorkEmail||'—';
+  document.getElementById('d-addr').textContent = e.Address||'—';
+  document.getElementById('d-jt').textContent = e.JobTitle||'—';
+  document.getElementById('d-camp').textContent = e.Campaign||'—';
+  document.getElementById('d-sal').textContent = e.Salary ? 'R ' + parseFloat(e.Salary).toLocaleString('en-ZA') : '—';
+  document.getElementById('d-sd').textContent = e.StartDate ? e.StartDate.split('T')[0] : '—';
+  document.getElementById('d-mgr').textContent = e.ReportsTo||'—';
+  document.getElementById('d-status').textContent = e.Status||'—';
 
-  window.submitForm=function(){
-    gi('globalErr').classList.remove('show');
-    if(!validate()){gi('globalErr').classList.add('show');return;}
-    var mgrSel=gi('mgrSelect');
-    if(!mgrSel.value){
-      mgrSel.classList.add('err');
-      gi('mgrSelect-err').classList.add('show');
-      gi('globalErr').classList.add('show');
-      return;
-    }
-    var d={
-      fn:gi('fn').value.trim(), ln:gi('ln').value.trim(),
-      idno:gi('idno').value.trim(), mob:gi('mob').value.trim(),
-      em:gi('em').value.trim(), addr:gi('addr').value.trim(),
-      jt:gi('jt').value.trim(), campaign:gi('campaign').value.trim(), sal:gi('sal').value.trim(),
-      sd:fmtDate(gi('sd').value), od:fmtDate(gi('offerdate').value),
-      mgr:gi('mgr').value.trim(), mgrem:gi('mgrem').value.trim(),
-      pow:gi('pow').value.trim(), al:gi('al').value.trim()
-    };
-    var tr=buildRef();
-    var sigUrl=buildSigningUrl(d,tr.token,tr.ref);
-    var payload={
-      action:'send_offer', ref:tr.ref,
-      candidate_first:d.fn, candidate_last:d.ln,
-      candidate_email:d.em, candidate_id:d.idno,
-      candidate_mobile:d.mob, candidate_address:d.addr,
-      job_title:d.jt, campaign:d.campaign, salary:d.sal,
-      start_date:d.sd, offer_date:d.od,
-      reports_to:d.mgr, reports_to_email:d.mgrem,
-      place_of_work:d.pow, annual_leave:d.al,
-      signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
-    };
-    gi('sendBtn').disabled=true;
-    gi('sendBtn').textContent='Reviewing…';
-    // Show verification checklist first
-    showVerifyModal(d, tr, sigUrl, payload);
-  };
+  // Edit tab
+  document.getElementById('edit-jt').value = e.JobTitle||'';
+  document.getElementById('edit-camp').value = e.Campaign||'';
+  document.getElementById('edit-wemail').value = e.WorkEmail||'';
+  document.getElementById('edit-mob').value = e.Mobile||'';
+  document.getElementById('edit-addr').value = e.Address||'';
+  document.getElementById('edit-status').value = e.Status||'Contract Signed';
 
-  function showVerifyModal(d, tr, sigUrl, payload){
-    var modal = gi('verifyModal');
-    var rows = [
-      ['Reference', tr.ref],
-      ['First name', cap(d.fn)],
-      ['Last name', cap(d.ln)],
-      ['ID number', d.idno],
-      ['Mobile', d.mob],
-      ['Email', d.em],
-      ['Address', d.addr],
-      ['Job title', d.jt],
-      ['Salary', 'R '+d.sal],
-      ['Start date', d.sd],
-      ['Offer date', d.od],
-      ['Place of work', d.pow],
-      ['Annual leave', d.al+' days'],
-      ['Reports to', d.mgr]
-    ];
-    gi('verifyTable').innerHTML = rows.map(function(r){
-      return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
-    }).join('');
-    modal.style.display = 'flex';
-    gi('verifyConfirmBtn').onclick = function(){
-      modal.style.display = 'none';
-      gi('sendBtn').textContent='Sending…';
-      postToZapier(payload, function(){
-        gi('formCard').style.display='none';
-        gi('successCard').style.display='block';
-        gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
-        gi('sendBtn').disabled=false;
-        gi('sendBtn').textContent='Send letter of offer to candidate';
-      });
-    };
-    gi('verifyCancelBtn').onclick = function(){
-      modal.style.display = 'none';
-      gi('sendBtn').disabled=false;
-      gi('sendBtn').textContent='Send letter of offer to candidate';
-    };
-  }
+  // Reset background check radio buttons
+  var radios = document.querySelectorAll('input[name="bgStatus"]');
+  radios.forEach(function(r) { r.checked = false; });
+  document.getElementById('bgOptComplete').style.borderColor = 'var(--border)';
+  document.getElementById('bgOptNA').style.borderColor = 'var(--border)';
+  document.getElementById('btnSaveBgStatus').style.display = 'none';
+  document.getElementById('bgSaveResult').textContent = '';
 
-  window.resetForm=function(){
-    ['fn','ln','idno','mob','em','addr','jt','campaign','sal','sd','mgr','mgrem'].forEach(function(id){
-      var el=gi(id); if(el){el.value='';el.classList.remove('err');}
-      var e=gi(id+'-err'); if(e) e.classList.remove('show');
-    });
-    gi('offerdate').value=new Date().toISOString().slice(0,10);
-    gi('mgrSelect').selectedIndex=0; gi('mgrSelect').classList.remove('err');
-    gi('mgrStatus').innerHTML=''; gi('globalErr').classList.remove('show');
-    gi('sendBtn').disabled=false; gi('sendBtn').textContent='Send letter of offer to candidate';
-    gi('formCard').style.display='block'; gi('successCard').style.display='none';
-  };
+  // Highlight row
+  filterTable();
+}
 
-  // ── SINGLE CSV TEMPLATE ──
-  window.downloadSingleTemplate=function(){
-    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
-      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+new Date().toISOString().slice(0,10)+',Tanya Phillips,tanyap@trilogybpo.com\n';
-    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_single.csv'; a.click();
-  };
+// ── BACKGROUND CHECK STATUS ──
+function setBgStatus(el) {
+  document.getElementById('btnSaveBgStatus').style.display = 'block';
+  // Highlight selected option
+  document.getElementById('bgOptComplete').style.borderColor = 'var(--border)';
+  document.getElementById('bgOptNA').style.borderColor = 'var(--border)';
+  el.closest('label').style.borderColor = 'var(--navy)';
+}
 
-  window.loadSingleCSV=function(input){
-    var file=input.files[0]; if(!file)return;
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var lines=e.target.result.split('\n').filter(Boolean);
-      if(lines.length<2){alert('No data found in file.');return;}
-      var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s/g,'_');});
-      var vals=parseCSVLine(lines[1]);
-      function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
-      gi('fn').value=get('first_name');
-      gi('ln').value=get('last_name');
-      gi('idno').value=fixIdNumber(get('id_number'));
-      gi('mob').value=get('mobile');
-      gi('em').value=get('email');
-      gi('addr').value=get('address');
-      gi('jt').value=get('job_title');
-      gi('campaign').value=get('campaign')||'';
-      gi('sal').value=get('salary');
-      gi('sd').value=get('start_date');
-      gi('offerdate').value=get('offer_date')||new Date().toISOString().slice(0,10);
-      // Match manager by name or email
-      var mgrName=get('reports_to_name'), mgrEmail=get('reports_to_email');
-      var sel=gi('mgrSelect');
-      for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===mgrEmail||sel.options[i].getAttribute('data-name')===mgrName){
-          sel.selectedIndex=i; onManagerSelect(sel); break;
-        }
-      }
-    };
-    reader.readAsText(file);
-    input.value='';
-  };
+function saveBgStatus() {
+  var selected = document.querySelector('input[name="bgStatus"]:checked');
+  if (!selected) { alert('Please select a status.'); return; }
+  var val = selected.value;
+  var btn = document.getElementById('btnSaveBgStatus');
+  var res = document.getElementById('bgSaveResult');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
 
-  // ── BULK CSV ──
-  window.downloadBulkTemplate=function(){
-    var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
-    var today=new Date().toISOString().slice(0,10);
-    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
-      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
-      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
-    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
-  };
+  fetch(UPDATE_EMPLOYEE_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      employee_id: selectedEmp.EmployeeID,
+      field: 'BackgroundCheckStatus',
+      value: val
+    })
+  })
+  .then(function() {
+    res.innerHTML = '<span style="color:var(--green-dark)">✓ Background check status saved as: ' + val + '</span>';
+    btn.textContent = 'Save background check status';
+    btn.disabled = false;
+    setTimeout(function() { res.textContent = ''; }, 4000);
+  })
+  .catch(function() {
+    res.innerHTML = '<span style="color:var(--red)">✗ Save failed. Try again.</span>';
+    btn.textContent = 'Save background check status';
+    btn.disabled = false;
+  });
+}
 
-  function parseCSVLine(line){
-    var result=[],cur='',inQ=false;
-    for(var i=0;i<line.length;i++){
-      var c=line[i];
-      if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur);cur='';}
-      else{cur+=c;}
-    }
-    result.push(cur);
-    return result;
-  }
+// ── TABS ──
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
 
-  function parseCSV(text){
-    var lines=text.split('\n').filter(Boolean);
-    if(lines.length<2)return[];
-    var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
-    var rows=[];
-    for(var i=1;i<lines.length;i++){
-      var vals=parseCSVLine(lines[i]);
-      if(vals.every(function(v){return!v.trim();}))continue;
-      var row={};
-      headers.forEach(function(h,j){row[h]=(vals[j]||'').replace(/"/g,'').trim();});
-      rows.push(row);
-    }
-    return rows;
-  }
+// ── SAVE FIELD ──
+function saveField(field, inputId) {
+  if (!selectedEmp) return;
+  var val = document.getElementById(inputId).value.trim();
+  var resultEl = document.getElementById('save-' + inputId.replace('edit-',''));
 
-  function validateBulkRow(row){
-    var errors=[];
-    if(!row.first_name) errors.push('first name');
-    if(!row.last_name) errors.push('last name');
-    if(!row.email||!isEmail(row.email)) errors.push('valid email');
-    if(!row.job_title) errors.push('job title');
-    if(!row.start_date) errors.push('start date');
-    if(!row.reports_to_email) errors.push('reports to email');
-    return errors;
-  }
+  fetch(UPDATE_EMPLOYEE_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      employee_id: selectedEmp.EmployeeID,
+      field: field,
+      value: val
+    })
+  })
+  .then(function(r) {
+    if (r.ok || r.status === 202) {
+      resultEl.textContent = '✓ Saved';
+      resultEl.style.color = 'var(--green-dark)';
+      selectedEmp[field] = val;
+      setTimeout(function() { resultEl.textContent = ''; }, 3000);
+    } else { throw new Error('Failed'); }
+  })
+  .catch(function() {
+    resultEl.textContent = '✗ Save failed';
+    resultEl.style.color = 'var(--red)';
+  });
+}
 
-  window.loadBulkCSV=function(input){
-    var file=input.files[0]; if(!file)return;
-    gi('uzTitle').textContent='📄 '+file.name;
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var rows=parseCSV(e.target.result);
-      if(!rows.length){alert('No data rows found.');return;}
-      bulkRows=rows.map(function(r,i){
-        var errors=validateBulkRow(r);
-        return {index:i+1, data:r, errors:errors, status:errors.length?'error':'valid'};
-      });
-      renderPreview();
-    };
-    reader.readAsText(file);
-    input.value='';
-  };
+// ── MODAL ──
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
 
-  window.dragOver=function(e){e.preventDefault();gi('bulkDropZone').classList.add('dragover');};
-  window.dragLeave=function(){gi('bulkDropZone').classList.remove('dragover');};
-  window.dropFile=function(e){
-    e.preventDefault();gi('bulkDropZone').classList.remove('dragover');
-    var file=e.dataTransfer.files[0];
-    if(file&&file.name.endsWith('.csv')){
-      var reader=new FileReader();
-      reader.onload=function(ev){
-        gi('uzTitle').textContent='📄 '+file.name;
-        var rows=parseCSV(ev.target.result);
-        bulkRows=rows.map(function(r,i){
-          var errors=validateBulkRow(r);
-          return {index:i+1,data:r,errors:errors,status:errors.length?'error':'valid'};
-        });
-        renderPreview();
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  function renderPreview(){
-    var valid=bulkRows.filter(function(r){return r.status==='valid'||r.status==='sent';}).length;
-    var errors=bulkRows.filter(function(r){return r.status==='error';}).length;
-    gi('validCount').textContent=valid+' valid';
-    gi('errorCount').textContent=errors+' error'+(errors===1?'':'s');
-    gi('errorCount').style.display=errors?'':'none';
-
-    var tbody=gi('previewBody'); tbody.innerHTML='';
-    bulkRows.forEach(function(row){
-      var tr=document.createElement('tr');
-      if(row.status==='error') tr.className='row-error';
-      var statusHtml='<span class="row-status '+(row.status==='sent'?'rs-sent':row.status==='sending'?'rs-sending':row.status==='error'?'rs-error':'rs-valid')+'">'+(row.status==='sent'?'✓ Sent':row.status==='sending'?'Sending…':row.status==='error'?'⚠ '+row.errors.join(', '):'Ready')+'</span>';
-      var d=row.data;
-      tr.innerHTML=
-        '<td>'+row.index+'</td>'+
-        '<td class="td-name">'+(d.first_name||'')+' '+(d.last_name||'')+'</td>'+
-        '<td>'+(d.email||'')+'</td>'+
-        '<td>'+(d.job_title||'')+'</td>'+
-        '<td>'+(d.start_date||'')+'</td>'+
-        '<td>'+(d.salary?'R '+d.salary:'')+'</td>'+
-        '<td>'+(d.reports_to_name||d.reports_to_email||'')+'</td>'+
-        '<td>'+statusHtml+'</td>';
-      tbody.appendChild(tr);
-    });
-    gi('previewWrap').style.display='block';
-    gi('sendAllBtn').disabled=valid===0;
-  }
-
-  window.sendAllOffers=function(){
-    var validRows=bulkRows.filter(function(r){return r.status==='valid';});
-    if(!validRows.length)return;
-    gi('sendAllBtn').disabled=true;
-    gi('bulkProgress').style.display='block';
-    var sent=0, total=validRows.length;
-
-    function sendNext(i){
-      if(i>=validRows.length){
-        gi('bulkProgressText').textContent='✓ All '+total+' offers sent successfully!';
-        gi('bulkBar').style.width='100%';
-        return;
-      }
-      var row=validRows[i];
-      row.status='sending';
-      renderPreview();
-      var d=row.data;
-      var sd=d.start_date, od=d.offer_date||new Date().toISOString().slice(0,10);
-      // Format dates
-      function fmt(v){if(!v)return'';if(v.includes('/'))return v;var p=v.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v;}
-      var fmtSd=fmt(sd), fmtOd=fmt(od);
-      var tr=buildRef();
-      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:d.salary||'',sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email};
-      var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
-      var payload={
-        action:'send_offer', ref:tr.ref,
-        candidate_first:d.first_name, candidate_last:d.last_name,
-        candidate_email:d.email, candidate_id:d.id_number||'',
-        candidate_mobile:d.mobile||'', candidate_address:d.address||'',
-        job_title:d.job_title, campaign:d.campaign||'', salary:d.salary||'',
-        start_date:fmtSd, offer_date:fmtOd,
-        reports_to:d.reports_to_name||'', reports_to_email:d.reports_to_email,
-        signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
-      };
-      postToZapier(payload, function(){
-        row.status='sent'; sent++;
-        var pct=Math.round((sent/total)*100);
-        gi('bulkBar').style.width=pct+'%';
-        gi('bulkProgressText').textContent='Sending… '+sent+' of '+total;
-        renderPreview();
-        setTimeout(function(){sendNext(i+1);},600);
-      });
-    }
-    sendNext(0);
-  };
-
-  window.clearBulk=function(){
-    bulkRows=[];
-    gi('previewWrap').style.display='none';
-    gi('bulkProgress').style.display='none';
-    gi('uzTitle').textContent='Drop your CSV here or click to browse';
-    gi('sendAllBtn').disabled=false;
-  };
-
-  loadManagers();
-})();
+// ── INIT ──
+loadEmployees();
 </script>
-<!-- VERIFICATION MODAL -->
-<div id="verifyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
-    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:.25rem">✅ Verify offer details</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem">Please review all details carefully before sending. Once sent, the candidate will receive the offer immediately.</div>
-    <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden" id="verifyTable"></table>
-    <div style="display:flex;gap:10px;margin-top:1.5rem">
-      <button id="verifyCancelBtn" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:var(--text);font-family:'Montserrat',sans-serif">✏️ Go back & edit</button>
-      <button id="verifyConfirmBtn" style="flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif">✅ Confirm & send offer</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

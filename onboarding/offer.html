@@ -83,6 +83,12 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 </div>
 
 <div id="signingScreen">
+<!-- LOADING SCREEN - shown while token check runs -->
+<div id="loadingScreen" style="text-align:center;padding:3rem 1.5rem">
+  <div style="width:36px;height:36px;border:3px solid #e2e1dd;border-top-color:#1e1e1e;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem"></div>
+  <div style="font-size:13px;color:var(--text3)">Verifying your link…</div>
+</div>
+
 <!-- EXPIRED SCREEN -->
 <div id="expiredScreen" style="display:none;text-align:center;padding:3rem 1.5rem">
   <div style="font-size:56px;margin-bottom:1rem">🔒</div>
@@ -90,6 +96,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   <div style="font-size:14px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem">This offer link has already been actioned. If you believe this is an error, please contact your HR representative at Trilogy BPO.</div>
   <div style="font-size:12px;color:var(--text3)">Ref: <strong id="expiredRef"></strong></div>
 </div>
+
+<!-- OFFER CONTENT - hidden until token verified -->
+<div id="offerContent" style="display:none">
 
   <div class="info-banner">
     <div class="info-icon">
@@ -160,7 +169,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     </div>
   </div>
 
-</div>
+</div><!-- end offerContent -->
 
 <div class="confirm-screen" id="declineScreen" style="display:none">
   <div class="confirm-card">
@@ -211,7 +220,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     al: gp('al') || '15'
   };
 
-  // Check token on load
+  // Check token on load - hide form until verified
   if(D.token){
     fetch(TOKEN_CHECK_URL, {
       method: 'POST',
@@ -220,13 +229,23 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
+      gi('loadingScreen').style.display = 'none';
       if(data.used && data.used.toLowerCase() === 'used'){
-        gi('signingScreen').style.display = 'none';
         gi('expiredScreen').style.display = 'block';
         if(gi('expiredRef')) gi('expiredRef').textContent = D.ref;
+      } else {
+        gi('offerContent').style.display = 'block';
       }
     })
-    .catch(function(err){ console.error('Token check error:', err); });
+    .catch(function(err){
+      // On error show the form (fail open — better UX than blocking)
+      console.error('Token check error:', err);
+      gi('loadingScreen').style.display = 'none';
+      gi('offerContent').style.display = 'block';
+    });
+  } else {
+    gi('loadingScreen').style.display = 'none';
+    gi('offerContent').style.display = 'block';
   }
 
   gi('refBadge').textContent = D.ref || 'REF–';
@@ -387,6 +406,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     xhr.send(body);
     // Mark token as used to prevent resubmission
     sessionStorage.setItem('offer_used_'+D.token, '1');
+    // Hide offer content immediately — cannot be shown again
+    gi('offerContent').style.display = 'none';
     showConfirm(signedAt);
 
   };
@@ -472,8 +493,10 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
     // Mark as used
     sessionStorage.setItem('offer_used_'+D.token, '1');
+    // Hide offer content immediately
+    gi('offerContent').style.display = 'none';
 
-    gi('signingScreen').style.display = 'none';
+    gi('signingScreen').style.display = 'block';
     gi('declineScreen').style.display = 'block';
     gi('declineRef').textContent = D.ref;
 
