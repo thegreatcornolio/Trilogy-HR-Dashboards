@@ -172,14 +172,14 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
 
     <div class="field" style="margin-top:14px">
       <label>Background / criminal check <span class="req">*</span></label>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--navy);border-radius:var(--radius);cursor:pointer;font-size:13px;background:var(--offwhite)" id="bgcLabelDone">
-          <input type="radio" name="bgcheck" value="Complete" checked onchange="toggleBgc(this)" style="accent-color:var(--navy)">
-          <span>✅ Check completed</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+        <label id="bgcLabelDone" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--navy);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:var(--offwhite)">
+          <input type="radio" name="bgcheck" value="Complete" checked onchange="toggleBgc(this)" style="accent-color:var(--navy);width:16px;height:16px;flex-shrink:0;margin:0">
+          Completed
         </label>
-        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;background:#fff" id="bgcLabelNA">
-          <input type="radio" name="bgcheck" value="Not Applicable" onchange="toggleBgc(this)" style="accent-color:var(--navy)">
-          <span>⚪ Not applicable</span>
+        <label id="bgcLabelNA" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:#fff">
+          <input type="radio" name="bgcheck" value="Not Applicable" onchange="toggleBgc(this)" style="accent-color:var(--navy);width:16px;height:16px;flex-shrink:0;margin:0">
+          Not applicable
         </label>
       </div>
       <div class="hint">Confirm whether a background/criminal check has been completed for this candidate</div>
@@ -270,8 +270,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     gi('bgcLabelNA').style.background = '#fff';
     if(el.value === 'Complete'){ gi('bgcLabelDone').style.borderColor = 'var(--navy)'; gi('bgcLabelDone').style.background = 'var(--offwhite)'; }
     else { gi('bgcLabelNA').style.borderColor = 'var(--navy)'; gi('bgcLabelNA').style.background = 'var(--offwhite)'; }
-  };
-  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
+  };  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
   function fixIdNumber(val){
     if(!val) return '';
     val = val.toString().trim();
