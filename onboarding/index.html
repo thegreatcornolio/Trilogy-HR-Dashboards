@@ -3,644 +3,707 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilogy BPO — HR Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Trilogy BPO — Employee Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1e1e1e;--navy2:#2a2a2a;--navy-dark:#121212;
   --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
-  --offwhite:#F7F6F2;--slate:#4A5568;
-  --border:#e2e1dd;--border2:#c8c7c3;
-  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
-  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
-  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --navy:#1B2A4A;--navy2:#243659;
+  --border:#dddcda;--border2:#c4c3bf;--bg:#e8e7e3;--surface:#ffffff;--surface2:#f2f1ed;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;
   --red:#c0392b;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
-.nav-logo{height:30px}
-.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
-.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.nav-right{display:flex;align-items:center;gap:1rem}
-.nav-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);font-family:'Montserrat',sans-serif}
-.hero{background:var(--navy);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
-.hero-inner{max-width:1100px;margin:0 auto}
-.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;opacity:.8}
-.hero-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem;letter-spacing:-.02em}
-.hero-title span{color:var(--green)}
-.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:500px;line-height:1.7}
-.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
-.stat{border-left:2px solid var(--green);padding-left:1rem}
-.stat-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1}
-.stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
-.shell{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem}
-.section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
-.section-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
-.section-line{flex:1;height:1px;background:var(--border)}
-.section-tag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.shell{max-width:740px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--navy);padding:1rem 1.75rem;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-1.75rem -1.75rem 1.5rem}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;letter-spacing:.04em}
+.badge-hop{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(74,253,14,.2);color:var(--green);padding:4px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
 
-/* LOOKUP */
-.lookup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem}
-.lookup-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-.lookup-header h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
-.lookup-header p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
-.lookup-view-all{font-size:11px;font-weight:600;color:var(--green);text-decoration:none;font-family:'Montserrat',sans-serif}
-.lookup-view-all:hover{opacity:.8}
-.lookup-body{padding:1.25rem 1.5rem}
-.lookup-row{display:flex;gap:10px;margin-bottom:1rem}
-.lookup-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--offwhite)}
-.lookup-input:focus{outline:none;border-color:var(--navy);background:#fff}
-.lookup-btn{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif}
-.lookup-btn:hover{background:var(--navy2)}
-.lookup-hint{font-size:12px;color:var(--text3);text-align:center;padding:.25rem 0}
-.lookup-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;display:none}
-.lookup-result{display:none}
-.result-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;flex-wrap:wrap}
-.result-avatar{width:46px;height:46px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
-.result-info{flex:1;min-width:180px}
-.result-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
-.result-role{font-size:12px;color:var(--text2);margin-bottom:.75rem}
-.result-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
-.rmi{font-size:11px;color:var(--text3)}
-.rmi strong{display:block;color:var(--text);font-weight:600;margin-bottom:1px}
-.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;font-family:'Montserrat',sans-serif}
-.s-offer-sent{background:#fff3cd;color:#856404}
-.s-offer-signed{background:#d1ecf1;color:#0c5460}
-.s-contract-sent{background:#cce5ff;color:#004085}
-.s-contract-signed{background:#d4edda;color:#155724}
-.s-complete{background:var(--green-light);color:var(--green-dark)}
-.s-draft{background:var(--surface2);color:var(--text3)}
-.rt-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin:.75rem 0 .4rem;font-family:'Montserrat',sans-serif;width:100%}
-.rt-track{display:flex;gap:4px}
-.rt-step{flex:1;height:6px;border-radius:3px;background:var(--border)}
-.rt-step.done{background:var(--navy)}
-.rt-step.active{background:var(--green)}
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.tab{flex:1;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text2);text-align:center;border-right:1px solid var(--border);transition:all .15s;font-family:'Montserrat',sans-serif}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--navy);color:#fff}
+.tab:hover:not(.active){background:var(--border)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-/* MODULES */
-.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;margin-bottom:2.5rem}
-.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;transition:all .18s;position:relative;overflow:hidden;text-decoration:none;display:block}
-.module-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .18s}
-.module-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.08);transform:translateY(-2px)}
-.module-card:hover::after{transform:scaleX(1)}
-.module-card.live-card{border-color:#515151}
-.module-card.live-card::after{transform:scaleX(1)}
-.module-card.placeholder{opacity:.5;pointer-events:none}
-.mc-icon{width:38px;height:38px;background:var(--offwhite);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.875rem}
-.mc-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
-.mc-desc{font-size:11px;color:var(--text3);line-height:1.5}
-.mc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:.5rem;font-family:'Montserrat',sans-serif}
-.badge-live{background:var(--green-light);color:var(--green-dark)}
-.badge-soon{background:var(--surface2);color:var(--text3)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1rem}
+.card-title{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'Montserrat',sans-serif;color:var(--navy)}
+.card-sub{font-size:12px;color:var(--text2);margin-bottom:1.5rem}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:1.5rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--green);font-family:'Montserrat',sans-serif}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,42,74,.1)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.field select.err,.field input.err{border-color:var(--red)}
+.err-msg{font-size:11px;color:var(--red);margin-top:3px;display:none}
+.err-msg.show{display:block}
+.hint{font-size:11px;color:var(--text3);margin-top:3px}
+.manager-status{font-size:11px;color:var(--text3);margin-top:4px}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:1.5rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-primary:hover{background:var(--navy2)}
+.btn-primary:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed}
+.btn-outline{background:var(--surface);color:var(--navy);border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-outline:hover{background:var(--surface2)}
+.global-err{background:#fdf0ef;border:1px solid #f5c0bb;border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--red);margin-bottom:1rem;display:none}
+.global-err.show{display:block}
+.success-icon{width:56px;height:56px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.success-icon svg{width:28px;height:28px;stroke:var(--green-dark);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
-/* SETTINGS CARDS */
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem}
-.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
-.settings-card h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text)}
-.settings-card p{font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.5}
-.staff-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
-.staff-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
-.staff-av{width:26px;height:26px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
-.staff-name{flex:1;font-weight:500;color:var(--text)}
-.staff-email{color:var(--text3);font-size:11px}
-.staff-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
-.staff-rm:hover{color:var(--red)}
-.dept-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
-.dept-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
-.dept-icon{width:26px;height:26px;background:#515151;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.dept-name{flex:1;font-weight:500;color:var(--text)}
-.dept-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
-.dept-rm:hover{color:var(--red)}
-.add-row{display:flex;gap:6px;margin-bottom:.75rem}
-.add-row input{flex:1;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;color:var(--text);min-width:0;background:var(--offwhite)}
-.add-row input:focus{outline:none;border-color:#515151;background:#fff}
-.btn-navy{padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
-.btn-navy:hover{background:var(--navy2)}
-.btn-full{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;width:100%;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);background:var(--offwhite);margin-bottom:8px}
-.btn-full:hover{background:#dddcda}
-.btn-full.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-full.primary:hover{background:var(--navy2)}
-.btn-full.green{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
-.divider-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;margin:.75rem 0 .5rem;display:flex;align-items:center;gap:8px}
-.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--offwhite)}
-.upload-zone:hover{border-color:#515151;background:#e2e1dd}
-.uz-icon{font-size:22px;margin-bottom:.25rem}
-.uz-text{font-size:12px;color:var(--text3)}
-.import-result{font-size:11px;color:var(--text3);margin-top:.5rem;min-height:16px;text-align:center}
-.preview-table{width:100%;border-collapse:collapse;font-size:12px;margin:.75rem 0;max-height:140px;display:block;overflow-y:auto}
-.preview-table th{background:var(--navy);color:#fff;padding:5px 10px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0}
-.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border);color:var(--text2)}
-.preview-table tr:last-child td{border-bottom:none}
+/* CSV UPLOAD AREA */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:2rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2);margin-bottom:1rem}
+.upload-zone:hover{border-color:var(--navy);background:var(--surface)}
+.upload-zone.dragover{border-color:var(--green);background:var(--green-light)}
+.uz-icon{font-size:32px;margin-bottom:.5rem}
+.uz-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Montserrat',sans-serif}
+.uz-sub{font-size:12px;color:var(--text3)}
 
-/* VIBECHECK SECTION HEADER LINK */
-.section-head a.vibecheck-link{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--green-dark);text-decoration:none;border:1px solid var(--green-dark);padding:3px 10px;border-radius:20px}
-.section-head a.vibecheck-link:hover{background:var(--green-light)}
+/* PREVIEW TABLE */
+.preview-wrap{display:none;margin-top:1rem}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.preview-header h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.preview-counts{display:flex;gap:10px}
+.preview-count{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;font-family:'Montserrat',sans-serif}
+.pc-valid{background:var(--green-light);color:var(--green-dark)}
+.pc-error{background:#fdf0ef;color:var(--red)}
+.preview-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.preview-table thead tr{background:var(--navy)}
+.preview-table thead th{padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.6);text-align:left;white-space:nowrap}
+.preview-table tbody tr{border-bottom:1px solid var(--border)}
+.preview-table tbody tr:last-child{border-bottom:none}
+.preview-table tbody tr.row-error{background:#fdf0ef}
+.preview-table td{padding:8px 12px;color:var(--text2);vertical-align:middle}
+.preview-table td.td-name{font-weight:600;color:var(--text)}
+.row-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.rs-valid{background:var(--green-light);color:var(--green-dark)}
+.rs-error{background:#fdf0ef;color:var(--red)}
+.rs-sent{background:#d1ecf1;color:#0c5460}
+.rs-sending{background:#fff3cd;color:#856404}
+.bulk-progress{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--text2);margin-top:.75rem;display:none}
+.bulk-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-top:.5rem;overflow:hidden}
+.bulk-bar{height:100%;background:var(--green-dark);border-radius:3px;width:0%;transition:width .3s}
 
-
-.btn-send-vibe{padding:12px 24px;background:var(--green);color:#111;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s}
-.btn-send-vibe:hover{background:#5fff1a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,253,14,.3)}
-.btn-send-vibe:disabled{opacity:.5;pointer-events:none}
-
-.pipe-step{display:flex;align-items:center;gap:0;position:relative}
-.pipe-step .pipe-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1;min-width:40px}
-.pipe-step .pipe-label{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px;margin-right:4px}
-.pipe-step .pipe-arrow{font-size:18px;color:var(--green);margin:0 12px;font-weight:700}
-.pipe-step.last .pipe-num{color:var(--green)}
-/* FOOTER */
-.footer{background:var(--navy);padding:1.25rem 2rem}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.footer-logo{height:20px}
-.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
-@media(max-width:760px){.settings-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr 1fr}.hero-title{font-size:22px}.shell{padding:1.5rem 1rem 4rem}}
-@media(max-width:440px){.module-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}.shell{padding:1rem 1rem 4rem}}
 </style>
 </head>
 <body>
-
-<nav class="nav">
-  <div style="display:flex;align-items:center;gap:12px">
-    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
-    <div class="nav-divider"></div>
-    <div class="nav-section">HR Portal</div>
-  </div>
-  <div class="nav-right">
-    <div class="nav-avatar">HP</div>
-  </div>
-</nav>
-
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-label">Trilogy BPO</div>
-    <h1 class="hero-title">People Operations<br><span>Central.</span></h1>
-    <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
-      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees</div></div>
-      <div class="stat"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total in system</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- PIPELINE SECTION -->
-<div style="background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem">
-  <div style="max-width:1100px;margin:0 auto">
-    <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
-    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-      <div class="pipe-step"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step last"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></div>
-    </div>
-  </div>
-  </div>
-</div>
-
 <div class="shell">
 
-  <!-- EMPLOYEE LOOKUP -->
-  <div class="section-head"><h2>Employee lookup</h2><div class="section-line"></div><div class="section-tag">Quick search</div></div>
-  <div class="lookup-card">
-    <div class="lookup-header">
-      <div><h3>Find an employee</h3><p>Search by name or reference number</p></div>
-      <a href="employees/" class="lookup-view-all">View all records →</a>
+<div class="topbar">
+  <div class="brand">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:28px;display:block">
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 6px"></div>
+    <div class="brand-sub">Onboarding Portal</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="../" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
+    <div class="badge-hop">Head of People</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('single')">Single offer</div>
+  <div class="tab" onclick="switchTab('bulk')">Bulk offers (CSV)</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1 — SINGLE OFFER
+══════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-single">
+
+  <div id="formCard" class="card">
+    <div class="card-title">New employee — letter of offer</div>
+    <p class="card-sub">Complete all fields or <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="downloadSingleTemplate()">⬇ Download CSV template</button> to pre-fill from a file <input type="file" id="singleCsvFile" accept=".csv" style="display:none" onchange="loadSingleCSV(this)"> <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="document.getElementById('singleCsvFile').click()">📂 Upload filled CSV</button></p>
+
+    <div class="global-err" id="globalErr">Please fill in all required fields before sending.</div>
+
+    <div class="section-label">Candidate details</div>
+    <div class="grid2">
+      <div class="field"><label>First name <span class="req">*</span></label><input type="text" id="fn" placeholder="e.g. Thandi"><div class="err-msg" id="fn-err">Required</div></div>
+      <div class="field"><label>Last name <span class="req">*</span></label><input type="text" id="ln" placeholder="e.g. Mokoena"><div class="err-msg" id="ln-err">Required</div></div>
     </div>
-    <div class="lookup-body">
-      <div class="lookup-row">
-        <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. John Smith or TBP-2026-AB1234" onkeydown="if(event.key==='Enter')doLookup()">
-        <button class="lookup-btn" onclick="doLookup()">Search</button>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>SA ID number <span class="req">*</span></label><input type="text" id="idno" placeholder="13-digit RSA ID" maxlength="13"><div class="err-msg" id="idno-err">Required</div></div>
+      <div class="field"><label>Mobile number <span class="req">*</span></label><input type="text" id="mob" placeholder="+27 81 234 5678"><div class="err-msg" id="mob-err">Required</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="field"><label>Candidate email address <span class="req">*</span></label><input type="email" id="em" placeholder="candidate@email.com"><div class="err-msg" id="em-err">Enter a valid email address</div></div>
+    <div style="height:14px"></div>
+    <div class="field"><label>Physical / residential address <span class="req">*</span></label><input type="text" id="addr" placeholder="Street, Suburb, City, Postal Code"><div class="err-msg" id="addr-err">Required</div></div>
+
+    <div class="section-label">Position details</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="field"><label>Job title <span class="req">*</span></label><input type="text" id="jt" placeholder="e.g. Customer Service Agent"><div class="err-msg" id="jt-err">Required</div></div>
+      <div class="field"><label>Campaign / Project</label><input type="text" id="campaign" placeholder="e.g. UK Telco Campaign"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Monthly salary (ZAR) <span class="req">*</span></label><input type="text" id="sal" placeholder="e.g. 8 500"><div class="err-msg" id="sal-err">Required</div></div>
+      <div class="field"><label>Start date <span class="req">*</span></label><input type="date" id="sd"><div class="err-msg" id="sd-err">Required</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>Date of offer <span class="req">*</span></label><input type="date" id="offerdate"><div class="hint">Defaults to today</div></div>
+      <div class="field">
+        <label>Reporting to <span class="req">*</span></label>
+        <select id="mgrSelect" onchange="onManagerSelect(this)">
+          <option value="">Loading managers…</option>
+        </select>
+        <div class="err-msg" id="mgrSelect-err">Please select a manager</div>
+        <div class="manager-status" id="mgrStatus"></div>
       </div>
-      <div class="lookup-hint" id="lookupHint">Enter a name or reference number and press Search</div>
-      <div class="lookup-empty" id="lookupEmpty">No matching record found.</div>
-      <div class="lookup-result" id="lookupResult"></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>Place of work <span class="req">*</span></label><input type="text" id="pow" value="Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town"><div class="err-msg" id="pow-err">Required</div></div>
+      <div class="field"><label>Annual leave (days) <span class="req">*</span></label><input type="number" id="al" value="15" min="15" max="365"><div class="hint">Minimum 15 days per BCEA</div></div>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <label>Background / criminal check <span class="req">*</span></label>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--navy);border-radius:var(--radius);cursor:pointer;font-size:13px;background:var(--offwhite)" id="bgcLabelDone">
+          <input type="radio" name="bgcheck" value="Complete" checked onchange="toggleBgc(this)" style="accent-color:var(--navy)">
+          <span>✅ Check completed</span>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;background:#fff" id="bgcLabelNA">
+          <input type="radio" name="bgcheck" value="Not Applicable" onchange="toggleBgc(this)" style="accent-color:var(--navy)">
+          <span>⚪ Not applicable</span>
+        </label>
+      </div>
+      <div class="hint">Confirm whether a background/criminal check has been completed for this candidate</div>
+    </div>
+
+    <input type="hidden" id="mgr">
+    <input type="hidden" id="mgrem">
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="sendBtn" onclick="submitForm()">Send letter of offer to candidate</button>
     </div>
   </div>
 
-  <!-- MODULES -->
-  <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
-  <div class="module-grid">
-    <a href="onboarding/" class="module-card live-card">
-      <div class="mc-icon">👤</div>
-      <div class="mc-title">Employee Onboarding</div>
-      <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
-      <div class="mc-badge badge-live">Live</div>
-    </a>
-    <a href="employees/" class="module-card live-card">
-      <div class="mc-icon">🗃️</div>
-      <div class="mc-title">Employee Records</div>
-      <div class="mc-desc">Search, track and manage all onboarding cases</div>
-      <div class="mc-badge badge-live">Live</div>
-    </a>
-    <a href="surveys/" class="module-card live-card">
-      <div class="mc-icon">✌️</div>
-      <div class="mc-title">#vibecheck</div>
-      <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
-      <div class="mc-badge badge-live">Live</div>
-    </a>
-    <a href="surveys/report.html" class="module-card live-card">
-      <div class="mc-icon">📊</div>
-      <div class="mc-title">Real Time #vibecheck Reports</div>
-      <div class="mc-desc">Live dashboard — weekly trends, scores by campaign, response feed</div>
-      <div class="mc-badge badge-live">Live</div>
-    </a>
-    <a href="reset.html" class="module-card" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
-    <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">🔍</div><div class="mc-title">Background Checks</div><div class="mc-desc">Criminal, credit, ID verification, qualifications</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">🧾</div><div class="mc-title">Tax Documentation</div><div class="mc-desc">IT77, IRP5 declarations, SARS submissions</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">📚</div><div class="mc-title">Policy Documents</div><div class="mc-desc">Handbook, absence, code of conduct issuance</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-soon">Coming soon</div></div>
-    <div class="module-card placeholder"><div class="mc-icon">🎓</div><div class="mc-title">Skills Development</div><div class="mc-desc">BBBEE, SETA records, training documentation</div><div class="mc-badge badge-soon">Coming soon</div></div>
-  </div>
-
-  <!-- MANAGERS SETTINGS -->
-  <div class="section-head"><h2>Reporting-to managers</h2><div class="section-line"></div><div class="section-tag">Manage list</div></div>
-  <div class="settings-grid">
-    <div class="settings-card">
-      <h3>Current managers</h3>
-      <p>Add or remove managers below. When done, click <strong>Save to GitHub</strong> to update the onboarding dropdown for everyone instantly.</p>
-      <div class="staff-list" id="staffList"></div>
-      <div class="add-row">
-        <input type="text" id="newName" placeholder="Full name">
-        <input type="email" id="newEmail" placeholder="email@trilogybpo.com">
-        <button class="btn-navy" onclick="addStaff()">Add</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn-full" onclick="exportJSON()" style="margin-bottom:0">⬇ Download managers.json</button>
-        <button class="btn-full primary" onclick="saveToGitHub('managers')" style="margin-bottom:0" id="saveBtn">☁ Save to GitHub</button>
-      </div>
-      <div id="saveResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
-    </div>
-    <div class="settings-card">
-      <h3>CSV import</h3>
-      <p>Download the blank template, fill it in Excel with your managers, then upload it here. Once imported click <strong>Save to GitHub</strong> on the left.</p>
-      <button class="btn-full" onclick="downloadTemplate()">⬇ Download CSV template</button>
-      <div class="divider-label">upload completed CSV</div>
-      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
-        <div class="uz-icon">📂</div>
-        <div class="uz-text" id="uzText">Click to select your completed CSV file</div>
-        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(this)">
-      </div>
-      <div class="import-result" id="importResult"></div>
-      <div id="previewWrap" style="display:none">
-        <table class="preview-table"><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody id="previewBody"></tbody></table>
-        <button class="btn-full green" onclick="applyImport()">✓ Apply — then Save to GitHub</button>
-      </div>
-      <div class="divider-label" style="margin-top:1rem">github settings</div>
-      <div style="margin-bottom:6px">
-        <label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">GitHub Personal Access Token</label>
-        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;background:var(--offwhite);color:var(--text)">
-        <div style="font-size:10px;color:var(--text3);margin-top:3px">Stored in your browser only. Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HR+Portal" target="_blank" style="color:#515151">Generate one here →</a></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- VIBECHECK DEPARTMENTS -->
-  <div class="section-head">
-    <h2>#vibecheck</h2>
-    <div class="section-line"></div>
-    <a href="surveys/" class="vibecheck-link" target="_blank">Open survey ↗</a>
-  </div>
-  <!-- VIBECHECK SEND BUTTON -->
-  <div class="settings-card" style="margin-bottom:1rem;background:var(--navy);border-color:rgba(74,253,14,.4)">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h3 style="color:#fff;font-size:15px">📲 Send this week's #vibecheck</h3>
-        <p style="color:rgba(255,255,255,.5);margin-bottom:0">Sends a WhatsApp to all employees with Contract Signed status. Every Thursday — or whenever you're ready.</p>
-      </div>
-      <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
-        <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
-      </button>
-    </div>
-    <div id="sendVibeResult" style="font-size:12px;margin-top:.75rem;min-height:16px;text-align:right;color:rgba(255,255,255,.6)"></div>
-  </div>
-
-  <div class="settings-grid">
-    <div class="settings-card">
-      <h3>Current campaigns / departments</h3>
-      <p>Add or remove campaigns below. Click <strong>Save to GitHub</strong> to update the dropdown in the #vibecheck survey instantly.</p>
-      <div class="dept-list" id="deptList"></div>
-      <div class="add-row">
-        <input type="text" id="newDept" placeholder="Campaign or department name">
-        <button class="btn-navy" onclick="addDept()">Add</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn-full" onclick="exportDeptJSON()" style="margin-bottom:0">⬇ Download departments.json</button>
-        <button class="btn-full primary" onclick="saveToGitHub('departments')" style="margin-bottom:0" id="saveDeptBtn">☁ Save to GitHub</button>
-      </div>
-      <div id="saveDeptResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
-    </div>
-    <div class="settings-card">
-      <h3>CSV import</h3>
-      <p>Download the blank template, add your campaign names, then upload. Once imported click <strong>Save to GitHub</strong> on the left.</p>
-      <button class="btn-full" onclick="downloadDeptTemplate()">⬇ Download CSV template</button>
-      <div class="divider-label">upload completed CSV</div>
-      <div class="upload-zone" onclick="document.getElementById('deptCsvFile').click()">
-        <div class="uz-icon">📂</div>
-        <div class="uz-text" id="deptUzText">Click to select your completed CSV file</div>
-        <input type="file" id="deptCsvFile" accept=".csv" style="display:none" onchange="handleDeptCSV(this)">
-      </div>
-      <div class="import-result" id="deptImportResult"></div>
-      <div id="deptPreviewWrap" style="display:none">
-        <table class="preview-table"><thead><tr><th>Campaign / Department</th></tr></thead><tbody id="deptPreviewBody"></tbody></table>
-        <button class="btn-full green" onclick="applyDeptImport()">✓ Apply — then Save to GitHub</button>
-      </div>
-      <div class="divider-label" style="margin-top:1rem">note</div>
-      <p style="font-size:11px;color:var(--text3);line-height:1.6">Uses the same GitHub token entered in the Managers section above. Make sure it's filled in before saving.</p>
-    </div>
+  <div id="successCard" class="card" style="display:none;text-align:center;padding:2.5rem 1.75rem">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:.5rem;font-family:'Montserrat',sans-serif">Offer sent successfully</div>
+    <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem" id="successMsg"></p>
+    <button class="btn btn-primary" onclick="resetForm()">+ Start another onboarding</button>
   </div>
 
 </div>
 
-<div class="footer">
-  <div class="footer-inner">
-    <img src="trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
-    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+<!-- ══════════════════════════════════════════════
+     TAB 2 — BULK CSV
+══════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-bulk">
+  <div class="card">
+    <div class="card-title">Bulk offer letters — CSV upload</div>
+    <p class="card-sub">Download the template, fill in one row per candidate, upload it here, review the list, then send all offers in one go.</p>
+
+    <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="downloadBulkTemplate()">⬇ Download CSV template</button>
+    </div>
+
+    <div class="upload-zone" id="bulkDropZone" onclick="document.getElementById('bulkCsvFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <div class="uz-icon">📂</div>
+      <div class="uz-title" id="uzTitle">Drop your CSV here or click to browse</div>
+      <div class="uz-sub">Accepted format: .csv — one candidate per row</div>
+      <input type="file" id="bulkCsvFile" accept=".csv" style="display:none" onchange="loadBulkCSV(this)">
+    </div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-header">
+        <h3>Preview — review before sending</h3>
+        <div class="preview-counts">
+          <span class="preview-count pc-valid" id="validCount">0 valid</span>
+          <span class="preview-count pc-error" id="errorCount" style="display:none">0 errors</span>
+        </div>
+      </div>
+      <div class="preview-table-wrap">
+        <table class="preview-table">
+          <thead><tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Job title</th>
+            <th>Start date</th><th>Salary</th><th>Reports to</th><th>Status</th>
+          </tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <div class="bulk-progress" id="bulkProgress">
+        <span id="bulkProgressText">Sending offers…</span>
+        <div class="bulk-bar-wrap"><div class="bulk-bar" id="bulkBar"></div></div>
+      </div>
+      <div class="btn-row" style="margin-top:1rem">
+        <button class="btn btn-primary" id="sendAllBtn" onclick="sendAllOffers()">Send all valid offers</button>
+        <button class="btn" onclick="clearBulk()">Clear</button>
+      </div>
+    </div>
   </div>
 </div>
+
+</div><!-- end shell -->
 
 <script>
-var BASE = '';
-var MANAGERS_URL = BASE + '/managers.json';
-var DEPARTMENTS_URL = BASE + '/departments.json';
+(function(){
+  var ZAPIER = 'https://hooks.zapier.com/hooks/catch/6391188/4oaqqzu/';
+  var BASE   = '';
+  var MANAGERS_URL = BASE + '/managers.json';
+  var managersData = [];
+  var bulkRows = [];
 
-/* ── EMPLOYEES ── */
-var employees = [
-  {name:'John Smith',ref:'TBP-2026-AP8XUM',role:'CEO',start:'01/07/2026',manager:'Tanya Phillips',status:'Offer Sent',stage:1},
-  {name:'Graham Smith',ref:'TBP-2026-B3LF8D',role:'Chief Bottle Washer',start:'01/06/2026',manager:'Tanya Phillips',status:'Offer Signed',stage:2}
-];
+  // ── UTILS ──
+  function gi(id){ return document.getElementById(id); }
 
-function statusClass(s){var m={'Offer Sent':'s-offer-sent','Offer Signed':'s-offer-signed','Contract Sent':'s-contract-sent','Contract Signed':'s-contract-signed','Complete':'s-complete'};return m[s]||'s-draft';}
-function initials(n){return n.split(' ').map(function(w){return w[0];}).slice(0,2).join('');}
-
-window.doLookup = function(){
-  var q=document.getElementById('lookupInput').value.trim().toLowerCase();
-  document.getElementById('lookupHint').style.display='none';
-  document.getElementById('lookupEmpty').style.display='none';
-  document.getElementById('lookupResult').style.display='none';
-  if(!q)return;
-  var found=employees.filter(function(e){return e.name.toLowerCase().includes(q)||e.ref.toLowerCase().includes(q);});
-  if(!found.length){document.getElementById('lookupEmpty').style.display='block';return;}
-  var html=found.map(function(e){
-    var steps=[0,1,2,3,4].map(function(i){return '<div class="rt-step'+(i<e.stage?' done':i===e.stage?' active':'')+'"></div>';}).join('');
-    return '<div class="result-card">'+
-      '<div class="result-avatar">'+initials(e.name)+'</div>'+
-      '<div class="result-info">'+
-        '<div class="result-name">'+e.name+'</div>'+
-        '<div class="result-role">'+e.role+'</div>'+
-        '<div class="result-meta">'+
-          '<div class="rmi"><strong>Reference</strong>'+e.ref+'</div>'+
-          '<div class="rmi"><strong>Start date</strong>'+e.start+'</div>'+
-          '<div class="rmi"><strong>Manager</strong>'+e.manager+'</div>'+
-        '</div>'+
-        '<div class="rt-label">Progress</div><div class="rt-track">'+steps+'</div>'+
-      '</div>'+
-      '<div><span class="status-pill '+statusClass(e.status)+'">'+e.status+'</span></div>'+
-      '</div>';
-  }).join('<div style="height:8px"></div>');
-  var r=document.getElementById('lookupResult'); r.innerHTML=html; r.style.display='block';
-};
-
-/* ── MANAGERS ── */
-var staffData=[];
-var importBuffer=[];
-
-function loadManagers(){
-  fetch(MANAGERS_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){staffData=d;renderStaff();})
-    .catch(function(){
-      staffData=[{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},{name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},{name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}];
-      renderStaff();
-    });
-}
-
-function renderStaff(){
-  var list=document.getElementById('staffList'); list.innerHTML='';
-  staffData.forEach(function(s,i){
-    var ini=s.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('');
-    var r=document.createElement('div'); r.className='staff-row';
-    r.innerHTML='<div class="staff-av">'+ini+'</div>'+
-      '<div style="flex:1"><div class="staff-name">'+s.name+'</div><div class="staff-email">'+s.email+'</div></div>'+
-      '<button class="staff-rm" onclick="removeStaff('+i+')" title="Remove">✕</button>';
-    list.appendChild(r);
-  });
-  document.getElementById('statManagers').textContent=staffData.length;
-}
-
-window.addStaff=function(){
-  var n=document.getElementById('newName').value.trim(), e=document.getElementById('newEmail').value.trim();
-  if(!n||!e){alert('Please enter both a name and email address.');return;}
-  staffData.push({name:n,email:e});
-  document.getElementById('newName').value=''; document.getElementById('newEmail').value='';
-  renderStaff();
-};
-window.removeStaff=function(i){staffData.splice(i,1);renderStaff();};
-window.exportJSON=function(){
-  var json=JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2);
-  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='managers.json'; a.click();
-};
-window.downloadTemplate=function(){
-  var csv='name,email\nTanya Phillips,tanyap@trilogybpo.com\nRudi Jacobs,rudij@trilogybpo.com\n';
-  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='managers_template.csv'; a.click();
-};
-window.handleCSV=function(input){
-  var file=input.files[0]; if(!file)return;
-  document.getElementById('uzText').textContent='📄 '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(Boolean);
-    importBuffer=[];
-    lines.forEach(function(line,i){
-      if(i===0&&line.toLowerCase().includes('name'))return;
-      var parts=line.split(',');
-      var n=(parts[0]||'').replace(/"/g,'').trim(), em=(parts[1]||'').replace(/"/g,'').trim();
-      if(n&&em) importBuffer.push({name:n,email:em});
-    });
-    if(!importBuffer.length){document.getElementById('importResult').textContent='No valid rows found.';document.getElementById('previewWrap').style.display='none';return;}
-    document.getElementById('importResult').textContent=importBuffer.length+' manager(s) found — preview below:';
-    var tbody=document.getElementById('previewBody'); tbody.innerHTML='';
-    importBuffer.forEach(function(m){var tr=document.createElement('tr');tr.innerHTML='<td>'+m.name+'</td><td>'+m.email+'</td>';tbody.appendChild(tr);});
-    document.getElementById('previewWrap').style.display='block';
+  window.toggleBgc = function(el){
+    gi('bgcLabelDone').style.borderColor = 'var(--border)';
+    gi('bgcLabelNA').style.borderColor = 'var(--border)';
+    gi('bgcLabelDone').style.background = '#fff';
+    gi('bgcLabelNA').style.background = '#fff';
+    if(el.value === 'Complete'){ gi('bgcLabelDone').style.borderColor = 'var(--navy)'; gi('bgcLabelDone').style.background = 'var(--offwhite)'; }
+    else { gi('bgcLabelNA').style.borderColor = 'var(--navy)'; gi('bgcLabelNA').style.background = 'var(--offwhite)'; }
   };
-  reader.readAsText(file);
-};
-window.applyImport=function(){
-  staffData=importBuffer.slice(); importBuffer=[];
-  renderStaff();
-  document.getElementById('importResult').textContent='✓ '+staffData.length+' managers imported. Click Save to GitHub to publish.';
-  document.getElementById('previewWrap').style.display='none';
-  document.getElementById('uzText').textContent='Click to select your completed CSV file';
-  document.getElementById('csvFile').value='';
-};
+  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
+  function fixIdNumber(val){
+    if(!val) return '';
+    val = val.toString().trim();
+    if(val.toUpperCase().indexOf('E+') > -1){
+      try { return parseInt(parseFloat(val)).toString(); } catch(e){ return val; }
+    }
+    return val;
+  }
+  function fmtDate(v){ if(!v)return''; var p=v.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function buildToken(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
 
-/* ── DEPARTMENTS ── */
-var deptData=[];
-var deptImportBuffer=[];
+  function buildRef(){
+    var t=buildToken();
+    return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6).toUpperCase()};
+  }
 
-function loadDepartments(){
-  fetch(DEPARTMENTS_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){deptData=d;renderDepts();})
-    .catch(function(){deptData=[{name:'NADClinic'}];renderDepts();});
-}
+  var SITE_URL = 'https://hr.trilogybpo.com';
 
-function renderDepts(){
-  var list=document.getElementById('deptList'); list.innerHTML='';
-  deptData.forEach(function(d,i){
-    var r=document.createElement('div'); r.className='dept-row';
-    r.innerHTML='<div class="dept-icon">🏷</div>'+
-      '<div class="dept-name">'+d.name+'</div>'+
-      '<button class="dept-rm" onclick="removeDept('+i+')" title="Remove">✕</button>';
-    list.appendChild(r);
-  });
-}
+  function buildSigningUrl(d, token, ref){
+    return SITE_URL+'/onboarding/offer.html?'+[
+      'token='+encodeURIComponent(token),
+      'ref='+encodeURIComponent(ref),
+      'fn='+encodeURIComponent(d.fn),
+      'ln='+encodeURIComponent(d.ln),
+      'id='+encodeURIComponent(d.idno),
+      'mob='+encodeURIComponent(d.mob),
+      'em='+encodeURIComponent(d.em),
+      'addr='+encodeURIComponent(d.addr),
+      'jt='+encodeURIComponent(d.jt),
+      'sal='+encodeURIComponent(d.sal),
+      'sd='+encodeURIComponent(d.sd),
+      'od='+encodeURIComponent(d.od),
+      'mgr='+encodeURIComponent(d.mgr),
+      'mgrem='+encodeURIComponent(d.mgrem),
+      'pow='+encodeURIComponent(d.pow||'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town'),
+      'al='+encodeURIComponent(d.al||'15')
+    ].join('&');
+  }
 
-window.addDept=function(){
-  var n=document.getElementById('newDept').value.trim();
-  if(!n){alert('Please enter a campaign or department name.');return;}
-  deptData.push({name:n});
-  document.getElementById('newDept').value='';
-  renderDepts();
-};
-window.removeDept=function(i){deptData.splice(i,1);renderDepts();};
-window.exportDeptJSON=function(){
-  var json=JSON.stringify(deptData,null,2);
-  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='departments.json'; a.click();
-};
-window.downloadDeptTemplate=function(){
-  var csv='department\nNADClinic\n';
-  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='departments_template.csv'; a.click();
-};
-window.handleDeptCSV=function(input){
-  var file=input.files[0]; if(!file)return;
-  document.getElementById('deptUzText').textContent='📄 '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(Boolean);
-    deptImportBuffer=[];
-    lines.forEach(function(line,i){
-      if(i===0&&line.toLowerCase().includes('department'))return;
-      var n=line.replace(/"/g,'').trim();
-      if(n) deptImportBuffer.push({name:n});
+  function postToZapier(payload, cb){
+    var body=Object.keys(payload).map(function(k){
+      return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);
+    }).join('&');
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',ZAPIER,true);
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.onreadystatechange=function(){ if(xhr.readyState===4) cb(); };
+    xhr.onerror=function(){ cb(); };
+    xhr.send(body);
+  }
+
+  // ── TABS ──
+  window.switchTab=function(tab){
+    document.querySelectorAll('.tab').forEach(function(t,i){
+      t.classList.toggle('active', (tab==='single'&&i===0)||(tab==='bulk'&&i===1));
     });
-    if(!deptImportBuffer.length){document.getElementById('deptImportResult').textContent='No valid rows found.';document.getElementById('deptPreviewWrap').style.display='none';return;}
-    document.getElementById('deptImportResult').textContent=deptImportBuffer.length+' campaign(s) found — preview below:';
-    var tbody=document.getElementById('deptPreviewBody'); tbody.innerHTML='';
-    deptImportBuffer.forEach(function(d){var tr=document.createElement('tr');tr.innerHTML='<td>'+d.name+'</td>';tbody.appendChild(tr);});
-    document.getElementById('deptPreviewWrap').style.display='block';
+    gi('panel-single').classList.toggle('active', tab==='single');
+    gi('panel-bulk').classList.toggle('active', tab==='bulk');
   };
-  reader.readAsText(file);
-};
-window.applyDeptImport=function(){
-  deptData=deptImportBuffer.slice(); deptImportBuffer=[];
-  renderDepts();
-  document.getElementById('deptImportResult').textContent='✓ '+deptData.length+' campaigns imported. Click Save to GitHub to publish.';
-  document.getElementById('deptPreviewWrap').style.display='none';
-  document.getElementById('deptUzText').textContent='Click to select your completed CSV file';
-  document.getElementById('deptCsvFile').value='';
-};
 
-/* ── SHARED GITHUB SAVE ── */
-window.saveToGitHub=function(type){
-  var token=document.getElementById('ghToken').value.trim();
-  if(!token){alert('Please enter your GitHub Personal Access Token.\n\nClick the "Generate one here" link in the Managers section.');return;}
+  // ── MANAGERS ──
+  function loadManagers(){
+    fetch(MANAGERS_URL+'?v='+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        managersData=data;
+        populateManagerSelect(data);
+        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">✓ '+data.length+' managers loaded</span>';
+      })
+      .catch(function(){
+        managersData=[
+          {name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},
+          {name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},
+          {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}
+        ];
+        populateManagerSelect(managersData);
+        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">Using cached list</span>';
+      });
+  }
 
-  var isManagers=(type==='managers');
-  var filename=isManagers?'managers.json':'departments.json';
-  var payload=isManagers
-    ? JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2)
-    : JSON.stringify(deptData,null,2);
-  var encoded=btoa(unescape(encodeURIComponent(payload)));
-  var btn=document.getElementById(isManagers?'saveBtn':'saveDeptBtn');
-  var res=document.getElementById(isManagers?'saveResult':'saveDeptResult');
-  btn.textContent='Saving…'; btn.disabled=true; res.textContent='';
-
-  fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
-    headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    return fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
-      method:'PUT',
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'Update '+filename+' via HR Portal',content:encoded,sha:data.sha})
+  function populateManagerSelect(data){
+    var sel=gi('mgrSelect');
+    sel.innerHTML='<option value="">Select reporting-to manager…</option>';
+    data.forEach(function(m){
+      var opt=document.createElement('option');
+      opt.value=m.email; opt.setAttribute('data-name',m.name); opt.textContent=m.name;
+      sel.appendChild(opt);
     });
-  })
-  .then(function(r){
-    if(r.ok){
-      res.innerHTML='<span style="color:var(--green-dark)">✓ Saved to GitHub. Will update within 60 seconds.</span>';
-    } else {return r.json().then(function(e){throw new Error(e.message);});}
-    btn.textContent=isManagers?'☁ Save to GitHub':'☁ Save to GitHub'; btn.disabled=false;
-  })
-  .catch(function(err){
-    res.innerHTML='<span style="color:var(--red)">✗ '+err.message+'</span>';
-    btn.textContent='☁ Save to GitHub'; btn.disabled=false;
-  });
-};
+  }
 
-/* ── STATS ── */
-var STATS_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e54b6a40ef5d4efab809ff93acf7def5/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=l87x_OZui4-AsVm1pkgO46gFtZ1NuwUwPydtn58ioWY';
-function loadStats(){
-  fetch(STATS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'get_stats'})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      console.log('Stats raw response:', JSON.stringify(d));
-      var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
-      console.log('Stats parsed data:', JSON.stringify(data));
-      document.getElementById('statActive').textContent=typeof data.active!=='undefined'?data.active:0;
-      document.getElementById('statTotal').textContent=typeof data.total!=='undefined'?data.total:0;
-      document.getElementById('statOfferSent').textContent=typeof data.offer_sent!=='undefined'?data.offer_sent:0;
-      document.getElementById('statOfferSigned').textContent=typeof data.offer_signed!=='undefined'?data.offer_signed:0;
-      document.getElementById('statContractSent').textContent=typeof data.contract_sent!=='undefined'?data.contract_sent:0;
-      document.getElementById('statContractSigned').textContent=typeof data.contract_signed!=='undefined'?data.contract_signed:0;
-    })
-    .catch(function(){
-      document.getElementById('statActive').textContent='0';
-      document.getElementById('statTotal').textContent='0';
-      document.getElementById('statOfferSent').textContent='0';
-      document.getElementById('statOfferSigned').textContent='0';
-      document.getElementById('statContractSent').textContent='0';
-      document.getElementById('statContractSigned').textContent='0';
+  window.onManagerSelect=function(sel){
+    var opt=sel.options[sel.selectedIndex];
+    gi('mgr').value=opt.getAttribute('data-name')||'';
+    gi('mgrem').value=opt.value||'';
+    var st=gi('mgrStatus');
+    st.innerHTML=opt.value?'<span style="color:var(--green-dark)">✓ '+opt.value+'</span>':'';
+    sel.classList.remove('err');
+    var e=gi('mgrSelect-err'); if(e) e.classList.remove('show');
+  };
+
+  // ── SINGLE OFFER ──
+  gi('offerdate').value=new Date().toISOString().slice(0,10);
+
+  function validate(){
+    var ok=true;
+    ['fn','ln','idno','mob','em','addr','jt','sal','sd','offerdate'].forEach(function(id){
+      var el=gi(id), val=el.value.trim(), fail=!val;
+      if(id==='em'&&val&&!isEmail(val)) fail=true;
+      el.classList.toggle('err',fail);
+      var e=gi(id+'-err'); if(e) e.classList.toggle('show',fail);
+      if(fail) ok=false;
     });
-}
+    return ok;
+  }
 
+  window.submitForm=function(){
+    gi('globalErr').classList.remove('show');
+    if(!validate()){gi('globalErr').classList.add('show');return;}
+    var mgrSel=gi('mgrSelect');
+    if(!mgrSel.value){
+      mgrSel.classList.add('err');
+      gi('mgrSelect-err').classList.add('show');
+      gi('globalErr').classList.add('show');
+      return;
+    }
+    var d={
+      fn:gi('fn').value.trim(), ln:gi('ln').value.trim(),
+      idno:gi('idno').value.trim(), mob:gi('mob').value.trim(),
+      em:gi('em').value.trim(), addr:gi('addr').value.trim(),
+      jt:gi('jt').value.trim(), campaign:gi('campaign').value.trim(), sal:gi('sal').value.trim(),
+      sd:fmtDate(gi('sd').value), od:fmtDate(gi('offerdate').value),
+      mgr:gi('mgr').value.trim(), mgrem:gi('mgrem').value.trim(),
+      pow:gi('pow').value.trim(), al:gi('al').value.trim(),
+      bgcheck:(document.querySelector('input[name="bgcheck"]:checked')||{}).value||'Complete'
+    };
+    var tr=buildRef();
+    var sigUrl=buildSigningUrl(d,tr.token,tr.ref);
+    var payload={
+      action:'send_offer', ref:tr.ref,
+      candidate_first:d.fn, candidate_last:d.ln,
+      candidate_email:d.em, candidate_id:d.idno,
+      candidate_mobile:d.mob, candidate_address:d.addr,
+      job_title:d.jt, campaign:d.campaign, salary:d.sal,
+      start_date:d.sd, offer_date:d.od,
+      reports_to:d.mgr, reports_to_email:d.mgrem,
+      place_of_work:d.pow, annual_leave:d.al,
+      background_check:d.bgcheck,
+      signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
+    };
+    gi('sendBtn').disabled=true;
+    gi('sendBtn').textContent='Reviewing…';
+    // Show verification checklist first
+    showVerifyModal(d, tr, sigUrl, payload);
+  };
 
-/* ── SEND VIBECHECK ── */
-var VIBECHECK_TRIGGER_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/417488f694614043990624dcb3b111d5/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iM6fMXsu4X9BiK8bFba9pDYQhxsdWw34KHzH9x0QSqQ';
+  function showVerifyModal(d, tr, sigUrl, payload){
+    var modal = gi('verifyModal');
+    var rows = [
+      ['Reference', tr.ref],
+      ['First name', cap(d.fn)],
+      ['Last name', cap(d.ln)],
+      ['ID number', d.idno],
+      ['Mobile', d.mob],
+      ['Email', d.em],
+      ['Address', d.addr],
+      ['Job title', d.jt],
+      ['Salary', 'R '+d.sal],
+      ['Start date', d.sd],
+      ['Offer date', d.od],
+      ['Place of work', d.pow],
+      ['Annual leave', d.al+' days'],
+      ['Background check', d.bgcheck],
+      ['Reports to', d.mgr]
+    ];
+    gi('verifyTable').innerHTML = rows.map(function(r){
+      return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
+    }).join('');
+    modal.style.display = 'flex';
+    gi('verifyConfirmBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').textContent='Sending…';
+      postToZapier(payload, function(){
+        gi('formCard').style.display='none';
+        gi('successCard').style.display='block';
+        gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
+        gi('sendBtn').disabled=false;
+        gi('sendBtn').textContent='Send letter of offer to candidate';
+      });
+    };
+    gi('verifyCancelBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').disabled=false;
+      gi('sendBtn').textContent='Send letter of offer to candidate';
+    };
+  }
 
-window.sendVibecheck = function(){
-  var btn = document.getElementById('sendVibeBtn');
-  var lbl = document.getElementById('sendVibeBtnLabel');
-  var res = document.getElementById('sendVibeResult');
-  if(!confirm('Send this week\'s #vibecheck WhatsApp to all active employees now?')) return;
-  btn.disabled = true;
-  lbl.textContent = 'Sending…';
-  res.textContent = '';
-  fetch(VIBECHECK_TRIGGER_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({triggered_by: 'hr_portal', triggered_at: new Date().toISOString()})
-  })
-  .then(function(r){
-    if(r.ok || r.status === 202){
-      lbl.textContent = '✌️ Send #vibecheck now';
-      res.innerHTML = '<span style="color:var(--green)">✓ #vibecheck sent! Employees will receive their WhatsApp shortly.</span>';
-    } else { throw new Error('Status '+r.status); }
-    btn.disabled = false;
-  })
-  .catch(function(err){
-    lbl.textContent = '✌️ Send #vibecheck now';
-    res.innerHTML = '<span style="color:var(--red)">✗ Something went wrong — '+err.message+'</span>';
-    btn.disabled = false;
-  });
-};
+  window.resetForm=function(){
+    ['fn','ln','idno','mob','em','addr','jt','campaign','sal','sd','mgr','mgrem'].forEach(function(id){
+      var el=gi(id); if(el){el.value='';el.classList.remove('err');}
+      var e=gi(id+'-err'); if(e) e.classList.remove('show');
+    });
+    gi('offerdate').value=new Date().toISOString().slice(0,10);
+    gi('mgrSelect').selectedIndex=0; gi('mgrSelect').classList.remove('err');
+    gi('mgrStatus').innerHTML=''; gi('globalErr').classList.remove('show');
+    gi('sendBtn').disabled=false; gi('sendBtn').textContent='Send letter of offer to candidate';
+    gi('formCard').style.display='block'; gi('successCard').style.display='none';
+  };
 
-loadStats();
-loadManagers();
-loadDepartments();
+  // ── SINGLE CSV TEMPLATE ──
+  window.downloadSingleTemplate=function(){
+    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
+      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+new Date().toISOString().slice(0,10)+',Tanya Phillips,tanyap@trilogybpo.com\n';
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_single.csv'; a.click();
+  };
+
+  window.loadSingleCSV=function(input){
+    var file=input.files[0]; if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var lines=e.target.result.split('\n').filter(Boolean);
+      if(lines.length<2){alert('No data found in file.');return;}
+      var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s/g,'_');});
+      var vals=parseCSVLine(lines[1]);
+      function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
+      gi('fn').value=get('first_name');
+      gi('ln').value=get('last_name');
+      gi('idno').value=fixIdNumber(get('id_number'));
+      gi('mob').value=get('mobile');
+      gi('em').value=get('email');
+      gi('addr').value=get('address');
+      gi('jt').value=get('job_title');
+      gi('campaign').value=get('campaign')||'';
+      gi('sal').value=get('salary');
+      gi('sd').value=get('start_date');
+      gi('offerdate').value=get('offer_date')||new Date().toISOString().slice(0,10);
+      // Match manager by name or email
+      var mgrName=get('reports_to_name'), mgrEmail=get('reports_to_email');
+      var sel=gi('mgrSelect');
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===mgrEmail||sel.options[i].getAttribute('data-name')===mgrName){
+          sel.selectedIndex=i; onManagerSelect(sel); break;
+        }
+      }
+    };
+    reader.readAsText(file);
+    input.value='';
+  };
+
+  // ── BULK CSV ──
+  window.downloadBulkTemplate=function(){
+    var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
+    var today=new Date().toISOString().slice(0,10);
+    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
+      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
+      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
+  };
+
+  function parseCSVLine(line){
+    var result=[],cur='',inQ=false;
+    for(var i=0;i<line.length;i++){
+      var c=line[i];
+      if(c==='"'){inQ=!inQ;}
+      else if(c===','&&!inQ){result.push(cur);cur='';}
+      else{cur+=c;}
+    }
+    result.push(cur);
+    return result;
+  }
+
+  function parseCSV(text){
+    var lines=text.split('\n').filter(Boolean);
+    if(lines.length<2)return[];
+    var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
+    var rows=[];
+    for(var i=1;i<lines.length;i++){
+      var vals=parseCSVLine(lines[i]);
+      if(vals.every(function(v){return!v.trim();}))continue;
+      var row={};
+      headers.forEach(function(h,j){row[h]=(vals[j]||'').replace(/"/g,'').trim();});
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function validateBulkRow(row){
+    var errors=[];
+    if(!row.first_name) errors.push('first name');
+    if(!row.last_name) errors.push('last name');
+    if(!row.email||!isEmail(row.email)) errors.push('valid email');
+    if(!row.job_title) errors.push('job title');
+    if(!row.start_date) errors.push('start date');
+    if(!row.reports_to_email) errors.push('reports to email');
+    return errors;
+  }
+
+  window.loadBulkCSV=function(input){
+    var file=input.files[0]; if(!file)return;
+    gi('uzTitle').textContent='📄 '+file.name;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var rows=parseCSV(e.target.result);
+      if(!rows.length){alert('No data rows found.');return;}
+      bulkRows=rows.map(function(r,i){
+        var errors=validateBulkRow(r);
+        return {index:i+1, data:r, errors:errors, status:errors.length?'error':'valid'};
+      });
+      renderPreview();
+    };
+    reader.readAsText(file);
+    input.value='';
+  };
+
+  window.dragOver=function(e){e.preventDefault();gi('bulkDropZone').classList.add('dragover');};
+  window.dragLeave=function(){gi('bulkDropZone').classList.remove('dragover');};
+  window.dropFile=function(e){
+    e.preventDefault();gi('bulkDropZone').classList.remove('dragover');
+    var file=e.dataTransfer.files[0];
+    if(file&&file.name.endsWith('.csv')){
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        gi('uzTitle').textContent='📄 '+file.name;
+        var rows=parseCSV(ev.target.result);
+        bulkRows=rows.map(function(r,i){
+          var errors=validateBulkRow(r);
+          return {index:i+1,data:r,errors:errors,status:errors.length?'error':'valid'};
+        });
+        renderPreview();
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  function renderPreview(){
+    var valid=bulkRows.filter(function(r){return r.status==='valid'||r.status==='sent';}).length;
+    var errors=bulkRows.filter(function(r){return r.status==='error';}).length;
+    gi('validCount').textContent=valid+' valid';
+    gi('errorCount').textContent=errors+' error'+(errors===1?'':'s');
+    gi('errorCount').style.display=errors?'':'none';
+
+    var tbody=gi('previewBody'); tbody.innerHTML='';
+    bulkRows.forEach(function(row){
+      var tr=document.createElement('tr');
+      if(row.status==='error') tr.className='row-error';
+      var statusHtml='<span class="row-status '+(row.status==='sent'?'rs-sent':row.status==='sending'?'rs-sending':row.status==='error'?'rs-error':'rs-valid')+'">'+(row.status==='sent'?'✓ Sent':row.status==='sending'?'Sending…':row.status==='error'?'⚠ '+row.errors.join(', '):'Ready')+'</span>';
+      var d=row.data;
+      tr.innerHTML=
+        '<td>'+row.index+'</td>'+
+        '<td class="td-name">'+(d.first_name||'')+' '+(d.last_name||'')+'</td>'+
+        '<td>'+(d.email||'')+'</td>'+
+        '<td>'+(d.job_title||'')+'</td>'+
+        '<td>'+(d.start_date||'')+'</td>'+
+        '<td>'+(d.salary?'R '+d.salary:'')+'</td>'+
+        '<td>'+(d.reports_to_name||d.reports_to_email||'')+'</td>'+
+        '<td>'+statusHtml+'</td>';
+      tbody.appendChild(tr);
+    });
+    gi('previewWrap').style.display='block';
+    gi('sendAllBtn').disabled=valid===0;
+  }
+
+  window.sendAllOffers=function(){
+    var validRows=bulkRows.filter(function(r){return r.status==='valid';});
+    if(!validRows.length)return;
+    gi('sendAllBtn').disabled=true;
+    gi('bulkProgress').style.display='block';
+    var sent=0, total=validRows.length;
+
+    function sendNext(i){
+      if(i>=validRows.length){
+        gi('bulkProgressText').textContent='✓ All '+total+' offers sent successfully!';
+        gi('bulkBar').style.width='100%';
+        return;
+      }
+      var row=validRows[i];
+      row.status='sending';
+      renderPreview();
+      var d=row.data;
+      var sd=d.start_date, od=d.offer_date||new Date().toISOString().slice(0,10);
+      // Format dates
+      function fmt(v){if(!v)return'';if(v.includes('/'))return v;var p=v.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v;}
+      var fmtSd=fmt(sd), fmtOd=fmt(od);
+      var tr=buildRef();
+      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:d.salary||'',sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email};
+      var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
+      var payload={
+        action:'send_offer', ref:tr.ref,
+        candidate_first:d.first_name, candidate_last:d.last_name,
+        candidate_email:d.email, candidate_id:d.id_number||'',
+        candidate_mobile:d.mobile||'', candidate_address:d.address||'',
+        job_title:d.job_title, campaign:d.campaign||'', salary:d.salary||'',
+        start_date:fmtSd, offer_date:fmtOd,
+        reports_to:d.reports_to_name||'', reports_to_email:d.reports_to_email,
+        signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
+      };
+      postToZapier(payload, function(){
+        row.status='sent'; sent++;
+        var pct=Math.round((sent/total)*100);
+        gi('bulkBar').style.width=pct+'%';
+        gi('bulkProgressText').textContent='Sending… '+sent+' of '+total;
+        renderPreview();
+        setTimeout(function(){sendNext(i+1);},600);
+      });
+    }
+    sendNext(0);
+  };
+
+  window.clearBulk=function(){
+    bulkRows=[];
+    gi('previewWrap').style.display='none';
+    gi('bulkProgress').style.display='none';
+    gi('uzTitle').textContent='Drop your CSV here or click to browse';
+    gi('sendAllBtn').disabled=false;
+  };
+
+  loadManagers();
+})();
 </script>
+<!-- VERIFICATION MODAL -->
+<div id="verifyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:.25rem">✅ Verify offer details</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem">Please review all details carefully before sending. Once sent, the candidate will receive the offer immediately.</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden" id="verifyTable"></table>
+    <div style="display:flex;gap:10px;margin-top:1.5rem">
+      <button id="verifyCancelBtn" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:var(--text);font-family:'Montserrat',sans-serif">✏️ Go back & edit</button>
+      <button id="verifyConfirmBtn" style="flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif">✅ Confirm & send offer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
