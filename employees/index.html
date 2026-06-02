@@ -7,51 +7,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#1e1e1e;--navy2:#2a2a2a;
-  --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
-  --offwhite:#F7F6F2;
-  --border:#e2e1dd;--border2:#c8c7c3;
-  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
-  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
-  --radius:8px;--radius-lg:12px;--radius-xl:16px;
-  --red:#c0392b;--orange:#e67e22;--blue:#2980b9;
-}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--blue:#2980b9}
 html{scroll-behavior:smooth}
 body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-
-/* NAV */
 .nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
 .nav-logo{height:28px}
 .nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
 .nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
 .nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
 .nav-back:hover{color:var(--green)}
-
-/* HERO */
 .hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
 .hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
 .hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
 .hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
 .hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
 .hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
-
-/* SHELL */
-.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start}
+.hero-stats{display:flex;gap:2.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.hstat{border-left:2px solid var(--green);padding-left:1rem}
+.hstat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.hstat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 440px;gap:1.5rem;align-items:start}
 .shell-left{min-width:0}
-@media(max-width:900px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
-
-/* TOOLBAR */
+@media(max-width:980px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
 .search-wrap{flex:1;min-width:200px;position:relative}
 .search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
-.search-wrap input:focus{outline:none;border-color:var(--navy);background:#fff}
+.search-wrap input:focus{outline:none;border-color:var(--navy)}
 .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
 .filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
-.filter-sel:focus{outline:none;border-color:var(--navy)}
 .count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
-
-/* TABLE */
 .tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
@@ -63,20 +47,14 @@ tr.selected td{background:#edffd6}
 .emp-name{font-weight:700;color:var(--text)}
 .emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
 .status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
-.s-contract-signed{background:#d4edda;color:#155724}
+.s-tobe{background:#fff3cd;color:#856404}
+.s-onboarded{background:#d1ecf1;color:#0c5460}
 .s-active{background:var(--green-light);color:var(--green-dark)}
-.s-bg-pending{background:#fff3cd;color:#856404}
-.s-bg-passed{background:#d4edda;color:#155724}
-.s-bg-failed{background:#fdf0ef;color:var(--red)}
+.s-exited{background:#f0f0f0;color:#888}
 .emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
-
-/* LOADING / EMPTY */
 .loading-row td{text-align:center;padding:3rem;color:var(--text3)}
 .spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
 @keyframes spin{to{transform:rotate(360deg)}}
-.no-results{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
-
-/* DETAIL PANEL */
 .detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
 .detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
 .detail-empty-icon{font-size:40px;margin-bottom:.75rem}
@@ -85,75 +63,47 @@ tr.selected td{background:#edffd6}
 .panel-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
 .panel-ref{font-size:11px;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif}
 .panel-body{padding:1.25rem;max-height:calc(100vh - 160px);overflow-y:auto}
-
-/* TABS */
-.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
-.tab-btn{padding:8px 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem;flex-wrap:wrap}
+.tab-btn{padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tab-btn.active{color:var(--navy);border-bottom-color:var(--navy)}
 .tab-content{display:none}
 .tab-content.active{display:block}
-
-/* FIELDS */
 .field-group{margin-bottom:1rem}
 .field-group label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
 .field-val{font-size:13px;color:var(--text);background:var(--offwhite);border-radius:var(--radius);padding:8px 10px;border:1px solid var(--border)}
 .field-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
-.field-input:focus{outline:none;border-color:var(--navy);background:#fff}
+.field-input:focus{outline:none;border-color:var(--navy)}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .save-field-btn{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border:none;border-radius:var(--radius);background:var(--navy);color:#fff;cursor:pointer;margin-top:6px}
-.save-field-btn:hover{background:#2a2a2a}
 .save-result{font-size:11px;color:var(--green-dark);margin-top:4px;min-height:14px}
-
-/* BG CHECK */
-.bg-status-card{border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem;border:1px solid}
-.bg-none{background:#f7f6f2;border-color:var(--border)}
-.bg-pending{background:#fff3cd;border-color:#ffc107}
-.bg-passed{background:#d4edda;border-color:#28a745}
-.bg-failed{background:#fdf0ef;border-color:var(--red)}
-.bg-status-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;margin-bottom:4px}
-.bg-check-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
-.bg-check-row:last-child{border-bottom:none}
-.bg-check-name{color:var(--text2)}
-.bg-check-result{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-.res-confirmed{background:#d4edda;color:#155724}
-.res-clear{background:#d4edda;color:#155724}
-.res-failed{background:#fdf0ef;color:var(--red)}
-.res-pending{background:#fff3cd;color:#856404}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none}
 .btn-primary{background:var(--navy);color:#fff}
-.btn-primary:hover{background:#2a2a2a}
 .btn-green{background:var(--green);color:#111}
-.btn-green:hover{background:#5fff1a}
 .btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
-.btn-outline:hover{background:var(--offwhite)}
 .btn-danger{background:var(--red);color:#fff}
-.btn-danger:hover{background:#a93226}
-.btn-sm{padding:7px 12px;font-size:11px}
-.btn-block{width:100%;justify-content:center;margin-bottom:8px}
-
-/* UPLOAD ZONE */
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--offwhite)}
-.upload-zone:hover{border-color:var(--navy);background:#e2e1dd}
-.upload-zone input{display:none}
-
-/* MODAL */
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:.25rem}
-.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem;line-height:1.6}
-.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
-
-/* STAGE TRACKER */
-.stage-track{display:flex;margin-bottom:1.25rem;gap:4px}
+.btn-block{width:100%;margin-bottom:8px}
+.missing-card{background:#fff8e1;border:1px solid #ffc107;border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem}
+.missing-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;color:#856404;margin-bottom:.5rem}
+.missing-list{font-size:12px;color:#856404;line-height:1.8}
+.leave-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.leave-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
+.leave-type{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.leave-balance{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;color:var(--navy);line-height:1}
+.leave-unit{font-size:11px;color:var(--text3);margin-top:2px}
+.leave-detail{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.disc-clear{background:#d4edda;border:1px solid #28a745;border-radius:var(--radius-lg);padding:1rem;text-align:center;color:#155724;font-weight:600;font-size:13px;margin-bottom:1rem}
+.stage-track{display:flex;margin-bottom:.5rem;gap:4px}
 .stage-dot{flex:1;height:6px;border-radius:3px;background:var(--border)}
 .stage-dot.done{background:var(--navy)}
 .stage-dot.active{background:var(--green)}
-.stage-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em;margin-bottom:1rem}
-
-/* FOOTER */
+.stage-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;margin-bottom:1.25rem}
+.placeholder-btn{opacity:.6}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;margin-bottom:.25rem}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
 .footer-logo{height:18px}
@@ -175,57 +125,38 @@ tr.selected td{background:#edffd6}
   <div class="hero-inner">
     <div class="hero-label">Trilogy BPO</div>
     <div class="hero-title">Employee Records</div>
-    <div class="hero-sub">Search, manage and progress employee onboarding. Employees are defined as anyone who has signed a contract.</div>
+    <div class="hero-sub">Search, onboard and manage employees. An employee is anyone who has signed a contract.</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="statToBe">—</div><div class="hstat-label">To be onboarded</div></div>
+      <div class="hstat"><div class="hstat-num" id="statOnboarded">—</div><div class="hstat-label">Onboarded</div></div>
+      <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active</div></div>
+    </div>
   </div>
 </div>
 
 <div class="shell">
-
-  <!-- LEFT: TABLE -->
   <div class="shell-left">
     <div class="toolbar">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Search by name, ID, reference or job title…" oninput="filterTable()">
       </div>
-      <select class="filter-sel" id="statusFilter" onchange="filterTable()">
-        <option value="">All statuses</option>
-        <option value="Contract Signed">Contract Signed</option>
-        <option value="Active">Active</option>
-        <option value="Resigned">Resigned</option>
-        <option value="Dismissed">Dismissed</option>
-      </select>
-      <select class="filter-sel" id="bgFilter" onchange="filterTable()">
-        <option value="">All checks</option>
-        <option value="none">No check yet</option>
-        <option value="pending">Check pending</option>
-        <option value="passed">Check passed</option>
-        <option value="failed">Check failed</option>
+      <select class="filter-sel" id="onboardFilter" onchange="filterTable()">
+        <option value="">All employees</option>
+        <option value="tobe">To be onboarded</option>
+        <option value="onboarded">Onboarded</option>
+        <option value="active">Active</option>
       </select>
       <span class="count-badge" id="countBadge">Loading…</span>
     </div>
-
     <div class="tbl-wrap">
       <table id="empTable">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Employee</th>
-            <th>Job title</th>
-            <th>Start date</th>
-            <th>Status</th>
-            <th>Background check</th>
-          </tr>
-        </thead>
-        <tbody id="empBody">
-          <tr class="loading-row"><td colspan="6"><div class="spinner"></div>Loading employees…</td></tr>
-        </tbody>
+        <thead><tr><th></th><th>Employee</th><th>Job title</th><th>Start date</th><th>Onboarding</th></tr></thead>
+        <tbody id="empBody"><tr class="loading-row"><td colspan="5"><div class="spinner"></div>Loading employees…</td></tr></tbody>
       </table>
     </div>
-    <div class="no-results" id="noResults" style="display:none">No employees match your search.</div>
   </div>
 
-  <!-- RIGHT: DETAIL PANEL -->
   <div class="detail-panel" id="detailPanel">
     <div class="detail-empty" id="detailEmpty">
       <div class="detail-empty-icon">👤</div>
@@ -235,34 +166,29 @@ tr.selected td{background:#edffd6}
     <div id="detailContent" style="display:none">
       <div class="panel-header">
         <div class="panel-avatar" id="panelAvatar">—</div>
-        <div>
-          <div class="panel-name" id="panelName">—</div>
-          <div class="panel-ref" id="panelRef">—</div>
-        </div>
+        <div><div class="panel-name" id="panelName">—</div><div class="panel-ref" id="panelRef">—</div></div>
       </div>
       <div class="panel-body">
+        <div class="stage-labels"><span>Contract</span><span>Onboarded</span><span>Active</span></div>
+        <div class="stage-track"><div class="stage-dot" id="st1"></div><div class="stage-dot" id="st2"></div><div class="stage-dot" id="st3"></div></div>
 
-        <!-- STAGE TRACKER -->
-        <div class="stage-labels">
-          <span>Offer</span><span>Contract</span><span>Background</span><span>Banking</span><span>Active</span>
-        </div>
-        <div class="stage-track">
-          <div class="stage-dot" id="st1"></div>
-          <div class="stage-dot" id="st2"></div>
-          <div class="stage-dot" id="st3"></div>
-          <div class="stage-dot" id="st4"></div>
-          <div class="stage-dot" id="st5"></div>
-        </div>
-
-        <!-- TABS -->
         <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('details',this)">Details</button>
-          <button class="tab-btn" onclick="switchTab('background',this)">Background check</button>
-          <button class="tab-btn" onclick="switchTab('edit',this)">Edit record</button>
+          <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+          <button class="tab-btn" onclick="switchTab('leave',this)">Leave</button>
+          <button class="tab-btn" onclick="switchTab('disc',this)">Disciplinary</button>
+          <button class="tab-btn" onclick="switchTab('edit',this)">Edit</button>
         </div>
 
-        <!-- TAB: DETAILS -->
-        <div class="tab-content active" id="tab-details">
+        <!-- OVERVIEW -->
+        <div class="tab-content active" id="tab-overview">
+          <div id="missingCard" class="missing-card" style="display:none">
+            <div class="missing-title">⚠️ Onboarding incomplete — info still needed</div>
+            <div class="missing-list" id="missingList"></div>
+            <button class="btn btn-primary btn-block" style="margin-top:.75rem" onclick="sendOnboardForm()" id="btnOnboard">📋 Send onboarding form to employee</button>
+            <div id="onboardResult" style="font-size:11px;text-align:center;min-height:14px"></div>
+          </div>
+          <div id="onboardedBadge" class="disc-clear" style="display:none">✓ Onboarding complete — all information captured</div>
+
           <div class="field-row">
             <div class="field-group"><label>First name</label><div class="field-val" id="d-fn">—</div></div>
             <div class="field-group"><label>Last name</label><div class="field-val" id="d-ln">—</div></div>
@@ -272,102 +198,49 @@ tr.selected td{background:#edffd6}
             <div class="field-group"><label>Mobile</label><div class="field-val" id="d-mob">—</div></div>
           </div>
           <div class="field-group"><label>Email</label><div class="field-val" id="d-email">—</div></div>
-          <div class="field-group"><label>Address</label><div class="field-val" id="d-addr">—</div></div>
           <div class="field-row">
             <div class="field-group"><label>Job title</label><div class="field-val" id="d-jt">—</div></div>
             <div class="field-group"><label>Campaign</label><div class="field-val" id="d-camp">—</div></div>
           </div>
           <div class="field-row">
-            <div class="field-group"><label>Salary</label><div class="field-val" id="d-sal">—</div></div>
             <div class="field-group"><label>Start date</label><div class="field-val" id="d-sd">—</div></div>
+            <div class="field-group"><label>Salary</label><div class="field-val" id="d-sal">—</div></div>
           </div>
-          <div class="field-group"><label>Reports to</label><div class="field-val" id="d-mgr">—</div></div>
+          <div class="field-group"><label>Reporting line</label><div class="field-val" id="d-mgr">—</div></div>
           <div class="field-group"><label>Status</label><div class="field-val" id="d-status">—</div></div>
+
+          <button class="btn btn-green btn-block" id="btnActivate" onclick="markActive()" style="display:none;margin-top:1rem">✓ Mark as Active (started work)</button>
         </div>
 
-        <!-- TAB: BACKGROUND CHECK -->
-        <div class="tab-content" id="tab-background">
-
-          <div id="bgStatusCard" class="bg-status-card bg-none">
-            <div class="bg-status-title" id="bgStatusTitle">No background check initiated</div>
-            <div id="bgStatusSub" style="font-size:12px;color:var(--text3)">Initiate a background check to continue the onboarding process.</div>
+        <!-- LEAVE -->
+        <div class="tab-content" id="tab-leave">
+          <div class="leave-grid">
+            <div class="leave-card"><div class="leave-type">Annual leave</div><div class="leave-balance" id="lv-annual">—</div><div class="leave-unit">days available</div><div class="leave-detail" id="lv-annual-detail"></div></div>
+            <div class="leave-card"><div class="leave-type">Sick leave</div><div class="leave-balance" id="lv-sick">—</div><div class="leave-unit">days available</div><div class="leave-detail">30 days / 36-month cycle</div></div>
+            <div class="leave-card"><div class="leave-type">Family responsibility</div><div class="leave-balance" id="lv-family">—</div><div class="leave-unit">days available</div><div class="leave-detail">3 days / annual cycle</div></div>
+            <div class="leave-card"><div class="leave-type" id="lv-mat-label">Maternity / Parental</div><div class="leave-balance" id="lv-mat">—</div><div class="leave-unit">days entitlement</div><div class="leave-detail" id="lv-mat-detail"></div></div>
           </div>
-
-          <!-- Check results -->
-          <div id="bgResultsSection" style="display:none;margin-bottom:1rem">
-            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem">Summary of checks</div>
-            <div style="background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
-              <div class="bg-check-row" style="padding:6px 10px"><span class="bg-check-name">Verification of ID number</span><span class="bg-check-result" id="res-id">—</span></div>
-              <div class="bg-check-row" style="padding:6px 10px"><span class="bg-check-name">Credit check - basic</span><span class="bg-check-result" id="res-credit">—</span></div>
-              <div class="bg-check-row" style="padding:6px 10px"><span class="bg-check-name">Risk assessment</span><span class="bg-check-result" id="res-risk">—</span></div>
-            </div>
-            <div id="bgOverallResult" style="margin-top:.75rem;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;text-align:center;padding:8px;border-radius:var(--radius)"></div>
-          </div>
-
-          <!-- Actions -->
-          <div id="bgActions">
-            <button class="btn btn-primary btn-block" onclick="sendConsentRequest()" id="btnConsent">
-              📋 Send consent request to candidate
-            </button>
-            <button class="btn btn-outline btn-block" onclick="document.getElementById('reportUpload').click()" id="btnUpload" style="display:none">
-              📄 Upload iFacts report PDF
-            </button>
-            <input type="file" id="reportUpload" accept=".pdf" style="display:none" onchange="handleReportUpload(this)">
-            <button class="btn btn-outline btn-block" onclick="openManualModal()" id="btnManual" style="display:none">
-              ✏️ Enter results manually
-            </button>
-          </div>
-
-          <div id="bgNote" style="font-size:11px;color:var(--text3);margin-top:.75rem;line-height:1.6"></div>
+          <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
+          <a class="btn btn-outline btn-block" href="../leave/" style="text-decoration:none">Open full leave management →</a>
         </div>
 
-        <!-- TAB: EDIT -->
+        <!-- DISCIPLINARY -->
+        <div class="tab-content" id="tab-disc">
+          <div id="discClear" class="disc-clear">✓ Clear disciplinary record</div>
+          <div id="discList"></div>
+          <button class="btn btn-primary btn-block" onclick="openDiscModal()">＋ Log disciplinary action</button>
+          <a class="btn btn-outline btn-block" href="../disciplinary/" style="text-decoration:none">Open full disciplinary management →</a>
+        </div>
+
+        <!-- EDIT -->
         <div class="tab-content" id="tab-edit">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:1rem;line-height:1.6">Edit individual fields. Changes are saved immediately to the database.</div>
-
-          <div class="field-group">
-            <label>Job title</label>
-            <input type="text" class="field-input" id="edit-jt" placeholder="Job title">
-            <button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button>
-            <div class="save-result" id="save-jt"></div>
-          </div>
-          <div class="field-group">
-            <label>Campaign / Department</label>
-            <input type="text" class="field-input" id="edit-camp" placeholder="Campaign">
-            <button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button>
-            <div class="save-result" id="save-camp"></div>
-          </div>
-          <div class="field-group">
-            <label>Work email</label>
-            <input type="email" class="field-input" id="edit-wemail" placeholder="name@trilogybpo.com">
-            <button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button>
-            <div class="save-result" id="save-wemail"></div>
-          </div>
-          <div class="field-group">
-            <label>Mobile</label>
-            <input type="text" class="field-input" id="edit-mob" placeholder="27821234567">
-            <button class="save-field-btn" onclick="saveField('Mobile','edit-mob')">Save</button>
-            <div class="save-result" id="save-mob"></div>
-          </div>
-          <div class="field-group">
-            <label>Address</label>
-            <input type="text" class="field-input" id="edit-addr" placeholder="Address">
-            <button class="save-field-btn" onclick="saveField('Address','edit-addr')">Save</button>
-            <div class="save-result" id="save-addr"></div>
-          </div>
-          <div class="field-group">
-            <label>Status</label>
-            <select class="field-input" id="edit-status">
-              <option value="Contract Signed">Contract Signed</option>
-              <option value="Active">Active</option>
-              <option value="Resigned">Resigned</option>
-              <option value="Dismissed">Dismissed</option>
-              <option value="Retrenched">Retrenched</option>
-              <option value="AWOL">AWOL</option>
-            </select>
-            <button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button>
-            <div class="save-result" id="save-status"></div>
-          </div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit fields — saved immediately to the database.</div>
+          <div class="field-group"><label>Job title</label><input type="text" class="field-input" id="edit-jt"><button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button><div class="save-result" id="save-jt"></div></div>
+          <div class="field-group"><label>Campaign</label><input type="text" class="field-input" id="edit-camp"><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
+          <div class="field-group"><label>Work email</label><input type="email" class="field-input" id="edit-wemail"><button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button><div class="save-result" id="save-wemail"></div></div>
+          <div class="field-group"><label>Reports to</label><input type="text" class="field-input" id="edit-mgr"><button class="save-field-btn" onclick="saveField('ReportsTo','edit-mgr')">Save</button><div class="save-result" id="save-mgr"></div></div>
+          <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
+          <a class="btn btn-danger btn-block" href="../offboarding/" style="text-decoration:none;margin-top:1rem">⚠ Offboard this employee →</a>
         </div>
 
       </div>
@@ -375,468 +248,291 @@ tr.selected td{background:#edffd6}
   </div>
 </div>
 
-<!-- CONSENT MODAL -->
-<div class="modal-overlay" id="consentModal">
+<!-- LEAVE MODAL -->
+<div class="modal-overlay" id="leaveModal">
   <div class="modal">
-    <div class="modal-title">📋 Send background check consent</div>
-    <div class="modal-sub">This will send an email to the candidate with the iFacts consent form pre-filled with their details. They will sign and return it. Once received, HR sends to iFacts for processing.</div>
-    <div style="background:#f7f6f2;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;font-size:13px;margin-bottom:1rem">
-      <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--text3);margin-bottom:.5rem;letter-spacing:.07em;text-transform:uppercase">Consent will be sent to</div>
-      <div id="consentEmailDisplay" style="font-weight:600;color:var(--text)">—</div>
-    </div>
-    <div class="field-group">
-      <label>Additional note to candidate (optional)</label>
-      <textarea class="field-input" id="consentNote" rows="2" placeholder="e.g. Please complete and return within 24 hours…" style="resize:vertical"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('consentModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmSendConsent()" id="btnConfirmConsent">Send consent request</button>
-    </div>
-    <div id="consentResult" style="font-size:12px;margin-top:.75rem;text-align:center;min-height:16px"></div>
+    <div class="modal-title">Log / request leave</div>
+    <div class="modal-sub">Record leave for <strong id="leaveEmpName"></strong></div>
+    <div class="field-group"><label>Leave type</label><select class="field-input" id="leaveType"><option>Annual</option><option>Sick</option><option>Family Responsibility</option><option>Maternity</option><option>Parental</option><option>Unpaid</option></select></div>
+    <div class="field-row"><div class="field-group"><label>From</label><input type="date" class="field-input" id="leaveFrom"></div><div class="field-group"><label>To</label><input type="date" class="field-input" id="leaveTo"></div></div>
+    <div class="field-group"><label>Days</label><input type="number" class="field-input" id="leaveDays" step="0.5" placeholder="Number of days"></div>
+    <div class="field-group"><label>Reason (optional)</label><input type="text" class="field-input" id="leaveReason"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('leaveModal')">Cancel</button><button class="btn btn-green" onclick="saveLeave()">Save leave</button></div>
+    <div id="leaveResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
   </div>
 </div>
 
-<!-- MANUAL RESULTS MODAL -->
-<div class="modal-overlay" id="manualModal">
+<!-- DISCIPLINARY MODAL -->
+<div class="modal-overlay" id="discModal">
   <div class="modal">
-    <div class="modal-title">✏️ Enter background check results</div>
-    <div class="modal-sub">Manually capture the results from the iFacts report. All checks must be Completed for the candidate to pass.</div>
-
-    <div class="field-group">
-      <label>Verification of ID number</label>
-      <select class="field-input" id="man-id">
-        <option value="">Select result…</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Not Confirmed">Not Confirmed</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <label>Credit check - basic</label>
-      <select class="field-input" id="man-credit">
-        <option value="">Select result…</option>
-        <option value="Clear">Clear</option>
-        <option value="Adverse">Adverse</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <label>Risk assessment</label>
-      <select class="field-input" id="man-risk">
-        <option value="">Select result…</option>
-        <option value="No further investigation is recommended">No further investigation recommended</option>
-        <option value="Further investigation recommended">Further investigation recommended</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <label>iFacts report reference (optional)</label>
-      <input type="text" class="field-input" id="man-ref" placeholder="e.g. 00011151">
-    </div>
-    <div class="field-group">
-      <label>Report date</label>
-      <input type="date" class="field-input" id="man-date">
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('manualModal')">Cancel</button>
-      <button class="btn btn-green" onclick="saveManualResults()">Save results</button>
-    </div>
-    <div id="manualResult" style="font-size:12px;margin-top:.75rem;text-align:center;min-height:16px"></div>
+    <div class="modal-title">Log disciplinary action</div>
+    <div class="modal-sub">Record a disciplinary action for <strong id="discEmpName"></strong></div>
+    <div class="field-group"><label>Date</label><input type="date" class="field-input" id="discDate"></div>
+    <div class="field-group"><label>Category</label><select class="field-input" id="discCategory"><option>Verbal Warning</option><option>Written Warning</option><option>Final Written Warning</option><option>Disciplinary Hearing</option><option>Suspension</option><option>Dismissal</option></select></div>
+    <div class="field-group"><label>Description</label><textarea class="field-input" id="discDescription" rows="2"></textarea></div>
+    <div class="field-group"><label>Outcome</label><input type="text" class="field-input" id="discOutcome"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('discModal')">Cancel</button><button class="btn btn-danger" onclick="saveDisc()">Save record</button></div>
+    <div id="discResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
   </div>
 </div>
 
-<div class="footer">
-  <div class="footer-inner">
-    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
-    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
-  </div>
-</div>
+<div class="footer"><div class="footer-inner"><img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo"><div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div></div></div>
 
 <script>
-// ── POWER AUTOMATE URLS ──
-// TODO: Replace with real URLs after creating PA flows
-var GET_EMPLOYEES_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
-var UPDATE_EMPLOYEE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
-var SAVE_BG_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/969398241b124bf0bbe26357f4288543/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=f_OV1TcJgHxqYM2lyprF2YrmVTPNv9E1Gc8GItk9dJM';
-var GET_BG_CHECKS_URL = '';
-var SEND_CONSENT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0e2cebdc80cd4cd8814c58a558a8609e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=D5JWazjceUM8IKhBmGsANIioqLhNCRVrbvnN0Q7EDJU';
+var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
+var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
+var SEND_FORM_URL='YOUR_SEND_ONBOARD_FORM_FLOW';
+var SAVE_LEAVE_URL='YOUR_SAVE_LEAVE_FLOW';
+var SAVE_DISC_URL='YOUR_SAVE_DISCIPLINARY_FLOW';
+var SITE_URL='https://hr.trilogybpo.com';
 
-var GITHUB_TOKEN = '';  // Set in session — not stored
+var allEmployees=[], selectedEmp=null, currentDetail=null;
 
-var allEmployees = [];
-var bgChecks = {};
-var selectedEmp = null;
+function gi(id){return document.getElementById(id);}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+function initials(f,l){return ((f||'')[0]||'')+((l||'')[0]||'');}
 
-// ── LOAD EMPLOYEES ──
-function loadEmployees() {
-  fetch(GET_EMPLOYEES_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({action: 'get_employees'})
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
-    allEmployees = Array.isArray(data) ? data : (data.employees || []);
-    renderTable(allEmployees);
-  })
-  .catch(function(err) {
-    document.getElementById('empBody').innerHTML = '<tr class="loading-row"><td colspan="6">⚠️ Could not load employees. Check Power Automate flow.<br><small>' + err.message + '</small></td></tr>';
-  });
+// ── ONBOARD STATE ──
+function onboardState(e){
+  if(e.Status==='Active') return 'active';
+  if(e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes') return 'onboarded';
+  return 'tobe';
 }
 
-// ── RENDER TABLE ──
-function renderTable(list) {
-  var tbody = document.getElementById('empBody');
-  document.getElementById('countBadge').textContent = list.length + ' employee' + (list.length !== 1 ? 's' : '');
+// ── LOAD ──
+function loadEmployees(){
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    allEmployees=Array.isArray(data)?data:(data.employees||[]);
+    renderStats(); renderTable(allEmployees);
+  })
+  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+}
 
-  if (!list.length) {
-    tbody.innerHTML = '<tr class="loading-row"><td colspan="6">No employees found</td></tr>';
-    return;
-  }
+function renderStats(){
+  var tobe=0,onb=0,act=0;
+  allEmployees.forEach(function(e){var s=onboardState(e);if(s==='tobe')tobe++;else if(s==='onboarded')onb++;else if(s==='active')act++;});
+  gi('statToBe').textContent=tobe; gi('statOnboarded').textContent=onb; gi('statActive').textContent=act;
+}
 
-  tbody.innerHTML = list.map(function(e) {
-    var ini = ((e.FirstName||'')[0]||'') + ((e.LastName||'')[0]||'');
-    var bgStatus = getBgStatus(e.EmployeeID);
-    var bgPill = bgStatus === 'passed' ? '<span class="status-pill s-bg-passed">✓ Passed</span>' :
-                 bgStatus === 'failed' ? '<span class="status-pill s-bg-failed">✗ Failed</span>' :
-                 bgStatus === 'pending' ? '<span class="status-pill s-bg-pending">In progress</span>' :
-                 '<span class="status-pill" style="background:#f0f0f0;color:#888">Not started</span>';
-    var statusClass = e.Status === 'Active' ? 's-active' : 's-contract-signed';
-    return '<tr class="clickable' + (selectedEmp && selectedEmp.EmployeeID === e.EmployeeID ? ' selected' : '') + '" onclick="selectEmployee(\'' + e.EmployeeID + '\')">' +
-      '<td><div class="emp-avatar">' + ini.toUpperCase() + '</div></td>' +
-      '<td><div class="emp-name">' + (e.FirstName||'') + ' ' + (e.LastName||'') + '</div><div class="emp-ref">' + (e.EmployeeID||'') + '</div></td>' +
-      '<td>' + (e.JobTitle||'—') + '</td>' +
-      '<td>' + (e.StartDate ? e.StartDate.split('T')[0] : '—') + '</td>' +
-      '<td><span class="status-pill ' + statusClass + '">' + (e.Status||'—') + '</span></td>' +
-      '<td>' + bgPill + '</td>' +
-      '</tr>';
+function renderTable(list){
+  gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
+  if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
+  gi('empBody').innerHTML=list.map(function(e){
+    var st=onboardState(e);
+    var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
+    return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td>'+(e.JobTitle||'—')+'</td>'+
+      '<td>'+(e.StartDate?e.StartDate.split('T')[0]:'—')+'</td>'+
+      '<td>'+pill+'</td></tr>';
   }).join('');
 }
 
-// ── FILTER ──
-function filterTable() {
-  var q = document.getElementById('searchInput').value.toLowerCase();
-  var sf = document.getElementById('statusFilter').value;
-  var bf = document.getElementById('bgFilter').value;
-  var filtered = allEmployees.filter(function(e) {
-    var name = ((e.FirstName||'') + ' ' + (e.LastName||'')).toLowerCase();
-    var matchQ = !q || name.includes(q) || (e.EmployeeID||'').toLowerCase().includes(q) || (e.JobTitle||'').toLowerCase().includes(q) || (e.IDNumber||'').includes(q);
-    var matchS = !sf || e.Status === sf;
-    var matchB = !bf || getBgStatus(e.EmployeeID) === bf;
-    return matchQ && matchS && matchB;
+function filterTable(){
+  var q=gi('searchInput').value.toLowerCase();
+  var f=gi('onboardFilter').value;
+  var filtered=allEmployees.filter(function(e){
+    var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
+    var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.IDNumber||'').includes(q);
+    var mf=!f||onboardState(e)===f;
+    return mq&&mf;
   });
   renderTable(filtered);
 }
 
-// ── SELECT EMPLOYEE ──
-function selectEmployee(id) {
-  var e = allEmployees.find(function(x) { return x.EmployeeID === id; });
-  if (!e) return;
-  selectedEmp = e;
-
-  document.getElementById('detailEmpty').style.display = 'none';
-  document.getElementById('detailContent').style.display = 'block';
-
-  // Header
-  var ini = ((e.FirstName||'')[0]||'') + ((e.LastName||'')[0]||'');
-  document.getElementById('panelAvatar').textContent = ini.toUpperCase();
-  document.getElementById('panelName').textContent = (e.FirstName||'') + ' ' + (e.LastName||'');
-  document.getElementById('panelRef').textContent = e.EmployeeID;
-
-  // Stage tracker
-  var stages = ['Contract Signed','Active'];
-  var bgStatus = getBgStatus(id);
-  var stageIdx = stages.indexOf(e.Status);
-  ['st1','st2','st3','st4','st5'].forEach(function(s,i) {
-    var el = document.getElementById(s);
-    el.className = 'stage-dot' + (i < 2 ? ' done' : (i === 2 && bgStatus === 'passed' ? ' done' : (i === 2 ? ' active' : '')));
-  });
-
-  // Details tab
-  document.getElementById('d-fn').textContent = e.FirstName||'—';
-  document.getElementById('d-ln').textContent = e.LastName||'—';
-  document.getElementById('d-id').textContent = e.IDNumber||'—';
-  document.getElementById('d-mob').textContent = e.Mobile||'—';
-  document.getElementById('d-email').textContent = e.PersonalEmail||e.WorkEmail||'—';
-  document.getElementById('d-addr').textContent = e.Address||'—';
-  document.getElementById('d-jt').textContent = e.JobTitle||'—';
-  document.getElementById('d-camp').textContent = e.Campaign||'—';
-  document.getElementById('d-sal').textContent = e.Salary ? 'R ' + parseFloat(e.Salary).toLocaleString('en-ZA') : '—';
-  document.getElementById('d-sd').textContent = e.StartDate ? e.StartDate.split('T')[0] : '—';
-  document.getElementById('d-mgr').textContent = e.ReportsTo||'—';
-  document.getElementById('d-status').textContent = e.Status||'—';
-
-  // Edit tab
-  document.getElementById('edit-jt').value = e.JobTitle||'';
-  document.getElementById('edit-camp').value = e.Campaign||'';
-  document.getElementById('edit-wemail').value = e.WorkEmail||'';
-  document.getElementById('edit-mob').value = e.Mobile||'';
-  document.getElementById('edit-addr').value = e.Address||'';
-  document.getElementById('edit-status').value = e.Status||'Contract Signed';
-
-  // Background check tab
-  renderBgCheckPanel(id);
-
-  // Highlight row
-  renderTable(allEmployees.filter(function() { return true; }));
-  filterTable();
+// ── LEAVE CALCULATIONS ──
+function monthsSince(dateStr){
+  if(!dateStr)return 0;
+  var start=new Date(dateStr.split('T')[0]);
+  var now=new Date();
+  if(start>now)return 0;
+  return (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth()) + (now.getDate()>=start.getDate()?0:-1);
 }
 
-// ── BACKGROUND CHECK PANEL ──
-function getBgStatus(empId) {
-  var check = bgChecks[empId];
-  if (!check) return 'none';
-  if (check.Result === 'Passed') return 'passed';
-  if (check.Result === 'Failed') return 'failed';
-  return 'pending';
+function calcLeave(e,detail){
+  var entitlement=parseFloat(e.AnnualLeaveEntitlement||15);
+  var months=monthsSince(e.StartDate);
+  var accrued=Math.max(0,(entitlement/12)*months);
+  var annualTaken=parseFloat((detail&&detail.annual_taken)||0);
+  var annualAvail=(accrued-annualTaken).toFixed(2);
+
+  var sickTaken=parseFloat((detail&&detail.sick_taken)||0);
+  var sickAvail=(30-sickTaken).toFixed(0);
+
+  var famTaken=parseFloat((detail&&detail.family_taken)||0);
+  var famAvail=(3-famTaken).toFixed(0);
+
+  var isFemale=(e.Gender||'').toLowerCase()==='female';
+  var matDays=isFemale?'~120':'10';
+  var matLabel=isFemale?'Maternity leave':'Parental leave';
+  var matDetail=isFemale?'4 consecutive months (BCEA)':'10 days (BCEA parental)';
+
+  return {annualAvail:annualAvail,accrued:accrued.toFixed(2),entitlement:entitlement,months:months,sickAvail:sickAvail,famAvail:famAvail,matDays:matDays,matLabel:matLabel,matDetail:matDetail};
 }
 
-function renderBgCheckPanel(empId) {
-  var check = bgChecks[empId];
-  var card = document.getElementById('bgStatusCard');
-  var title = document.getElementById('bgStatusTitle');
-  var sub = document.getElementById('bgStatusSub');
-  var resultsSection = document.getElementById('bgResultsSection');
-  var overall = document.getElementById('bgOverallResult');
-  var note = document.getElementById('bgNote');
+// ── SELECT ──
+function selectEmployee(id){
+  var e=allEmployees.find(function(x){return x.EmployeeID===id;});
+  if(!e)return;
+  selectedEmp=e; currentDetail=null;
+  gi('detailEmpty').style.display='none';
+  gi('detailContent').style.display='block';
+  gi('panelAvatar').textContent=initials(e.FirstName,e.LastName).toUpperCase();
+  gi('panelName').textContent=(e.FirstName||'')+' '+(e.LastName||'');
+  gi('panelRef').textContent=e.EmployeeID;
 
-  document.getElementById('btnUpload').style.display = 'none';
-  document.getElementById('btnManual').style.display = 'none';
-  document.getElementById('btnConsent').style.display = 'block';
+  var st=onboardState(e);
+  gi('st1').className='stage-dot done';
+  gi('st2').className='stage-dot '+(st==='onboarded'||st==='active'?'done':'active');
+  gi('st3').className='stage-dot '+(st==='active'?'done':(st==='onboarded'?'active':''));
 
-  if (!check) {
-    card.className = 'bg-status-card bg-none';
-    title.textContent = 'No background check initiated';
-    sub.textContent = 'Send a consent request to the candidate to begin the iFacts background check process.';
-    resultsSection.style.display = 'none';
-    note.textContent = '⚠️ A background check is required before the employee can be marked as Active.';
-    return;
-  }
+  // Overview
+  gi('d-fn').textContent=e.FirstName||'—';
+  gi('d-ln').textContent=e.LastName||'—';
+  gi('d-id').textContent=e.IDNumber||'—';
+  gi('d-mob').textContent=e.Mobile||'—';
+  gi('d-email').textContent=e.PersonalEmail||e.WorkEmail||'—';
+  gi('d-jt').textContent=e.JobTitle||'—';
+  gi('d-camp').textContent=e.Campaign||'—';
+  gi('d-sd').textContent=e.StartDate?e.StartDate.split('T')[0]:'—';
+  gi('d-sal').textContent=e.Salary?'R '+parseFloat(e.Salary).toLocaleString('en-ZA'):'—';
+  gi('d-mgr').textContent=e.ReportsTo||'—';
+  gi('d-status').textContent=e.Status||'—';
 
-  resultsSection.style.display = 'block';
-  document.getElementById('btnUpload').style.display = 'block';
-  document.getElementById('btnManual').style.display = 'block';
-
-  var idRes = check.IDVerification || '—';
-  var creditRes = check.CreditCheck || '—';
-  var riskRes = check.RiskAssessment || '—';
-
-  document.getElementById('res-id').textContent = idRes;
-  document.getElementById('res-id').className = 'bg-check-result ' + (idRes === 'Confirmed' ? 'res-confirmed' : idRes === 'Pending' ? 'res-pending' : 'res-failed');
-  document.getElementById('res-credit').textContent = creditRes;
-  document.getElementById('res-credit').className = 'bg-check-result ' + (creditRes === 'Clear' ? 'res-clear' : creditRes === 'Pending' ? 'res-pending' : 'res-failed');
-  document.getElementById('res-risk').textContent = riskRes === 'No further investigation is recommended' ? 'Clear' : riskRes;
-  document.getElementById('res-risk').className = 'bg-check-result ' + (riskRes === 'No further investigation is recommended' ? 'res-clear' : riskRes === 'Pending' ? 'res-pending' : 'res-failed');
-
-  var passed = idRes === 'Confirmed' && creditRes === 'Clear' && (riskRes === 'No further investigation is recommended' || riskRes === 'Clear');
-
-  if (passed) {
-    card.className = 'bg-status-card bg-passed';
-    title.textContent = '✓ Background check passed';
-    sub.textContent = 'All checks completed successfully. Employee can proceed to next onboarding step.';
-    overall.style.background = '#d4edda';
-    overall.style.color = '#155724';
-    overall.textContent = '✓ PASSED — Employee cleared for onboarding';
-    note.textContent = 'Next step: Capture banking details and complete onboarding.';
-  } else if (check.Result === 'Failed') {
-    card.className = 'bg-status-card bg-failed';
-    title.textContent = '✗ Background check failed';
-    sub.textContent = 'One or more checks did not pass. Review results and consult with management.';
-    overall.style.background = '#fdf0ef';
-    overall.style.color = '#c0392b';
-    overall.textContent = '✗ FAILED — Escalate to HR management';
-    note.textContent = 'The offer may need to be withdrawn. Consult your HR policy.';
+  // Missing info / onboarded badge
+  var missing=[];
+  if(!e.Title)missing.push('Title');
+  if(!e.Gender)missing.push('Gender');
+  if(!e.Race)missing.push('Race');
+  if(!e.HomeLanguage)missing.push('Home language');
+  if(!e.TaxNumber)missing.push('Tax number');
+  if(st==='tobe'){
+    gi('missingCard').style.display='block';
+    gi('onboardedBadge').style.display='none';
+    gi('missingList').innerHTML=missing.length?'Still required: '+missing.join(', ')+', emergency contact, banking details':'Awaiting employee onboarding form completion';
   } else {
-    card.className = 'bg-status-card bg-pending';
-    title.textContent = '⏳ Check in progress';
-    sub.textContent = 'Consent sent. Awaiting iFacts report.';
-    overall.style.background = '#fff3cd';
-    overall.style.color = '#856404';
-    overall.textContent = 'Awaiting iFacts results';
-    note.textContent = 'Upload the iFacts PDF report when received, or enter results manually.';
-    document.getElementById('btnConsent').style.display = 'none';
+    gi('missingCard').style.display='none';
+    gi('onboardedBadge').style.display='block';
   }
+
+  // Activate button — show if onboarded but not active
+  gi('btnActivate').style.display=(st==='onboarded')?'flex':'none';
+
+  // Edit fields
+  gi('edit-jt').value=e.JobTitle||'';
+  gi('edit-camp').value=e.Campaign||'';
+  gi('edit-wemail').value=e.WorkEmail||'';
+  gi('edit-mgr').value=e.ReportsTo||'';
+  gi('edit-status').value=e.Status||'Contract Signed';
+
+  // Leave (show entitlement immediately, refine with detail)
+  renderLeave(e,null);
+
+  // Disciplinary default
+  gi('discClear').style.display='block';
+  gi('discList').innerHTML='';
+
+  filterTable();
+
+  // Fetch detail (leave taken, disciplinary, emergency, banking)
+  fetch(GET_DETAIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:e.EmployeeID})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var detail=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    currentDetail=detail;
+    renderLeave(e,detail);
+    if(detail.active_disciplinary&&parseInt(detail.active_disciplinary)>0){
+      gi('discClear').style.display='none';
+      gi('discList').innerHTML='<div style="background:#fdf0ef;border:1px solid '+'#c0392b;border-radius:8px;padding:1rem;color:#c0392b;font-size:12px">⚠️ '+detail.active_disciplinary+' active disciplinary record(s). Open full disciplinary management to view details.</div>';
+    }
+  })
+  .catch(function(err){console.error('Detail fetch error:',err);});
+}
+
+function renderLeave(e,detail){
+  var l=calcLeave(e,detail);
+  gi('lv-annual').textContent=l.annualAvail;
+  gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued';
+  gi('lv-sick').textContent=l.sickAvail;
+  gi('lv-family').textContent=l.famAvail;
+  gi('lv-mat').textContent=l.matDays;
+  gi('lv-mat-label').textContent=l.matLabel;
+  gi('lv-mat-detail').textContent=l.matDetail;
 }
 
 // ── TABS ──
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active'); gi('tab-'+tab).classList.add('active');
 }
 
 // ── SAVE FIELD ──
-function saveField(field, inputId) {
-  if (!selectedEmp) return;
-  var val = document.getElementById(inputId).value.trim();
-  var resultEl = document.getElementById('save-' + inputId.replace('edit-',''));
-
-  fetch(UPDATE_EMPLOYEE_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      employee_id: selectedEmp.EmployeeID,
-      field: field,
-      value: val
-    })
-  })
-  .then(function(r) {
-    if (r.ok || r.status === 202) {
-      resultEl.textContent = '✓ Saved';
-      resultEl.style.color = 'var(--green-dark)';
-      selectedEmp[field] = val;
-      setTimeout(function() { resultEl.textContent = ''; }, 3000);
-    } else { throw new Error('Failed'); }
-  })
-  .catch(function() {
-    resultEl.textContent = '✗ Save failed';
-    resultEl.style.color = 'var(--red)';
-  });
+function saveField(field,inputId){
+  if(!selectedEmp)return;
+  var val=gi(inputId).value.trim();
+  var resultEl=gi('save-'+inputId.replace('edit-',''));
+  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:field,value:val})})
+  .then(function(r){if(r.ok||r.status===202){resultEl.textContent='✓ Saved';resultEl.style.color='var(--green-dark)';selectedEmp[field]=val;setTimeout(function(){resultEl.textContent='';},3000);}else{throw new Error('Failed');}})
+  .catch(function(){resultEl.textContent='✗ Failed';resultEl.style.color='var(--red)';});
 }
 
-// ── CONSENT ──
-function sendConsentRequest() {
-  if (!selectedEmp) return;
-  document.getElementById('consentEmailDisplay').textContent = selectedEmp.PersonalEmail || selectedEmp.WorkEmail || 'No email on file';
-  document.getElementById('consentNote').value = '';
-  document.getElementById('consentResult').textContent = '';
-  document.getElementById('consentModal').classList.add('open');
+// ── MARK ACTIVE ──
+function markActive(){
+  if(!selectedEmp)return;
+  if(!confirm('Mark '+selectedEmp.FirstName+' as Active? This confirms they have started work.'))return;
+  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'Status',value:'Active'})})
+  .then(function(){selectedEmp.Status='Active';gi('d-status').textContent='Active';gi('btnActivate').style.display='none';renderStats();renderTable(allEmployees);selectEmployee(selectedEmp.EmployeeID);})
+  .catch(function(){alert('Failed to update status.');});
 }
 
-function confirmSendConsent() {
-  var btn = document.getElementById('btnConfirmConsent');
-  var res = document.getElementById('consentResult');
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  var token = 'BGC-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
-  var consentUrl = 'https://hr.trilogybpo.com/onboarding/bg-consent.html?' + [
-    'token=' + encodeURIComponent(token),
-    'ref=' + encodeURIComponent(selectedEmp.EmployeeID),
-    'fn=' + encodeURIComponent(selectedEmp.FirstName||''),
-    'ln=' + encodeURIComponent(selectedEmp.LastName||''),
-    'id=' + encodeURIComponent(selectedEmp.IDNumber||''),
-    'mob=' + encodeURIComponent(selectedEmp.Mobile||''),
-    'addr=' + encodeURIComponent(selectedEmp.Address||''),
-    'em=' + encodeURIComponent(selectedEmp.PersonalEmail||selectedEmp.WorkEmail||'')
+// ── SEND ONBOARD FORM ──
+function sendOnboardForm(){
+  if(!selectedEmp)return;
+  var e=selectedEmp;
+  var token='EMP-'+Date.now()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  var url=SITE_URL+'/onboarding/employee-form.html?'+[
+    'token='+encodeURIComponent(token),'ref='+encodeURIComponent(e.EmployeeID),
+    'fn='+encodeURIComponent(e.FirstName||''),'ln='+encodeURIComponent(e.LastName||''),
+    'id='+encodeURIComponent(e.IDNumber||''),'mob='+encodeURIComponent(e.Mobile||''),
+    'em='+encodeURIComponent(e.PersonalEmail||e.WorkEmail||''),'addr='+encodeURIComponent(e.Address||'')
   ].join('&');
-
-  fetch(SEND_CONSENT_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      action: 'send_consent',
-      employee_id: selectedEmp.EmployeeID,
-      first_name: selectedEmp.FirstName,
-      last_name: selectedEmp.LastName,
-      id_number: selectedEmp.IDNumber,
-      email: selectedEmp.PersonalEmail || selectedEmp.WorkEmail,
-      mobile: selectedEmp.Mobile,
-      address: selectedEmp.Address,
-      consent_url: consentUrl,
-      note: document.getElementById('consentNote').value
-    })
-  })
-  .then(function(r) {
-    if (r.ok || r.status === 202) {
-      bgChecks[selectedEmp.EmployeeID] = {Result: 'Pending', IDVerification: 'Pending', CreditCheck: 'Pending', RiskAssessment: 'Pending'};
-      res.innerHTML = '<span style="color:var(--green-dark)">✓ Consent request sent! iFacts form emailed to candidate.</span>';
-      btn.textContent = 'Send consent request';
-      btn.disabled = false;
-      setTimeout(function() {
-        closeModal('consentModal');
-        renderBgCheckPanel(selectedEmp.EmployeeID);
-      }, 2000);
-    } else { throw new Error('Failed'); }
-  })
-  .catch(function() {
-    res.innerHTML = '<span style="color:var(--red)">✗ Failed to send. Try again.</span>';
-    btn.textContent = 'Send consent request';
-    btn.disabled = false;
-  });
+  var btn=gi('btnOnboard'), res=gi('onboardResult');
+  btn.disabled=true; btn.textContent='Sending…';
+  fetch(SEND_FORM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    employee_id:e.EmployeeID,first_name:e.FirstName,last_name:e.LastName,
+    email:e.PersonalEmail||e.WorkEmail,mobile:e.Mobile,form_url:url
+  })})
+  .then(function(){res.innerHTML='<span style="color:var(--green-dark)">✓ Onboarding form sent to '+(e.PersonalEmail||e.WorkEmail)+'</span>';btn.textContent='📋 Resend onboarding form';btn.disabled=false;})
+  .catch(function(){res.innerHTML='<span style="color:var(--red)">✗ Failed to send</span>';btn.textContent='📋 Send onboarding form to employee';btn.disabled=false;});
 }
 
-// ── REPORT UPLOAD ──
-function handleReportUpload(input) {
-  var file = input.files[0];
-  if (!file) return;
-  // For now show manual entry - PDF parsing requires server-side
-  alert('PDF uploaded: ' + file.name + '\n\nPlease enter the results manually from the report. We will add automatic PDF parsing in a future update.');
-  openManualModal();
+// ── LEAVE MODAL ──
+function openLeaveModal(){gi('leaveEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;gi('leaveModal').classList.add('open');gi('leaveResult').textContent='';}
+function saveLeave(){
+  var payload={employee_id:selectedEmp.EmployeeID,leave_type:gi('leaveType').value,start_date:gi('leaveFrom').value,end_date:gi('leaveTo').value,days:gi('leaveDays').value,reason:gi('leaveReason').value,status:'Approved'};
+  if(!payload.days){gi('leaveResult').innerHTML='<span style="color:var(--red)">Enter number of days</span>';return;}
+  fetch(SAVE_LEAVE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(){gi('leaveResult').innerHTML='<span style="color:var(--green-dark)">✓ Leave saved</span>';setTimeout(function(){closeModal('leaveModal');selectEmployee(selectedEmp.EmployeeID);},1200);})
+  .catch(function(){gi('leaveResult').innerHTML='<span style="color:var(--red)">✗ Failed</span>';});
 }
 
-// ── MANUAL RESULTS ──
-function openManualModal() {
-  document.getElementById('man-id').value = '';
-  document.getElementById('man-credit').value = '';
-  document.getElementById('man-risk').value = '';
-  document.getElementById('man-ref').value = '';
-  document.getElementById('man-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('manualResult').textContent = '';
-  document.getElementById('manualModal').classList.add('open');
+// ── DISCIPLINARY MODAL ──
+function openDiscModal(){gi('discEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;gi('discDate').value=new Date().toISOString().split('T')[0];gi('discModal').classList.add('open');gi('discResult').textContent='';}
+function saveDisc(){
+  var payload={employee_id:selectedEmp.EmployeeID,incident_date:gi('discDate').value,category:gi('discCategory').value,description:gi('discDescription').value,outcome:gi('discOutcome').value,issued_by:'HR Portal',status:'Active'};
+  fetch(SAVE_DISC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(){gi('discResult').innerHTML='<span style="color:var(--green-dark)">✓ Record saved</span>';setTimeout(function(){closeModal('discModal');selectEmployee(selectedEmp.EmployeeID);},1200);})
+  .catch(function(){gi('discResult').innerHTML='<span style="color:var(--red)">✗ Failed</span>';});
 }
 
-function saveManualResults() {
-  var idRes = document.getElementById('man-id').value;
-  var creditRes = document.getElementById('man-credit').value;
-  var riskRes = document.getElementById('man-risk').value;
-  var ref = document.getElementById('man-ref').value;
-  var date = document.getElementById('man-date').value;
+function closeModal(id){gi(id).classList.remove('open');}
 
-  if (!idRes || !creditRes || !riskRes) {
-    document.getElementById('manualResult').innerHTML = '<span style="color:var(--red)">Please fill in all check results.</span>';
-    return;
-  }
-
-  var passed = idRes === 'Confirmed' && creditRes === 'Clear' && riskRes === 'No further investigation is recommended';
-  var overall = passed ? 'Passed' : 'Failed';
-
-  fetch(SAVE_BG_CHECK_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      employee_id: selectedEmp.EmployeeID,
-      check_type: 'Full iFacts Check',
-      provider: 'iFacts',
-      reference_number: ref,
-      completed_at: date,
-      id_verification: idRes,
-      credit_check: creditRes,
-      risk_assessment: riskRes,
-      result: overall,
-      status: 'Complete'
-    })
-  })
-  .then(function(r) {
-    if (r.ok || r.status === 202) {
-      bgChecks[selectedEmp.EmployeeID] = {
-        Result: overall,
-        IDVerification: idRes,
-        CreditCheck: creditRes,
-        RiskAssessment: riskRes
-      };
-      document.getElementById('manualResult').innerHTML = '<span style="color:var(--green-dark)">✓ Results saved!</span>';
-      setTimeout(function() {
-        closeModal('manualModal');
-        renderBgCheckPanel(selectedEmp.EmployeeID);
-        filterTable();
-      }, 1500);
-    } else { throw new Error('Failed'); }
-  })
-  .catch(function() {
-    document.getElementById('manualResult').innerHTML = '<span style="color:var(--red)">✗ Failed to save. Check PA flow.</span>';
-  });
-}
-
-// ── MODAL ──
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-// ── INIT ──
 loadEmployees();
 </script>
 </body>
