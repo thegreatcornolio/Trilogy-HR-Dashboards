@@ -297,6 +297,43 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
     </div>
   </div>
 
+  <!-- CAMPAIGNS / PROJECTS -->
+  <div class="section-head"><h2>Campaigns / Projects</h2><div class="section-line"></div><div class="section-tag">Manage list</div></div>
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Current campaigns / projects</h3>
+      <p>Add or remove campaigns below. Click <strong>Save to GitHub</strong> to update the dropdown in the onboarding form instantly.</p>
+      <div class="dept-list" id="campList"></div>
+      <div class="add-row">
+        <input type="text" id="newCamp" placeholder="Campaign or project name">
+        <button class="btn-navy" onclick="addCamp()">Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-full" onclick="exportCampJSON()" style="margin-bottom:0">⬇ Download campaigns.json</button>
+        <button class="btn-full primary" onclick="saveToGitHub('campaigns')" style="margin-bottom:0" id="saveCampBtn">☁ Save to GitHub</button>
+      </div>
+      <div id="saveCampResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
+    </div>
+    <div class="settings-card">
+      <h3>CSV import</h3>
+      <p>Download the blank template, add your campaign names, then upload. Once imported click <strong>Save to GitHub</strong> on the left.</p>
+      <button class="btn-full" onclick="downloadCampTemplate()">⬇ Download CSV template</button>
+      <div class="divider-label">upload completed CSV</div>
+      <div class="upload-zone" onclick="document.getElementById('campCsvFile').click()">
+        <div class="uz-icon">📂</div>
+        <div class="uz-text" id="campUzText">Click to select your completed CSV file</div>
+        <input type="file" id="campCsvFile" accept=".csv" style="display:none" onchange="handleCampCSV(this)">
+      </div>
+      <div class="import-result" id="campImportResult"></div>
+      <div id="campPreviewWrap" style="display:none">
+        <table class="preview-table"><thead><tr><th>Campaign / Project</th></tr></thead><tbody id="campPreviewBody"></tbody></table>
+        <button class="btn-full green" onclick="applyCampImport()">✓ Apply — then Save to GitHub</button>
+      </div>
+      <div class="divider-label" style="margin-top:1rem">note</div>
+      <p style="font-size:11px;color:var(--text3);line-height:1.6">Uses the same GitHub token entered in the Managers section above.</p>
+    </div>
+  </div>
+
   <!-- VIBECHECK DEPARTMENTS -->
   <div class="section-head">
     <h2>#vibecheck</h2>
@@ -365,6 +402,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 var BASE = '';
 var MANAGERS_URL = BASE + '/managers.json';
 var DEPARTMENTS_URL = BASE + '/departments.json';
+var CAMPAIGNS_URL = BASE + '/campaigns.json';
 
 /* ── EMPLOYEES ── */
 var employees = [
@@ -543,19 +581,90 @@ window.applyDeptImport=function(){
   document.getElementById('deptCsvFile').value='';
 };
 
+/* ── CAMPAIGNS ── */
+var campData=[];
+var campImportBuffer=[];
+
+function loadCampaigns(){
+  fetch(CAMPAIGNS_URL+'?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){campData=d;renderCamps();})
+    .catch(function(){campData=[{name:'UK Telco Campaign'},{name:'NADClinic'}];renderCamps();});
+}
+
+function renderCamps(){
+  var list=document.getElementById('campList'); list.innerHTML='';
+  campData.forEach(function(c,i){
+    var r=document.createElement('div'); r.className='dept-row';
+    r.innerHTML='<div class="dept-icon">📁</div>'+
+      '<div class="dept-name">'+c.name+'</div>'+
+      '<button class="dept-rm" onclick="removeCamp('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+}
+
+window.addCamp=function(){
+  var n=document.getElementById('newCamp').value.trim();
+  if(!n){alert('Please enter a campaign or project name.');return;}
+  campData.push({name:n});
+  document.getElementById('newCamp').value='';
+  renderCamps();
+};
+window.removeCamp=function(i){campData.splice(i,1);renderCamps();};
+window.exportCampJSON=function(){
+  var json=JSON.stringify(campData,null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='campaigns.json'; a.click();
+};
+window.downloadCampTemplate=function(){
+  var csv='campaign\nUK Telco Campaign\nNADClinic\n';
+  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='campaigns_template.csv'; a.click();
+};
+window.handleCampCSV=function(input){
+  var file=input.files[0]; if(!file)return;
+  document.getElementById('campUzText').textContent='📄 '+file.name;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(Boolean);
+    campImportBuffer=[];
+    lines.forEach(function(line,i){
+      if(i===0&&line.toLowerCase().includes('campaign'))return;
+      var n=line.replace(/"/g,'').trim();
+      if(n) campImportBuffer.push({name:n});
+    });
+    if(!campImportBuffer.length){document.getElementById('campImportResult').textContent='No valid rows found.';document.getElementById('campPreviewWrap').style.display='none';return;}
+    document.getElementById('campImportResult').textContent=campImportBuffer.length+' campaign(s) found — preview below:';
+    var tbody=document.getElementById('campPreviewBody'); tbody.innerHTML='';
+    campImportBuffer.forEach(function(c){var tr=document.createElement('tr');tr.innerHTML='<td>'+c.name+'</td>';tbody.appendChild(tr);});
+    document.getElementById('campPreviewWrap').style.display='block';
+  };
+  reader.readAsText(file);
+};
+window.applyCampImport=function(){
+  campData=campImportBuffer.slice(); campImportBuffer=[];
+  renderCamps();
+  document.getElementById('campImportResult').textContent='✓ '+campData.length+' campaigns imported. Click Save to GitHub to publish.';
+  document.getElementById('campPreviewWrap').style.display='none';
+  document.getElementById('campUzText').textContent='Click to select your completed CSV file';
+  document.getElementById('campCsvFile').value='';
+};
+
 /* ── SHARED GITHUB SAVE ── */
 window.saveToGitHub=function(type){
   var token=document.getElementById('ghToken').value.trim();
   if(!token){alert('Please enter your GitHub Personal Access Token.\n\nClick the "Generate one here" link in the Managers section.');return;}
 
   var isManagers=(type==='managers');
-  var filename=isManagers?'managers.json':'departments.json';
-  var payload=isManagers
+  var filename = type==='managers' ? 'managers.json' : type==='campaigns' ? 'campaigns.json' : 'departments.json';
+  var payload = type==='managers'
     ? JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2)
+    : type==='campaigns'
+    ? JSON.stringify(campData,null,2)
     : JSON.stringify(deptData,null,2);
   var encoded=btoa(unescape(encodeURIComponent(payload)));
-  var btn=document.getElementById(isManagers?'saveBtn':'saveDeptBtn');
-  var res=document.getElementById(isManagers?'saveResult':'saveDeptResult');
+  var btnId = type==='managers' ? 'saveBtn' : type==='campaigns' ? 'saveCampBtn' : 'saveDeptBtn';
+  var resId = type==='managers' ? 'saveResult' : type==='campaigns' ? 'saveCampResult' : 'saveDeptResult';
+  var btn=document.getElementById(btnId);
+  var res=document.getElementById(resId);
   btn.textContent='Saving…'; btn.disabled=true; res.textContent='';
 
   fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
@@ -641,6 +750,7 @@ window.sendVibecheck = function(){
 loadStats();
 loadManagers();
 loadDepartments();
+loadCampaigns();
 </script>
 </body>
 </html>

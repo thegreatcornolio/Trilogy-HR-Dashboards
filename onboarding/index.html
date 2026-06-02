@@ -146,7 +146,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     <div class="section-label">Position details</div>
     <div class="grid2" style="margin-bottom:14px">
       <div class="field"><label>Job title <span class="req">*</span></label><input type="text" id="jt" placeholder="e.g. Customer Service Agent"><div class="err-msg" id="jt-err">Required</div></div>
-      <div class="field"><label>Campaign / Project</label><input type="text" id="campaign" placeholder="e.g. UK Telco Campaign"></div>
+      <div class="field"><label>Campaign / Project</label><select id="campaign" style="width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)"><option value="">Loading…</option></select></div>
     </div>
     <div class="grid2">
       <div class="field"><label>Monthly salary (ZAR) <span class="req">*</span></label><input type="text" id="sal" placeholder="e.g. 8 500"><div class="err-msg" id="sal-err">Required</div></div>
@@ -257,6 +257,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   var ZAPIER = 'https://hooks.zapier.com/hooks/catch/6391188/4oaqqzu/';
   var BASE   = '';
   var MANAGERS_URL = BASE + '/managers.json';
+  var CAMPAIGNS_URL = BASE + '/campaigns.json';
   var managersData = [];
   var bulkRows = [];
 
@@ -351,6 +352,23 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
         populateManagerSelect(managersData);
         gi('mgrStatus').innerHTML='<span style="color:var(--text3)">Using cached list</span>';
       });
+  }
+
+  function loadCampaigns(){
+    fetch(CAMPAIGNS_URL+'?v='+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(data){ populateCampaignSelect(data); })
+      .catch(function(){ populateCampaignSelect([{name:'UK Telco Campaign'},{name:'NADClinic'}]); });
+  }
+
+  function populateCampaignSelect(data){
+    var sel=gi('campaign');
+    sel.innerHTML='<option value="">Select campaign / project…</option>';
+    data.forEach(function(c){
+      var o=document.createElement('option');
+      o.value=c.name; o.textContent=c.name;
+      sel.appendChild(o);
+    });
   }
 
   function populateManagerSelect(data){
@@ -689,6 +707,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   };
 
   loadManagers();
+  loadCampaigns();
 })();
 </script>
 <!-- VERIFICATION MODAL -->
