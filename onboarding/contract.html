@@ -94,7 +94,22 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   </div>
 </div>
 
-<div id="signingScreen">
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" style="text-align:center;padding:3rem 1.5rem">
+  <div style="width:36px;height:36px;border:3px solid #e2e1dd;border-top-color:#1e1e1e;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem"></div>
+  <div style="font-size:13px;color:#7a8499">Verifying your link…</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<!-- EXPIRED SCREEN -->
+<div id="expiredScreen" style="display:none;text-align:center;padding:3rem 1.5rem">
+  <div style="font-size:56px;margin-bottom:1rem">🔒</div>
+  <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#1e1e1e;margin-bottom:.75rem">This link has expired</div>
+  <div style="font-size:14px;color:#4A5568;max-width:380px;margin:0 auto 1.5rem">This contract link has already been actioned. If you believe this is an error, please contact your HR representative at Trilogy BPO.</div>
+  <div style="font-size:12px;color:#7a8499">Ref: <strong id="expiredRef"></strong></div>
+</div>
+
+<div id="signingScreen" style="display:none">
   <div class="info-banner">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>Please read your contract of employment carefully before signing. By signing you confirm you have read, understood and accept all terms. This is a legally binding document.</div>
@@ -241,6 +256,45 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     al:gp('al')||'15', pow:gp('pow'), wh:gp('wh'), restraint:gp('restraint')
   };
 
+  // ── CONTRACT TOKEN CHECK ──
+  var CONTRACT_TOKEN_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ffa9da21036a4af1b4c33e26a61e6879/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5iYg_qzJ8_gIMvNQDiIe5M1a4rhSPsz-9GN1tkjzHnc';
+
+  if(D.ref){
+    fetch(CONTRACT_TOKEN_CHECK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token: D.token, ref: D.ref, check_field: 'contract'})
+    })
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      console.log('CONTRACT TOKEN raw:', txt);
+      gi('loadingScreen').style.display = 'none';
+      var used = false;
+      try {
+        var data = JSON.parse(txt);
+        if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
+        var usedVal = (data.contract_used || data.used || '').toString().toLowerCase();
+        used = (usedVal === 'used' || usedVal === 'true');
+        console.log('CONTRACT TOKEN usedVal:', usedVal, '→ used:', used);
+      } catch(e){ console.error('Contract token parse error:', e, txt); }
+
+      if(used){
+        gi('expiredScreen').style.display = 'block';
+        if(gi('expiredRef')) gi('expiredRef').textContent = D.ref;
+      } else {
+        gi('signingScreen').style.display = 'block';
+      }
+    })
+    .catch(function(err){
+      console.error('Contract token check error:', err);
+      gi('loadingScreen').style.display = 'none';
+      gi('signingScreen').style.display = 'block';
+    });
+  } else {
+    gi('loadingScreen').style.display = 'none';
+    gi('signingScreen').style.display = 'block';
+  }
+
   // Populate header
   gi('refBadge').textContent = D.ref || 'REF–';
   gi('docRef').textContent = D.ref || '—';
@@ -307,6 +361,11 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
   };
 
   window.submitSignature=function(){
+    // Prevent resubmission
+    if(sessionStorage.getItem('contract_used_'+D.ref)){
+      alert('This contract link has already been used. Please contact Trilogy BPO if you need assistance.');
+      return;
+    }
     var sigData='', sigHtml='';
     if(isDrawMode()){
       if(!hasSig){alert('Please draw your signature before signing.');return;}
@@ -377,8 +436,13 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     xhr.send(body);
 
+    // Mark used to prevent resubmission
+    sessionStorage.setItem('contract_used_'+D.ref, '1');
+
     // Show confirmation
     gi('signingScreen').style.display='none';
+    gi('expiredScreen').style.display='none';
+    gi('loadingScreen').style.display='none';
     gi('confirmScreen').style.display='block';
     gi('confirmRef').textContent=D.ref;
     gi('signedDate').textContent=signedAt;
