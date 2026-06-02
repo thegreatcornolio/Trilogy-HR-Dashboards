@@ -225,7 +225,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     fetch(TOKEN_CHECK_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({token: D.token})
+      body: JSON.stringify({token: D.token, ref: D.ref})
     })
     .then(function(r){ return r.text(); })
     .then(function(txt){
