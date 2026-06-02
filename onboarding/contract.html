@@ -273,7 +273,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       try {
         var data = JSON.parse(txt);
         if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
-        var usedVal = (data.contract_used || data.used || '').toString().toLowerCase();
+        var usedVal = (data.contract_used || '').toString().toLowerCase();
         used = (usedVal === 'used' || usedVal === 'true');
         console.log('CONTRACT TOKEN usedVal:', usedVal, '→ used:', used);
       } catch(e){ console.error('Contract token parse error:', e, txt); }
