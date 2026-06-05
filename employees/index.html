@@ -91,6 +91,12 @@ tr.selected td{background:#edffd6}
 .leave-balance{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;color:var(--navy);line-height:1}
 .leave-unit{font-size:11px;color:var(--text3);margin-top:2px}
 .leave-detail{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.leave-card.locked{background:#f9f9f9;opacity:.75;position:relative}
+.leave-card.locked .leave-balance{color:var(--text3)}
+.leave-card.locked .leave-type{color:var(--text3)}
+.lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;padding:2px 8px;margin-top:5px;font-family:'Montserrat',sans-serif}
+.countdown-chip{font-size:10px;color:var(--text3);margin-top:3px;font-style:italic}
+.leave-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--radius);padding:.6rem .8rem;font-size:11px;color:#92400e;margin-top:.75rem;line-height:1.5}
 .disc-clear{background:#d4edda;border:1px solid #28a745;border-radius:var(--radius-lg);padding:1rem;text-align:center;color:#155724;font-weight:600;font-size:13px;margin-bottom:1rem}
 .stage-track{display:flex;margin-bottom:.5rem;gap:4px}
 .stage-dot{flex:1;height:6px;border-radius:3px;background:var(--border)}
@@ -216,11 +222,12 @@ tr.selected td{background:#edffd6}
         <div class="tab-content" id="tab-leave">
           <div class="leave-grid">
             <div class="leave-card"><div class="leave-type">Annual leave</div><div class="leave-balance" id="lv-annual">—</div><div class="leave-unit">days available</div><div class="leave-detail" id="lv-annual-detail"></div></div>
-            <div class="leave-card"><div class="leave-type">Sick leave</div><div class="leave-balance" id="lv-sick">—</div><div class="leave-unit">days available</div><div class="leave-detail">30 days / 36-month cycle</div></div>
-            <div class="leave-card"><div class="leave-type">Family responsibility</div><div class="leave-balance" id="lv-family">—</div><div class="leave-unit">days available</div><div class="leave-detail">3 days / annual cycle</div></div>
+            <div class="leave-card" id="lv-sick-card"><div class="leave-type">Sick leave</div><div class="leave-balance" id="lv-sick">—</div><div class="leave-unit" id="lv-sick-unit">days available</div><div class="leave-detail" id="lv-sick-detail">30 days / 36-month cycle</div><div id="lv-sick-lock" style="display:none"></div></div>
+            <div class="leave-card" id="lv-frl-card"><div class="leave-type">Family responsibility</div><div class="leave-balance" id="lv-family">—</div><div class="leave-unit" id="lv-frl-unit">days available</div><div class="leave-detail" id="lv-frl-detail">3 days / annual cycle</div><div id="lv-frl-lock" style="display:none"></div></div>
             <div class="leave-card"><div class="leave-type" id="lv-mat-label">Maternity / Parental</div><div class="leave-balance" id="lv-mat">—</div><div class="leave-unit">days entitlement</div><div class="leave-detail" id="lv-mat-detail"></div></div>
           </div>
-          <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
+          <div id="lv-unpaid-note" style="display:none" class="leave-note"></div>
+          <button class="btn btn-primary btn-block" onclick="openLeaveModal()" style="margin-top:.75rem">＋ Log / request leave</button>
           <a class="btn btn-outline btn-block" href="../leave/" style="text-decoration:none">Open full leave management →</a>
         </div>
 
@@ -354,6 +361,22 @@ function monthsSince(dateStr){
   return (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth()) + (now.getDate()>=start.getDate()?0:-1);
 }
 
+function daysUntilEligible(dateStr,targetMonths){
+  if(!dateStr)return 0;
+  var start=new Date(dateStr.split('T')[0]);
+  var unlock=new Date(start.getFullYear(),start.getMonth()+targetMonths,start.getDate());
+  var diff=Math.ceil((unlock-new Date())/(1000*60*60*24));
+  return Math.max(0,diff);
+}
+
+function formatCountdown(days){
+  if(days<=0)return null;
+  if(days===1)return '1 day until available';
+  if(days<31)return days+' days until available';
+  var m=Math.ceil(days/30);
+  return 'approx. '+m+(m===1?' month':' months')+' until available';
+}
+
 function calcLeave(e,detail){
   var entitlement=parseFloat(e.AnnualLeaveEntitlement||15);
   var months=monthsSince(e.StartDate);
@@ -361,18 +384,27 @@ function calcLeave(e,detail){
   var annualTaken=parseFloat((detail&&detail.annual_taken)||0);
   var annualAvail=(accrued-annualTaken).toFixed(2);
 
+  var sickEligible=months>=6;
   var sickTaken=parseFloat((detail&&detail.sick_taken)||0);
-  var sickAvail=(30-sickTaken).toFixed(0);
+  var sickAvail=sickEligible?(30-sickTaken).toFixed(0):null;
+  var sickCountdown=sickEligible?null:formatCountdown(daysUntilEligible(e.StartDate,6));
 
+  var frlEligible=months>=4;
   var famTaken=parseFloat((detail&&detail.family_taken)||0);
-  var famAvail=(3-famTaken).toFixed(0);
+  var famAvail=frlEligible?(3-famTaken).toFixed(0):null;
+  var frlCountdown=frlEligible?null:formatCountdown(daysUntilEligible(e.StartDate,4));
 
   var isFemale=(e.Gender||'').toLowerCase()==='female';
   var matDays=isFemale?'~120':'10';
   var matLabel=isFemale?'Maternity leave':'Parental leave';
   var matDetail=isFemale?'4 consecutive months (BCEA)':'10 days (BCEA parental)';
 
-  return {annualAvail:annualAvail,accrued:accrued.toFixed(2),entitlement:entitlement,months:months,sickAvail:sickAvail,famAvail:famAvail,matDays:matDays,matLabel:matLabel,matDetail:matDetail};
+  return {
+    annualAvail:annualAvail,accrued:accrued.toFixed(2),entitlement:entitlement,months:months,
+    sickAvail:sickAvail,sickEligible:sickEligible,sickCountdown:sickCountdown,
+    famAvail:famAvail,frlEligible:frlEligible,frlCountdown:frlCountdown,
+    matDays:matDays,matLabel:matLabel,matDetail:matDetail
+  };
 }
 
 // ── SELECT ──
@@ -458,11 +490,55 @@ function renderLeave(e,detail){
   var l=calcLeave(e,detail);
   gi('lv-annual').textContent=l.annualAvail;
   gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued';
-  gi('lv-sick').textContent=l.sickAvail;
-  gi('lv-family').textContent=l.famAvail;
   gi('lv-mat').textContent=l.matDays;
   gi('lv-mat-label').textContent=l.matLabel;
   gi('lv-mat-detail').textContent=l.matDetail;
+
+  // ── Sick leave ──
+  var sickCard=gi('lv-sick-card');
+  if(l.sickEligible){
+    sickCard.classList.remove('locked');
+    gi('lv-sick').textContent=l.sickAvail;
+    gi('lv-sick-unit').textContent='days available';
+    gi('lv-sick-detail').textContent='30 days / 36-month cycle';
+    gi('lv-sick-lock').style.display='none';
+  } else {
+    sickCard.classList.add('locked');
+    gi('lv-sick').textContent='30';
+    gi('lv-sick-unit').textContent='days (not yet available)';
+    gi('lv-sick-detail').textContent='Unlocks at 6 months of service';
+    gi('lv-sick-lock').style.display='block';
+    gi('lv-sick-lock').innerHTML='<div class="lock-badge">🔒 Not yet available</div>'+(l.sickCountdown?'<div class="countdown-chip">⏱ '+l.sickCountdown+'</div>':'');
+  }
+
+  // ── Family responsibility leave ──
+  var frlCard=gi('lv-frl-card');
+  if(l.frlEligible){
+    frlCard.classList.remove('locked');
+    gi('lv-family').textContent=l.famAvail;
+    gi('lv-frl-unit').textContent='days available';
+    gi('lv-frl-detail').textContent='3 days / annual cycle';
+    gi('lv-frl-lock').style.display='none';
+  } else {
+    frlCard.classList.add('locked');
+    gi('lv-family').textContent='3';
+    gi('lv-frl-unit').textContent='days (not yet available)';
+    gi('lv-frl-detail').textContent='Unlocks at 4 months of service';
+    gi('lv-frl-lock').style.display='block';
+    gi('lv-frl-lock').innerHTML='<div class="lock-badge">🔒 Not yet available</div>'+(l.frlCountdown?'<div class="countdown-chip">⏱ '+l.frlCountdown+'</div>':'');
+  }
+
+  // ── Unpaid note ──
+  var unpaidNote=gi('lv-unpaid-note');
+  var locked=[];
+  if(!l.sickEligible) locked.push('sick leave');
+  if(!l.frlEligible) locked.push('family responsibility leave');
+  if(locked.length){
+    unpaidNote.style.display='block';
+    unpaidNote.innerHTML='<strong>Note:</strong> '+locked.map(function(t){return t.charAt(0).toUpperCase()+t.slice(1);}).join(' and ')+' '+(locked.length>1?'are':'is')+' not yet accrued. Any '+locked.join(' or ')+' taken during this period will be <strong>unpaid</strong> in line with the employment contract and BCEA.';
+  } else {
+    unpaidNote.style.display='none';
+  }
 }
 
 // ── TABS ──
