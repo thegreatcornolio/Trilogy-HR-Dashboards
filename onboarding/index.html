@@ -549,10 +549,13 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
 
   var CSV_SEP = ',';
   function detectSep(headerLine){
-    // If there are more semicolons than commas in the header, use semicolon
+    // Count each candidate separator in the header; pick the most frequent
     var commas=(headerLine.match(/,/g)||[]).length;
     var semis=(headerLine.match(/;/g)||[]).length;
-    return semis>commas ? ';' : ',';
+    var tabs=(headerLine.match(/\t/g)||[]).length;
+    if(tabs>=commas && tabs>=semis && tabs>0) return '\t';
+    if(semis>commas) return ';';
+    return ',';
   }
 
   function parseCSVLine(line){
