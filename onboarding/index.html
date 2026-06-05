@@ -254,7 +254,7 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
 
 <script>
 (function(){
-  var ZAPIER = 'https://hooks.zapier.com/hooks/catch/6391188/4oaqqzu/';
+  var ZAPIER = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fcea2bf9fe254cebad7fb036acdf4e44/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WZK-GcDKtcigueZ_n53_96dF9qUDRQy8qYyfdIeDeEI';
   var BASE   = '';
   var MANAGERS_URL = BASE + '/managers.json';
   var CAMPAIGNS_URL = BASE + '/campaigns.json';
@@ -315,15 +315,12 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   }
 
   function postToZapier(payload, cb){
-    var body=Object.keys(payload).map(function(k){
-      return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);
-    }).join('&');
     var xhr=new XMLHttpRequest();
     xhr.open('POST',ZAPIER,true);
-    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Content-Type','application/json');
     xhr.onreadystatechange=function(){ if(xhr.readyState===4) cb(); };
     xhr.onerror=function(){ cb(); };
-    xhr.send(body);
+    xhr.send(JSON.stringify(payload));
   }
 
   // ── TABS ──
