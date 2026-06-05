@@ -680,8 +680,20 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       renderPreview();
       var d=row.data;
       var sd=d.start_date, od=d.offer_date||new Date().toISOString().slice(0,10);
-      // Format dates
-      function fmt(v){if(!v)return'';if(v.includes('/'))return v;var p=v.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v;}
+      // Format dates → always DD/MM/YYYY for SQL style 103
+      function fmt(v){
+        if(!v) return '';
+        v = v.toString().trim();
+        var p;
+        if(v.indexOf('/')>-1){ p = v.split('/'); } 
+        else if(v.indexOf('-')>-1){ p = v.split('-'); }
+        else { return v; }
+        if(p.length!==3) return v;
+        // If first part is 4 digits → YYYY/MM/DD or YYYY-MM-DD → convert to DD/MM/YYYY
+        if(p[0].length===4){ return p[2]+'/'+p[1]+'/'+p[0]; }
+        // Otherwise assume already DD/MM/YYYY
+        return p[0]+'/'+p[1]+'/'+p[2];
+      }
       var fmtSd=fmt(sd), fmtOd=fmt(od);
       var tr=buildRef();
       var cleanSal=(d.salary||'').toString().replace(/^R\s*/i,'').replace(/,/g,'').trim()||'0';
