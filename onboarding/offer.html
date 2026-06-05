@@ -202,8 +202,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
 <script>
 (function(){
-  var ZAPIER_SIGNED_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/6391188/4oa779a/';
-  var ZAPIER_DECLINE_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/6391188/4ocgtfq/';
+  var ZAPIER_SIGNED_WEBHOOK = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82bcb0ef84b44884902296ce245714a4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=eEXdgz4lrN-BFIuzYYmjqEwM9Pv5sOX29xYwQiIsR3M';
+  var ZAPIER_DECLINE_WEBHOOK = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8b6db81ca27e4460bd8aebdb36719b93/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Q_f7fl_6XljIZV0DnI39LawcD5lWsPOR7XuMeTfuPno';
 
   function gi(id){ return document.getElementById(id); }
   function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
@@ -410,11 +410,10 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       document_filename: D.ref+'_'+cap(D.fn)+'_'+cap(D.ln)+'_LetterOfOffer_Signed.html'
     };
 
-    var body = Object.keys(payload).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]); }).join("&");
     var xhr = new XMLHttpRequest();
     xhr.open("POST", ZAPIER_SIGNED_WEBHOOK, true);
-    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-    xhr.send(body);
+    xhr.setRequestHeader("Content-Type","application/json");
+    xhr.send(JSON.stringify(payload));
     // Mark token as used to prevent resubmission
     sessionStorage.setItem('offer_used_'+D.token, '1');
     // Hide offer content immediately — cannot be shown again
@@ -500,8 +499,8 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
     fetch(ZAPIER_DECLINE_WEBHOOK, {
       method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
     }).catch(function(err){ console.error('Decline webhook error:', err); });
 
     // Mark as used

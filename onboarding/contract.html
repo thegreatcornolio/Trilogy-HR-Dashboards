@@ -241,7 +241,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
 
 <script>
 (function(){
-  var ZAPIER_CONTRACT_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/6391188/4b3yos6/';
+  var ZAPIER_CONTRACT_WEBHOOK = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/21acafa3d30c4f80940b32c2fe70ab04/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=l1OEvcdrPeWvBgzzLRvdxqwsk2P30J3eg_Vvb5E4ydU';
 
   function gi(id){ return document.getElementById(id); }
   function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }
@@ -431,11 +431,10 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       document_filename:D.ref+'_'+cap(D.fn)+'_'+cap(D.ln)+'_ContractOfEmployment_Signed.html'
     };
 
-    var body=Object.keys(payload).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(payload[k]);}).join('&');
     var xhr=new XMLHttpRequest();
     xhr.open('POST',ZAPIER_CONTRACT_WEBHOOK,true);
-    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    xhr.send(body);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.send(JSON.stringify(payload));
 
     // Mark used to prevent resubmission
     sessionStorage.setItem('contract_used_'+D.ref, '1');

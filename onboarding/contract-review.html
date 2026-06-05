@@ -122,7 +122,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 
 <script>
 (function(){
-  var ZAPIER_SEND_CONTRACT = 'https://hooks.zapier.com/hooks/catch/6391188/4opdi3u/';
+  var ZAPIER_SEND_CONTRACT = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eed90d597d004cad97570f17e610aa91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xZh2zrYasZlEQiPL81QUOtuwUzK1epgeFoBha8sGSK8';
   var BASE = '';
   var SITE_URL = 'https://hr.trilogybpo.com';
 
@@ -203,8 +203,8 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 
     fetch(ZAPIER_SEND_CONTRACT, {
       method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
     })
     .then(function(r){
       if(!r.ok) throw new Error('Status '+r.status);
