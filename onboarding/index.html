@@ -541,9 +541,9 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   window.downloadBulkTemplate=function(){
     var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
     var today=new Date().toISOString().slice(0,10);
-    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
-      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
-      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
+    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,annual_leave,start_date,offer_date,reports_to_name,reports_to_email\n'+
+      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,15,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
+      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,21,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
     var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
   };
 
@@ -681,16 +681,20 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
       function fmt(v){if(!v)return'';if(v.includes('/'))return v;var p=v.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v;}
       var fmtSd=fmt(sd), fmtOd=fmt(od);
       var tr=buildRef();
-      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:d.salary||'',sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email};
+      var cleanSal=(d.salary||'').toString().replace(/^R\s*/i,'').replace(/,/g,'').trim()||'0';
+      var cleanLeave=(d.annual_leave||'').toString().trim()||'15';
+      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:cleanSal,sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email,al:cleanLeave};
       var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
       var payload={
         action:'send_offer', ref:tr.ref,
         candidate_first:d.first_name, candidate_last:d.last_name,
         candidate_email:d.email, candidate_id:d.id_number||'',
         candidate_mobile:d.mobile||'', candidate_address:d.address||'',
-        job_title:d.job_title, campaign:d.campaign||'', salary:d.salary||'',
+        job_title:d.job_title, campaign:d.campaign||'', salary:cleanSal,
         start_date:fmtSd, offer_date:fmtOd,
         reports_to:d.reports_to_name||'', reports_to_email:d.reports_to_email,
+        place_of_work:'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town',
+        annual_leave:cleanLeave, background_check:'Complete',
         signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
       };
       postToZapier(payload, function(){
