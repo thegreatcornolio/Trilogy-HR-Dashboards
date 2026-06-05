@@ -275,8 +275,9 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   function fixIdNumber(val){
     if(!val) return '';
     val = val.toString().trim();
+    // Handle scientific notation, including comma decimal separator (e.g. 9,00102E+12)
     if(val.toUpperCase().indexOf('E+') > -1){
-      try { return parseInt(parseFloat(val)).toString(); } catch(e){ return val; }
+      try { return parseInt(parseFloat(val.replace(',','.'))).toString(); } catch(e){ return val; }
     }
     return val;
   }
@@ -549,12 +550,20 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
     var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
   };
 
+  var CSV_SEP = ',';
+  function detectSep(headerLine){
+    // If there are more semicolons than commas in the header, use semicolon
+    var commas=(headerLine.match(/,/g)||[]).length;
+    var semis=(headerLine.match(/;/g)||[]).length;
+    return semis>commas ? ';' : ',';
+  }
+
   function parseCSVLine(line){
     var result=[],cur='',inQ=false;
     for(var i=0;i<line.length;i++){
       var c=line[i];
       if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur);cur='';}
+      else if(c===CSV_SEP&&!inQ){result.push(cur);cur='';}
       else{cur+=c;}
     }
     result.push(cur);
@@ -564,7 +573,8 @@ body{font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg
   function parseCSV(text){
     var lines=text.split('\n').filter(Boolean);
     if(lines.length<2)return[];
-    var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
+    CSV_SEP=detectSep(lines[0]);
+    var headers=lines[0].split(CSV_SEP).map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
     var rows=[];
     for(var i=1;i<lines.length;i++){
       var vals=parseCSVLine(lines[i]);
