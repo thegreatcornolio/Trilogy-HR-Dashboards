@@ -4,5 +4,20 @@
   },
   {
     "name": "EXCO"
+  },
+  {
+    "name": "Sales"
+  },
+  {
+    "name": "Marketing"
+  },
+  {
+    "name": "Finance"
+  },
+  {
+    "name": "Information Technology"
+  },
+  {
+    "name": "Operations"
   }
 ]
