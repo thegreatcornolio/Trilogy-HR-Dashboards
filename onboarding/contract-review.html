@@ -53,7 +53,22 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
   </div>
 </div>
 
-<div id="reviewCard">
+<!-- LOADING -->
+<div id="loadingScreen" style="text-align:center;padding:3rem 1.5rem">
+  <div style="width:36px;height:36px;border:3px solid #e2e1dd;border-top-color:#1e1e1e;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem"></div>
+  <div style="font-size:13px;color:#7a8499">Verifying…</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<!-- EXPIRED -->
+<div id="expiredScreen" style="display:none;text-align:center;padding:3rem 1.5rem">
+  <div style="font-size:56px;margin-bottom:1rem">🔒</div>
+  <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#1e1e1e;margin-bottom:.75rem">Contract already sent</div>
+  <div style="font-size:14px;color:#4A5568;max-width:400px;margin:0 auto 1.5rem">This contract has already been reviewed and sent to the candidate. No further action is needed from this link.</div>
+  <div style="font-size:12px;color:#7a8499">Ref: <strong id="expiredRef"></strong></div>
+</div>
+
+<div id="reviewCard" style="display:none">
   <div class="info-banner">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>This candidate has accepted their letter of offer. Review the contract details below and send the contract of employment when ready.</div>
@@ -149,6 +164,39 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
   gi('dSal').textContent = 'R '+D.sal.toString().replace(/^R\s*/i,'');
   gi('dSd').textContent = D.sd;
   gi('dRef').textContent = D.ref;
+
+  // ── EXPIRY CHECK: if contract already sent, block re-send ──
+  var TOKEN_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ffa9da21036a4af1b4c33e26a61e6879/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5iYg_qzJ8_gIMvNQDiIe5M1a4rhSPsz-9GN1tkjzHnc';
+
+  if(D.ref){
+    fetch(TOKEN_CHECK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:D.token,ref:D.ref})})
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      gi('loadingScreen').style.display='none';
+      var sent=false;
+      try{
+        var data=JSON.parse(txt);
+        if(data.body){data=typeof data.body==='string'?JSON.parse(data.body):data.body;}
+        var status=(data.status||'').toString().toLowerCase();
+        // If status has progressed to Contract Sent or beyond, link is spent
+        sent=['contract sent','contract signed','onboarded','active'].indexOf(status)>-1;
+      }catch(e){console.error('Status check error:',e,txt);}
+      if(sent){
+        gi('expiredScreen').style.display='block';
+        if(gi('expiredRef'))gi('expiredRef').textContent=D.ref;
+      } else {
+        gi('reviewCard').style.display='block';
+      }
+    })
+    .catch(function(err){
+      console.error('Check error:',err);
+      gi('loadingScreen').style.display='none';
+      gi('reviewCard').style.display='block';
+    });
+  } else {
+    gi('loadingScreen').style.display='none';
+    gi('reviewCard').style.display='block';
+  }
 
   window.sendContract = function(){
     var btn=gi('sendBtn'), lbl=gi('sendBtnLabel'), spin=gi('sendSpinner');
