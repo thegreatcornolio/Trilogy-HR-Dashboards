@@ -182,6 +182,45 @@ tr.data-row:hover td{background:#f7f6f2}
   .payslip{box-shadow:none;border-radius:0;max-width:100%;page-break-inside:avoid}
 }
 
+/* ── BATCH PAYROLL MODAL ── */
+.batch-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;align-items:flex-start;justify-content:center;padding:1.5rem;overflow-y:auto}
+.batch-overlay.open{display:flex}
+.batch-modal{background:#fff;border-radius:var(--radius-xl);width:100%;max-width:860px;box-shadow:0 24px 80px rgba(0,0,0,.5);margin:auto}
+.batch-topbar{background:var(--navy);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.batch-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.batch-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.batch-topbar-right{display:flex;gap:8px}
+.batch-period-row{display:flex;align-items:center;gap:10px;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:var(--offwhite);flex-wrap:wrap}
+.batch-period-row label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)}
+.batch-sel{padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:#fff}
+.batch-run-btn{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;margin-left:auto}
+.batch-run-btn:hover{background:var(--green);color:#111}
+.batch-body{padding:0}
+/* Batch table */
+.batch-tbl-wrap{overflow-x:auto}
+.batch-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.batch-tbl th{background:var(--navy);color:rgba(255,255,255,.65);padding:9px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.batch-tbl th.num{text-align:right}
+.batch-tbl td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.batch-tbl td.num{text-align:right;font-family:'Montserrat',sans-serif;font-weight:600;color:var(--text)}
+.batch-tbl td.neg{text-align:right;font-family:'Montserrat',sans-serif;font-weight:600;color:var(--red)}
+.batch-tbl td.net{text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;color:var(--green-dark)}
+.batch-tbl tr.no-salary td{color:var(--text3);font-style:italic}
+.batch-tbl tr.totals-row td{background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;border:none}
+.batch-tbl tr.totals-row td.num{text-align:right;color:rgba(255,255,255,.8)}
+.batch-tbl tr.totals-row td.highlight{color:var(--green)}
+.batch-emp-name{font-weight:700;color:var(--text);font-size:12px}
+.batch-emp-ref{font-size:10px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.batch-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--offwhite);border-radius:0 0 var(--radius-xl) var(--radius-xl);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.batch-footer-note{font-size:11px;color:var(--text3)}
+/* Print — batch */
+@media print{
+  body>*{display:none!important}
+  .batch-overlay.open{display:block!important;position:static;background:none;padding:0;overflow:visible}
+  .batch-modal{box-shadow:none;border-radius:0;max-width:100%}
+  .batch-topbar-right,.batch-period-row .batch-run-btn,.batch-footer{display:none!important}
+  .batch-tbl{font-size:11px}
+}
 /* ── FOOTER ── */
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -232,6 +271,7 @@ tr.data-row:hover td{background:#f7f6f2}
       <option value="salary-asc">Salary ↑</option>
       <option value="start-desc">Start date ↓</option>
     </select>
+    <button class="icon-btn" onclick="openBatchPayroll()" style="background:var(--navy);color:#fff;border-color:var(--navy)">▶▶ Run all</button>
     <button class="icon-btn" onclick="exportCSV()">⬇ Export CSV</button>
     <span class="count-badge" id="countBadge">Loading…</span>
   </div>
@@ -338,6 +378,64 @@ tr.data-row:hover td{background:#f7f6f2}
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- BATCH PAYROLL MODAL                          -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="batch-overlay" id="batchOverlay">
+  <div class="batch-modal">
+
+    <div class="batch-topbar">
+      <div>
+        <div class="batch-title">Payroll Run — All Employees</div>
+        <div class="batch-sub" id="batch-sub-label">Select a pay period and click Run</div>
+      </div>
+      <div class="batch-topbar-right">
+        <button class="pr-print-btn" onclick="window.print()">🖨 Print</button>
+        <button class="pr-close-btn" onclick="closeBatchModal()">✕</button>
+      </div>
+    </div>
+
+    <div class="batch-period-row">
+      <label>Pay period</label>
+      <select class="batch-sel" id="batch-month"></select>
+      <select class="batch-sel" id="batch-year"></select>
+      <select class="batch-sel" id="batch-status-filter">
+        <option value="Active">Active employees</option>
+        <option value="">All employees</option>
+        <option value="Onboarded">Onboarded</option>
+      </select>
+      <button class="batch-run-btn" onclick="runBatchPayroll()">▶ Run payroll</button>
+    </div>
+
+    <div class="batch-body">
+      <div class="batch-tbl-wrap">
+        <table class="batch-tbl">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Campaign</th>
+              <th class="num">Gross salary</th>
+              <th class="num">PAYE</th>
+              <th class="num">UIF (emp)</th>
+              <th class="num">Total deductions</th>
+              <th class="num">Take-home</th>
+            </tr>
+          </thead>
+          <tbody id="batchBody">
+            <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3);font-size:13px">Select a pay period above and click <strong>Run payroll</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="batch-footer">
+      <div class="batch-footer-note">SARS 2025/2026 tax tables · Primary rebate R 17,235 · UIF ceiling R 17,712/mo · Gross salary only — no additional deductions applied</div>
+      <button class="icon-btn" onclick="exportBatchCSV()" id="batchExportBtn" style="display:none">⬇ Export CSV</button>
+    </div>
+
   </div>
 </div>
 
@@ -727,8 +825,100 @@ function exportCSV(){
   a.download='trilogy-payroll-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BATCH PAYROLL
+═══════════════════════════════════════════════════════════ */
+var lastBatchResults=[];
+
+function openBatchPayroll(){
+  var now=new Date();
+  // Populate period selectors
+  var bm=gi('batch-month');
+  bm.innerHTML=MONTHS.map(function(m,i){return'<option value="'+(i+1)+'"'+(i===now.getMonth()?' selected':'')+'>'+m+'</option>';}).join('');
+  var by=gi('batch-year');
+  by.innerHTML='';
+  for(var y=now.getFullYear()-1;y<=now.getFullYear()+1;y++){
+    var o=document.createElement('option');o.value=y;o.textContent=y;
+    if(y===now.getFullYear())o.selected=true;
+    by.appendChild(o);
+  }
+  gi('batchOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeBatchModal(){
+  gi('batchOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function runBatchPayroll(){
+  var monthIdx=parseInt(gi('batch-month').value)-1;
+  var year=gi('batch-year').value;
+  var statusF=gi('batch-status-filter').value;
+  var period=MONTHS[monthIdx]+' '+year;
+
+  var employees=allEmployees.filter(function(e){
+    return !statusF||e.Status===statusF;
+  });
+
+  gi('batch-sub-label').textContent=period+' · '+employees.length+' employee'+(employees.length!==1?'s':'');
+
+  lastBatchResults=[];
+  var totalGross=0,totalPAYE=0,totalUIF=0,totalNet=0;
+  var noSalaryCount=0;
+
+  var rows=employees.map(function(e){
+    var gross=monthlyEquiv(e.Salary,e.SalaryFrequency);
+    if(!gross){noSalaryCount++;lastBatchResults.push({emp:e,gross:0,paye:0,uif:0,net:0,noSalary:true});return'<tr class="no-salary"><td><div class="batch-emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="batch-emp-ref">'+(e.EmployeeID||'')+'</div></td><td style="font-size:11px;color:var(--text3)">'+(e.Campaign||'—')+'</td><td class="num" colspan="5">No salary on file</td></tr>';}
+    var p=calcMonthlyPAYE(gross);
+    var uif=calcUIF(gross);
+    var totalDed=p.paye+uif;
+    var net=gross-totalDed;
+    totalGross+=gross;totalPAYE+=p.paye;totalUIF+=uif;totalNet+=net;
+    lastBatchResults.push({emp:e,gross:gross,paye:p.paye,uif:uif,totalDed:totalDed,net:net,noSalary:false});
+    return'<tr>'+
+      '<td><div class="batch-emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="batch-emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:11px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td class="num">'+fmtR(gross)+'</td>'+
+      '<td class="neg">'+fmtR(p.paye)+'</td>'+
+      '<td class="neg">'+fmtR(uif)+'</td>'+
+      '<td class="neg">'+fmtR(totalDed)+'</td>'+
+      '<td class="net">'+fmtR(net)+'</td>'+
+      '</tr>';
+  });
+
+  // Totals row
+  var withSalary=employees.length-noSalaryCount;
+  rows.push(
+    '<tr class="totals-row">'+
+    '<td colspan="2">TOTALS &nbsp;·&nbsp; '+withSalary+' employees with salary'+(noSalaryCount?' &nbsp;·&nbsp; '+noSalaryCount+' no salary':'')+' &nbsp;·&nbsp; '+period+'</td>'+
+    '<td class="num">'+fmtR(totalGross)+'</td>'+
+    '<td class="num">'+fmtR(totalPAYE)+'</td>'+
+    '<td class="num">'+fmtR(totalUIF)+'</td>'+
+    '<td class="num">'+fmtR(totalPAYE+totalUIF)+'</td>'+
+    '<td class="num highlight">'+fmtR(totalNet)+'</td>'+
+    '</tr>'
+  );
+
+  gi('batchBody').innerHTML=rows.join('');
+  gi('batchExportBtn').style.display='flex';
+}
+
+function exportBatchCSV(){
+  if(!lastBatchResults.length)return;
+  var rows=[['Employee ID','First Name','Last Name','Job Title','Campaign','Status','Gross (Monthly)','PAYE','UIF (Employee)','Total Deductions','Take-home (Net)']];
+  lastBatchResults.forEach(function(r){
+    rows.push([r.emp.EmployeeID,r.emp.FirstName,r.emp.LastName,r.emp.JobTitle,r.emp.Campaign,r.emp.Status,r.noSalary?'':r.gross.toFixed(2),r.noSalary?'':r.paye.toFixed(2),r.noSalary?'':r.uif.toFixed(2),r.noSalary?'':(r.paye+r.uif).toFixed(2),r.noSalary?'':r.net.toFixed(2)]);
+  });
+  var csv=rows.map(function(r){return r.map(function(v){return'"'+(v||'').toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='trilogy-payroll-run-'+gi('batch-year').value+'-'+String(gi('batch-month').value).padStart(2,'0')+'.csv';
+  a.click();
+}
+
 /* ─── close on overlay click ─── */
-gi('prOverlay').addEventListener('click',function(e){if(e.target===this)closePayrollModal();});
+gi('batchOverlay').addEventListener('click',function(e){if(e.target===this)closeBatchModal();});
 
 loadEmployees();
 </script>
