@@ -12,7 +12,7 @@
   --text:#1a1a18;--text2:#5a5a56;--text3:#88887e;--radius:8px;--radius-lg:12px;
   --red:#c0392b;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+body{overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .shell{max-width:700px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
 .brand{display:flex;align-items:center;gap:10px}
@@ -364,7 +364,7 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     // Build full signed document HTML for storage
     var docHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
       '<title>Signed Letter of Offer — '+cap(D.fn)+' '+cap(D.ln)+'</title>'+
-      '<style>body{font-family:Arial,sans-serif;max-width:750px;margin:40px auto;padding:0 20px;color:#1B2A4A;font-size:13px;line-height:1.8}'+
+      '<style>body{overflow-x:hidden;font-family:Arial,sans-serif;max-width:750px;margin:40px auto;padding:0 20px;color:#1B2A4A;font-size:13px;line-height:1.8}'+
       '.hd{border-bottom:3px solid #1B2A4A;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}'+
       '.hd-name{font-size:22px;font-weight:800;color:#1B2A4A}.hd-ref{font-size:11px;color:#888;text-align:right}'+
       '.section{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin:20px 0 6px;border-bottom:1px solid #ddd;padding-bottom:4px}'+
