@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Payroll Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22}
+html{scroll-behavior:smooth}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.hstat{border-left:2px solid var(--green);padding-left:1rem}
+.hstat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.hstat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem}
+/* Campaign summary strip */
+.campaign-strip{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.camp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;flex:1;min-width:160px;cursor:pointer;transition:all .15s}
+.camp-card:hover{border-color:var(--navy);box-shadow:0 2px 10px rgba(27,42,74,.1)}
+.camp-card.active{border-color:var(--navy);background:var(--navy);color:#fff}
+.camp-card.active .camp-name{color:rgba(255,255,255,.5)}
+.camp-card.active .camp-count{color:#fff}
+.camp-card.active .camp-salary{color:var(--green)}
+.camp-name{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.camp-count{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:900;color:var(--text);line-height:1;margin-bottom:2px}
+.camp-salary{font-size:11px;color:var(--text3)}
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.search-wrap input:focus{outline:none;border-color:var(--navy)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
+.export-btn{padding:9px 14px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.export-btn:hover{background:var(--offwhite)}
+.count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+/* Table */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{background:var(--navy2)}
+th .sort-arrow{margin-left:4px;opacity:.4}
+th.sorted .sort-arrow{opacity:1}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.data-row:hover td{background:#f7f6f2}
+.emp-name{font-weight:700;color:var(--text)}
+.emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.s-active{background:var(--green-light);color:var(--green-dark)}
+.s-onboarded{background:#d1ecf1;color:#0c5460}
+.s-exited{background:#f0f0f0;color:#888}
+.salary-cell{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text)}
+.freq-badge{font-size:10px;color:var(--text3);font-weight:400;font-family:'Wix Madefor Text',sans-serif}
+.loading-row td{text-align:center;padding:3rem;color:var(--text3)}
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Totals row */
+.totals-bar{background:var(--navy);border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:12px 14px;display:flex;gap:2rem;flex-wrap:wrap}
+.total-item{font-size:12px;color:rgba(255,255,255,.6)}
+.total-item strong{color:#fff;font-family:'Montserrat',sans-serif;font-weight:800}
+.total-item .total-val{color:var(--green);font-family:'Montserrat',sans-serif;font-weight:800}
+/* No salary badge */
+.no-salary{color:var(--text3);font-style:italic;font-size:12px}
+/* Footer */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+/* Disclaimer */
+.disclaimer{background:#fff8e1;border:1px solid #ffc107;border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:12px;color:#7a5500;margin-bottom:1.5rem}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Payroll</div>
+  </div>
+  <a href="../" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Finance</div>
+    <div class="hero-title">Payroll Overview</div>
+    <div class="hero-sub">Salary headcount and payroll totals by campaign. Based on contracted salary from employee records — for indicative purposes only.</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="statHeadcount">—</div><div class="hstat-label">Active headcount</div></div>
+      <div class="hstat"><div class="hstat-num" id="statMonthly">—</div><div class="hstat-label">Est. monthly payroll</div></div>
+      <div class="hstat"><div class="hstat-num" id="statAvg">—</div><div class="hstat-label">Avg salary (active)</div></div>
+      <div class="hstat"><div class="hstat-num" id="statMissing">—</div><div class="hstat-label">No salary on file</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="disclaimer">
+    ⚠️ <strong>Indicative only.</strong> This view shows contracted salary from employee records as-is. It does not reflect deductions, UIF, tax or actual payroll runs. Salaries marked "Not set" have not been captured. For payroll processing, use the official payroll system.
+  </div>
+
+  <!-- Campaign summary strip (populated by JS) -->
+  <div class="campaign-strip" id="campaignStrip"></div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search by name, ID, job title or campaign…" oninput="filterAndRender()">
+    </div>
+    <select class="filter-sel" id="statusFilter" onchange="filterAndRender()">
+      <option value="Active">Active employees</option>
+      <option value="">All employees</option>
+      <option value="Onboarded">Onboarded</option>
+    </select>
+    <select class="filter-sel" id="freqFilter" onchange="filterAndRender()">
+      <option value="">All pay frequencies</option>
+      <option value="Monthly">Monthly</option>
+      <option value="Weekly">Weekly</option>
+      <option value="Bi-weekly">Bi-weekly</option>
+    </select>
+    <select class="filter-sel" id="sortBy" onchange="filterAndRender()">
+      <option value="name">Sort: Name</option>
+      <option value="salary-desc">Sort: Salary ↓</option>
+      <option value="salary-asc">Sort: Salary ↑</option>
+      <option value="start-desc">Sort: Start date ↓</option>
+    </select>
+    <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+    <span class="count-badge" id="countBadge">Loading…</span>
+  </div>
+
+  <div class="tbl-wrap">
+    <table id="payTable">
+      <thead>
+        <tr>
+          <th style="width:40px"></th>
+          <th>Employee</th>
+          <th>Job title</th>
+          <th>Campaign</th>
+          <th>Start date</th>
+          <th>Status</th>
+          <th>Salary</th>
+          <th>Monthly equiv.</th>
+        </tr>
+      </thead>
+      <tbody id="payBody">
+        <tr class="loading-row"><td colspan="8"><div class="spinner"></div>Loading payroll data…</td></tr>
+      </tbody>
+    </table>
+    <div class="totals-bar" id="totalsBar" style="display:none">
+      <div class="total-item">Showing <strong id="tot-count">0</strong> employees</div>
+      <div class="total-item">Total monthly: <span class="total-val" id="tot-monthly">—</span></div>
+      <div class="total-item">Average: <span class="total-val" id="tot-avg">—</span></div>
+      <div class="total-item" id="tot-weekly-wrap" style="display:none">Total weekly: <span class="total-val" id="tot-weekly">—</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+
+var PAYROLL_STATUSES=['Active','Onboarded','Resigned','Dismissed','Retrenched','AWOL','Deceased'];
+var allEmployees=[], filteredEmployees=[], activeCampaign='';
+
+function gi(id){return document.getElementById(id);}
+function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
+function fmtZAR(n){return'R '+n.toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0});}
+
+// Normalise salary to monthly equivalent
+function monthlyEquiv(salary,freq){
+  var s=parseFloat(salary||0);
+  if(!s)return 0;
+  freq=(freq||'Monthly').toLowerCase();
+  if(freq.includes('week')&&freq.includes('bi'))return s*2; // bi-weekly = 2/month approx
+  if(freq.includes('week'))return s*4.33;
+  if(freq.includes('annual')||freq.includes('year'))return s/12;
+  return s; // Monthly default
+}
+
+// ── LOAD ──
+function loadEmployees(){
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var all=Array.isArray(data)?data:(data.employees||[]);
+    allEmployees=all.filter(function(e){return PAYROLL_STATUSES.indexOf(e.Status)>=0;});
+    renderStats();
+    buildCampaignStrip();
+    filterAndRender();
+  })
+  .catch(function(err){gi('payBody').innerHTML='<tr class="loading-row"><td colspan="8">⚠️ Could not load payroll data.<br><small>'+err.message+'</small></td></tr>';});
+}
+
+function renderStats(){
+  var active=allEmployees.filter(function(e){return e.Status==='Active';});
+  var totalMonthly=0,count=0,missing=0;
+  active.forEach(function(e){
+    var m=monthlyEquiv(e.Salary,e.SalaryFrequency);
+    if(m>0){totalMonthly+=m;count++;}else missing++;
+  });
+  gi('statHeadcount').textContent=active.length;
+  gi('statMonthly').textContent=totalMonthly>0?fmtZAR(totalMonthly):'—';
+  gi('statAvg').textContent=(count>0)?fmtZAR(totalMonthly/count):'—';
+  gi('statMissing').textContent=missing;
+}
+
+function buildCampaignStrip(){
+  // Group by campaign
+  var camps={};
+  allEmployees.forEach(function(e){
+    var c=e.Campaign||'(No campaign)';
+    if(!camps[c])camps[c]={count:0,monthly:0};
+    camps[c].count++;
+    camps[c].monthly+=monthlyEquiv(e.Salary,e.SalaryFrequency);
+  });
+  var html='<div class="camp-card'+(activeCampaign===''?' active':'')+'" onclick="setCampaign(this,\'\')">'+'<div class="camp-name">All campaigns</div><div class="camp-count">'+allEmployees.length+'</div><div class="camp-salary">employees</div></div>';
+  Object.keys(camps).sort().forEach(function(c){
+    var info=camps[c];
+    html+='<div class="camp-card'+(activeCampaign===c?' active':'')+'" onclick="setCampaign(this,\''+c.replace(/'/g,"\\'")+'\')">'+'<div class="camp-name">'+c+'</div><div class="camp-count">'+info.count+'</div><div class="camp-salary">'+(info.monthly>0?fmtZAR(info.monthly)+'/mo':'No salary data')+'</div></div>';
+  });
+  gi('campaignStrip').innerHTML=html;
+}
+
+function setCampaign(el,camp){
+  activeCampaign=camp;
+  document.querySelectorAll('.camp-card').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  filterAndRender();
+}
+
+function filterAndRender(){
+  var q=gi('searchInput').value.toLowerCase();
+  var f=gi('statusFilter').value;
+  var freq=gi('freqFilter').value;
+  var sort=gi('sortBy').value;
+
+  filteredEmployees=allEmployees.filter(function(e){
+    var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
+    var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.Campaign||'').toLowerCase().includes(q);
+    var mf=!f||e.Status===f;
+    var mcamp=!activeCampaign||(e.Campaign||'(No campaign)')===activeCampaign;
+    var mfreq=!freq||(e.SalaryFrequency||'').toLowerCase()===freq.toLowerCase();
+    return mq&&mf&&mcamp&&mfreq;
+  });
+
+  // Sort
+  filteredEmployees.sort(function(a,b){
+    if(sort==='salary-desc')return monthlyEquiv(b.Salary,b.SalaryFrequency)-monthlyEquiv(a.Salary,a.SalaryFrequency);
+    if(sort==='salary-asc')return monthlyEquiv(a.Salary,a.SalaryFrequency)-monthlyEquiv(b.Salary,b.SalaryFrequency);
+    if(sort==='start-desc')return(b.StartDate||'').localeCompare(a.StartDate||'');
+    // Name default
+    return ((a.FirstName||'')+' '+(a.LastName||'')).localeCompare((b.FirstName||'')+' '+(b.LastName||''));
+  });
+
+  renderTable(filteredEmployees);
+}
+
+function renderTable(list){
+  gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
+  if(!list.length){gi('payBody').innerHTML='<tr class="loading-row"><td colspan="8">No employees match the current filters</td></tr>';gi('totalsBar').style.display='none';return;}
+
+  var totalMonthly=0,salaryCount=0;
+  gi('payBody').innerHTML=list.map(function(e){
+    var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
+    var hasSalary=e.Salary&&parseFloat(e.Salary)>0;
+    var monthly=monthlyEquiv(e.Salary,e.SalaryFrequency);
+    if(monthly>0){totalMonthly+=monthly;salaryCount++;}
+    var salaryStr=hasSalary?fmtZAR(parseFloat(e.Salary)):'<span class="no-salary">Not set</span>';
+    var freqStr=e.SalaryFrequency?'<span class="freq-badge"> / '+(e.SalaryFrequency||'')+'</span>':'';
+    var monthlyStr=monthly>0?fmtZAR(monthly):'<span class="no-salary">—</span>';
+    return '<tr class="data-row">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.JobTitle||'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--text3)">'+(e.StartDate?e.StartDate.split('T')[0]:'—')+'</td>'+
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
+      '<td class="salary-cell">'+salaryStr+freqStr+'</td>'+
+      '<td class="salary-cell">'+monthlyStr+'</td>'+
+      '</tr>';
+  }).join('');
+
+  // Totals bar
+  gi('tot-count').textContent=list.length;
+  gi('tot-monthly').textContent=totalMonthly>0?fmtZAR(totalMonthly):'—';
+  gi('tot-avg').textContent=(salaryCount>0)?fmtZAR(totalMonthly/salaryCount):'—';
+  gi('totalsBar').style.display='flex';
+}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  if(!filteredEmployees.length)return;
+  var rows=[['Employee ID','First Name','Last Name','Job Title','Campaign','Status','Start Date','Salary','Salary Frequency','Monthly Equivalent (ZAR)']];
+  filteredEmployees.forEach(function(e){
+    rows.push([
+      e.EmployeeID,e.FirstName,e.LastName,e.JobTitle,e.Campaign,e.Status,
+      e.StartDate?e.StartDate.split('T')[0]:'',
+      e.Salary||'',e.SalaryFrequency||'',
+      monthlyEquiv(e.Salary,e.SalaryFrequency)||''
+    ]);
+  });
+  var csv=rows.map(function(r){return r.map(function(v){return'"'+(v||'').toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='trilogy-payroll-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
+loadEmployees();
+</script>
+</body>
+</html>
