@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilogy · Employee Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- MSAL.js — Microsoft Authentication Library -->
+  <script src="https://alcdn.msauth.net/browser/3.3.0/js/msal-browser.min.js" crossorigin="anonymous"></script>
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — matches hr.trilogybpo.com exactly
+    ============================================================ */
+    :root {
+      --navy:       #1e1e1e;
+      --navy2:      #2a2a2a;
+      --green:      #4AFD0E;
+      --green-light:#edffd6;
+      --green-dark: #2a8a00;
+      --offwhite:   #F7F6F2;
+      --border:     #e2e1dd;
+      --border2:    #c8c7c3;
+      --surface:    #fff;
+      --bg:         #e8e7e3;
+      --text:       #1B2A4A;
+      --text2:      #4A5568;
+      --text3:      #7a8499;
+      --radius:     8px;
+      --radius-lg:  12px;
+      --radius-xl:  16px;
+      --red:        #c0392b;
+      --orange:     #e67e22;
+      --blue:       #2980b9;
+    }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body {
+      overflow-x: hidden;
+      font-family: 'Wix Madefor Text', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      margin: 0;
+    }
+    * { box-sizing: border-box; }
+
+    /* ── NAV ── */
+    .nav {
+      background: var(--navy);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 12px; }
+    .nav-logo { height: 28px; }
+    .nav-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); }
+    .nav-section {
+      color: rgba(255,255,255,0.65);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--green); color: var(--navy);
+      font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden; border: 2px solid rgba(74,253,14,0.4);
+    }
+    .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .nav-name {
+      color: rgba(255,255,255,0.8);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 600;
+    }
+    .nav-role-badge {
+      background: rgba(74,253,14,0.14); color: var(--green);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 3px 9px; border-radius: 4px;
+    }
+    .btn-signout {
+      background: transparent; border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.55); font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 600; padding: 6px 12px;
+      border-radius: 6px; cursor: pointer; letter-spacing: 0.04em;
+      transition: all 0.18s;
+    }
+    .btn-signout:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+
+    /* ── HERO ── */
+    .hero { background: var(--navy); padding: 40px 0 36px; }
+    .hero-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .hero-label {
+      color: var(--green); font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.13em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .hero-title {
+      color: #fff; font-family: 'Montserrat', sans-serif;
+      font-size: 30px; font-weight: 900; margin-bottom: 5px; line-height: 1.15;
+    }
+    .hero-sub { color: rgba(255,255,255,0.38); font-size: 14px; margin-bottom: 28px; }
+    .hero-stats { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hstat {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg); padding: 14px 20px; min-width: 120px;
+    }
+    .hstat-num {
+      color: #fff; font-family: 'Montserrat', sans-serif;
+      font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 4px;
+    }
+    .hstat-num.green  { color: var(--green); }
+    .hstat-num.orange { color: #f6ad55; }
+    .hstat-num.red    { color: #fc8181; }
+    .hstat-label {
+      color: rgba(255,255,255,0.38); font-size: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 28px 32px 56px; }
+
+    /* ── DASHBOARD GRID ── */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .col-span-2 { grid-column: span 2; }
+    .col-span-3 { grid-column: span 3; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 15px 20px; border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.09em; text-transform: uppercase; color: var(--text2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .icon-g  { background: var(--green-light); }
+    .icon-b  { background: #dbeafe; }
+    .icon-o  { background: #fef3c7; }
+    .icon-r  { background: #fee2e2; }
+    .icon-p  { background: #f3e8ff; }
+    .icon-n  { background: rgba(30,30,30,0.07); }
+
+    .badge {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px;
+      text-decoration: none;
+    }
+    .badge-green  { background: var(--green-light); color: var(--green-dark); }
+    .badge-orange { background: #fef3c7; color: #92400e; }
+    .badge-red    { background: #fee2e2; color: var(--red); }
+    .badge-blue   { background: #dbeafe; color: #1e40af; }
+    .badge-grey   { background: var(--bg); color: var(--text3); }
+
+    .card-body { padding: 20px; }
+
+    /* ── STATUS PILLS ── */
+    .s-active   { background: var(--green-light); color: var(--green-dark); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+    .s-onboarded{ background: #dbeafe; color:#1e40af; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+    .s-exited   { background: var(--bg); color:var(--text3); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+
+    /* ── SKELETON ── */
+    .skel {
+      background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── PERSONAL SNAPSHOT ── */
+    .snap-head {
+      background: linear-gradient(135deg, var(--navy) 0%, #252535 100%);
+      padding: 20px; display: flex; align-items: center; gap: 16px;
+    }
+    .snap-av {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green); color: var(--navy);
+      font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; border: 3px solid rgba(74,253,14,0.25);
+    }
+    .snap-name {
+      color: #fff; font-family: 'Montserrat', sans-serif;
+      font-size: 18px; font-weight: 800; line-height: 1.1; margin-bottom: 4px;
+    }
+    .snap-role { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 8px; }
+    .snap-campaign {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(74,253,14,0.12); color: var(--green);
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px;
+    }
+    .snap-grid { display: grid; grid-template-columns: 1fr 1fr; }
+    .snap-row {
+      display: flex; flex-direction: column; padding: 13px 20px;
+      border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .snap-row:nth-child(2n)      { border-right: none; }
+    .snap-row:nth-last-child(-n+2){ border-bottom: none; }
+    .snap-key {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px;
+    }
+    .snap-val { font-size: 13px; font-weight: 600; color: var(--text); }
+    .snap-val a { color: var(--text); text-decoration: none; }
+    .snap-val a:hover { color: var(--green-dark); }
+
+    /* ── LEAVE BALANCE ── */
+    .leave-block { margin-bottom: 18px; }
+    .leave-block:last-child { margin-bottom: 0; }
+    .leave-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .leave-lbl { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600; color: var(--text); }
+    .leave-cnt { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; }
+    .cnt-good { color: var(--green-dark); }
+    .cnt-warn { color: var(--orange); }
+    .cnt-bad  { color: var(--red); }
+    .pbar { height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .pfill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    .pf-green  { background: var(--green); }
+    .pf-blue   { background: #3b82f6; }
+    .pf-orange { background: #f59e0b; }
+    .pf-red    { background: var(--red); }
+
+    /* ── QUICK ACTIONS ── */
+    .action-btn {
+      display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 8px; text-decoration: none; color: var(--text);
+      transition: all 0.15s; cursor: pointer; background: transparent;
+    }
+    .action-btn:last-child { margin-bottom: 0; }
+    .action-btn:hover { border-color: var(--green); background: var(--green-light); }
+    .action-ico {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--bg); display: flex; align-items: center;
+      justify-content: center; font-size: 16px; flex-shrink: 0;
+    }
+    .action-lbl { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600; flex: 1; }
+    .action-arrow { color: var(--text3); font-size: 16px; }
+
+    /* ── TEAM CARD ── */
+    .member {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .member:last-child { border-bottom: none; }
+    .mem-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--navy2); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .mem-name { font-weight: 600; font-size: 13px; margin-bottom: 1px; }
+    .mem-role { font-size: 11px; color: var(--text3); }
+    .mem-status { margin-left: auto; flex-shrink: 0; }
+    .pill-leave {
+      background: #fef3c7; color: #92400e;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .dot-avail { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .dot-load  { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    /* ── ALERTS ── */
+    .alert {
+      display: flex; gap: 10px; padding: 12px 14px;
+      border-radius: var(--radius); margin-bottom: 8px; border: 1px solid;
+    }
+    .alert:last-child { margin-bottom: 0; }
+    .alert-warn   { background: #fef3c7; border-color: #fcd34d; }
+    .alert-danger { background: #fee2e2; border-color: #fca5a5; }
+    .alert-info   { background: #dbeafe; border-color: #93c5fd; }
+    .a-ico { font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+    .a-title { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+    .a-body  { font-size: 12px; color: var(--text2); line-height: 1.45; }
+    .no-alerts {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 28px 16px; color: var(--text3); text-align: center;
+    }
+    .no-alerts-ico { font-size: 32px; margin-bottom: 8px; }
+    .no-alerts-txt { font-size: 13px; }
+
+    /* ── NOTICEBOARD ── */
+    .notice-sec { margin-bottom: 20px; }
+    .notice-sec:last-child { margin-bottom: 0; }
+    .notice-sec-hd {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+    }
+    .n-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .n-row:last-child { border-bottom: none; }
+    .n-date { min-width: 42px; text-align: center; }
+    .n-day  { font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 800; color: var(--text); line-height: 1; }
+    .n-mon  { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; }
+    .n-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .n-tag  { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+    .tag-hol  { background: var(--green-light); color: var(--green-dark); }
+    .tag-bday { background: #fce7f3; color: #9d174d; }
+    .tag-anniv{ background: #dbeafe; color: #1e40af; }
+
+    /* ── OFFICE ACTIVITY ── */
+    .o-tabs {
+      display: flex; border-bottom: 1px solid var(--border);
+      padding: 0 20px; background: var(--offwhite);
+    }
+    .o-tab {
+      padding: 10px 16px; font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: all 0.15s; white-space: nowrap;
+    }
+    .o-tab.active { color: var(--text); border-bottom-color: var(--navy); }
+    .o-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .o-item:last-child { border-bottom: none; }
+    .o-ico  { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .o-title{ font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .o-sub  { font-size: 11px; color: var(--text3); }
+    .o-time { margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; color: var(--text3); flex-shrink: 0; white-space: nowrap; }
+    .empty-state { display: flex; flex-direction: column; align-items: center; padding: 28px 16px; color: var(--text3); text-align: center; }
+    .empty-ico { font-size: 28px; margin-bottom: 8px; }
+    .empty-txt { font-size: 13px; }
+
+    /* ── FINANCE PULSE ── */
+    .fin-stat { display: flex; flex-direction: column; padding: 15px 0; border-bottom: 1px solid var(--border); }
+    .fin-stat:last-child { border-bottom: none; }
+    .fin-num { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 3px; }
+    .fin-lbl { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); }
+
+    /* ── PIPELINE ── */
+    .pip-stages { display: flex; align-items: center; gap: 6px; }
+    .pip-stage  { flex: 1; text-align: center; }
+    .pip-bar    { border-radius: 8px; padding: 10px 6px; margin-bottom: 6px; }
+    .pip-count  { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+    .pip-name   { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text3); margin-top: 2px; }
+    .pip-arrow  { color: var(--border2); font-size: 18px; flex-shrink: 0; }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      min-height: 100vh; background: var(--navy);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-box {
+      background: var(--navy2); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-xl); padding: 48px 40px;
+      width: 100%; max-width: 420px; text-align: center;
+    }
+    .login-logo  { height: 34px; margin-bottom: 32px; }
+    .login-title { color: #fff; font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .login-sub   { color: rgba(255,255,255,0.38); font-size: 14px; line-height: 1.6; margin-bottom: 36px; }
+    .btn-ms {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 14px 20px; background: #fff; color: var(--text);
+      border: none; border-radius: var(--radius);
+      font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.02em; transition: all 0.2s;
+    }
+    .btn-ms:hover { background: #f0f4ff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .login-err {
+      margin-top: 14px; background: rgba(192,57,43,0.14);
+      border: 1px solid rgba(192,57,43,0.3); border-radius: var(--radius);
+      padding: 10px 14px; color: #ffa0a0; font-size: 13px; display: none; line-height: 1.5;
+    }
+    .login-footer { margin-top: 40px; color: rgba(255,255,255,0.18); font-size: 11px; }
+
+    /* ── LOADING OVERLAY ── */
+    #loading-overlay {
+      position: fixed; inset: 0; background: var(--navy);
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; z-index: 1000;
+    }
+    .load-logo    { height: 30px; margin-bottom: 32px; }
+    .load-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(74,253,14,0.18); border-top-color: var(--green);
+      border-radius: 50%; animation: spin 0.75s linear infinite; margin-bottom: 16px;
+    }
+    .load-txt { color: rgba(255,255,255,0.38); font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── NOTE BAR (for setup reminders) ── */
+    .note-bar {
+      background: #fef3c7; border-bottom: 1px solid #fcd34d;
+      padding: 10px 32px; display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: #78350f;
+    }
+    .note-bar strong { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .col-span-3 { grid-column: span 2; }
+    }
+    @media (max-width: 640px) {
+      .nav { padding: 0 16px; }
+      .nav-name, .nav-role-badge { display: none; }
+      .hero-inner, .container { padding-left: 16px; padding-right: 16px; }
+      .hero-title { font-size: 22px; }
+      .dashboard-grid { grid-template-columns: 1fr; gap: 14px; }
+      .col-span-2, .col-span-3 { grid-column: span 1; }
+      .snap-grid { grid-template-columns: 1fr; }
+      .snap-row { border-right: none !important; border-bottom: 1px solid var(--border) !important; }
+      .snap-row:last-child { border-bottom: none !important; }
+      .pip-stages { flex-wrap: wrap; gap: 8px; justify-content: center; }
+      .pip-arrow  { display: none; }
+      .login-box  { padding: 36px 24px; }
+      .note-bar   { padding: 10px 16px; }
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      .nav, .hero, .note-bar { display: none !important; }
+      .card { break-inside: avoid; border: 1px solid #ccc; }
+      .manager-only { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     LOGIN SCREEN
+================================================================ -->
+<div id="login-screen">
+  <div class="login-box">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="login-logo">
+    <div class="login-title">Employee Portal</div>
+    <div class="login-sub">
+      Sign in with your Trilogy Microsoft account to access your personalised dashboard.
+    </div>
+    <button class="btn-ms" onclick="signIn()">
+      <!-- Microsoft four-square logo -->
+      <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1"  y="1"  width="9" height="9" fill="#F35325"/>
+        <rect x="11" y="1"  width="9" height="9" fill="#81BC06"/>
+        <rect x="1"  y="11" width="9" height="9" fill="#05A6F0"/>
+        <rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-footer">Trilogy CX (Pty) Ltd · Authorised users only</div>
+  </div>
+</div>
+
+<!-- ================================================================
+     LOADING OVERLAY
+================================================================ -->
+<div id="loading-overlay">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="load-logo">
+  <div class="load-spinner"></div>
+  <div class="load-txt" id="load-txt">Loading your portal…</div>
+</div>
+
+<!-- ================================================================
+     PORTAL APP
+================================================================ -->
+<div id="portal-app" style="display:none">
+
+  <!-- Setup reminder (visible only when CONFIG still has placeholder values) -->
+  <div class="note-bar" id="setup-note" style="display:none">
+    ⚙️ <strong>Setup required:</strong>
+    Open <code>portal/index.html</code> and fill in <code>CONFIG.azureClientId</code>
+    and <code>CONFIG.azureTenantId</code> before deploying.
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-left">
+      <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+      <div class="nav-divider"></div>
+      <div class="nav-section">Employee Portal</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name"       id="nav-name"></span>
+      <span class="nav-role-badge" id="nav-badge"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-label">Trilogy BPO · Employee Portal</div>
+      <div class="hero-title" id="hero-greeting">Good morning</div>
+      <div class="hero-sub"   id="hero-sub">Loading…</div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-num"       id="stat-campaign">—</div>
+          <div class="hstat-label">Campaign</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num"       id="stat-days">—</div>
+          <div class="hstat-label">Days Employed</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num green" id="stat-leave">—</div>
+          <div class="hstat-label">Annual Leave Left</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num"       id="stat-team">—</div>
+          <div class="hstat-label">Team Size</div>
+        </div>
+        <!-- Manager/HR only -->
+        <div class="hstat manager-only" style="display:none">
+          <div class="hstat-num"       id="stat-headcount">—</div>
+          <div class="hstat-label">Active Headcount</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD GRID -->
+  <div class="container">
+    <div class="dashboard-grid">
+
+      <!-- ── 1  PERSONAL SNAPSHOT (span 2) ── -->
+      <div class="card col-span-2">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon icon-n">👤</div>Personal Snapshot
+          </div>
+          <span id="snap-pill" class="s-active">Active</span>
+        </div>
+        <div id="snap-head" class="snap-head">
+          <div class="snap-av" id="snap-av"></div>
+          <div>
+            <div class="snap-name" id="snap-name">Loading…</div>
+            <div class="snap-role" id="snap-role"></div>
+            <span class="snap-campaign" id="snap-campaign"></span>
+          </div>
+        </div>
+        <div class="snap-grid" id="snap-grid"></div>
+      </div>
+
+      <!-- ── 2  LEAVE BALANCE ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-g">🌴</div>Leave Balance</div>
+          <span class="badge badge-grey" id="leave-yr">2026</span>
+        </div>
+        <div class="card-body" id="leave-body">
+          <div class="skel" style="height:18px;margin-bottom:10px"></div>
+          <div class="skel" style="height:7px; margin-bottom:18px"></div>
+          <div class="skel" style="height:18px;margin-bottom:10px"></div>
+          <div class="skel" style="height:7px; margin-bottom:18px"></div>
+          <div class="skel" style="height:18px;margin-bottom:10px"></div>
+          <div class="skel" style="height:7px"></div>
+        </div>
+      </div>
+
+      <!-- ── 3  QUICK ACTIONS ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-b">⚡</div>Quick Actions</div>
+        </div>
+        <div class="card-body" id="quick-body">
+          <div class="skel" style="height:44px;margin-bottom:8px"></div>
+          <div class="skel" style="height:44px;margin-bottom:8px"></div>
+          <div class="skel" style="height:44px;margin-bottom:8px"></div>
+          <div class="skel" style="height:44px"></div>
+        </div>
+      </div>
+
+      <!-- ── 4  TEAM ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-p">👥</div>My Team</div>
+          <span class="badge badge-grey" id="team-badge">—</span>
+        </div>
+        <div class="card-body" id="team-body">
+          <div class="skel" style="height:200px"></div>
+        </div>
+      </div>
+
+      <!-- ── 5  ALERTS ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-r">🔔</div>Alerts</div>
+          <span class="badge badge-grey" id="alerts-badge">0</span>
+        </div>
+        <div class="card-body" id="alerts-body">
+          <div class="skel" style="height:120px"></div>
+        </div>
+      </div>
+
+      <!-- ── 6  OFFICE ACTIVITY (span 2) ── -->
+      <div class="card col-span-2">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-b">☁️</div>Microsoft 365 Activity</div>
+          <span class="badge badge-blue">Live</span>
+        </div>
+        <div class="o-tabs">
+          <div class="o-tab active" onclick="switchTab('meetings',this)">📅 Today</div>
+          <div class="o-tab"        onclick="switchTab('files',this)">📄 Files</div>
+          <div class="o-tab"        onclick="switchTab('email',this)">✉️ Emails</div>
+        </div>
+        <div class="card-body" id="office-body">
+          <div class="skel" style="height:60px;margin-bottom:10px"></div>
+          <div class="skel" style="height:60px"></div>
+        </div>
+      </div>
+
+      <!-- ── 7  NOTICEBOARD ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-o">📌</div>Noticeboard</div>
+        </div>
+        <div class="card-body" id="notice-body">
+          <div class="skel" style="height:220px"></div>
+        </div>
+      </div>
+
+      <!-- ── 8  FINANCE PULSE (manager/HR only) ── -->
+      <div class="card manager-only" style="display:none">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-g">💰</div>Finance Pulse</div>
+          <a href="../payroll/" class="badge badge-green">View Payroll →</a>
+        </div>
+        <div class="card-body" id="finance-body"></div>
+      </div>
+
+      <!-- ── 9  PIPELINE TRACKER (manager/HR only, span 2) ── -->
+      <div class="card col-span-2 manager-only" style="display:none">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon icon-n">🔄</div>Hiring Pipeline</div>
+          <a href="../onboarding/" class="badge badge-grey">Manage →</a>
+        </div>
+        <div class="card-body" id="pipeline-body"></div>
+      </div>
+
+    </div><!-- /dashboard-grid -->
+  </div><!-- /container -->
+
+</div><!-- /portal-app -->
+
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────────────────────────
+//  ⚙️  CONFIG  — fill in before deploying to portal.trilogybpo.com
+// ─────────────────────────────────────────────────────────────────
+const CONFIG = {
+  // Azure AD app registration
+  azureClientId: 'YOUR_AZURE_CLIENT_ID',
+  azureTenantId: 'YOUR_TENANT_ID',
+  redirectUri:   'https://portal.trilogybpo.com',
+
+  // Link back to HR admin portal
+  hrBase: 'https://hr.trilogybpo.com',
+
+  // Campaigns that receive full HR-admin access (lowercase match)
+  hrCampaigns: ['hr', 'human resources'],
+
+  // Job-title keywords that receive manager-level access (lowercase match)
+  managerTitles: ['manager','director','head','lead','supervisor',
+                  'executive','ceo','coo','cfo','cto','vp'],
+};
+
+// ─────────────────────────────────────────────────────────────────
+//  🔗  POWER AUTOMATE FLOWS
+// ─────────────────────────────────────────────────────────────────
+const FLOWS = {
+  GET_EMPLOYEES:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U',
+  GET_DETAIL:     'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c',
+};
+
+// MS Graph scopes required — add in Azure app registration
+const GRAPH_SCOPES = ['User.Read', 'Calendars.Read', 'Mail.ReadBasic', 'Files.Read'];
+
+// ─────────────────────────────────────────────────────────────────
+//  📦  STATE
+// ─────────────────────────────────────────────────────────────────
+const S = {
+  msUser:      null,   // Graph /me
+  graphToken:  null,   // Bearer token
+  employee:    null,   // Matched HR record
+  detail:      null,   // GET_DETAIL response
+  allEmployees:[],     // All employees
+  role:        'employee',  // 'employee' | 'manager' | 'hr'
+  teammates:   [],     // Same-campaign colleagues
+  calEvents:   [],     // Today's calendar
+  recentFiles: [],     // Recent SharePoint files
+  recentEmails:[],     // Unread emails
+  activeTab:   'meetings',
+};
+
+// ─────────────────────────────────────────────────────────────────
+//  🛠️  UTILITIES
+// ─────────────────────────────────────────────────────────────────
+
+/** Unwrap Power Automate double-nested JSON */
+function unwrap(d) {
+  return d.body
+    ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body)
+    : d;
+}
+
+/** POST to a Power Automate flow */
+async function flow(url, body = {}) {
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(`Flow HTTP ${r.status}`);
+  return unwrap(await r.json());
+}
+
+/** GET from MS Graph */
+async function graph(path) {
+  const r = await fetch('https://graph.microsoft.com/v1.0' + path, {
+    headers: { Authorization: 'Bearer ' + S.graphToken },
+  });
+  if (!r.ok) throw new Error('Graph ' + path + ' → ' + r.status);
+  return r.json();
+}
+
+function initials(name) {
+  return (name || '??').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
+
+function daysEmployed(start) {
+  if (!start) return 0;
+  return Math.max(0, Math.floor((Date.now() - new Date(start)) / 86400000));
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-ZA', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function fmtTime(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('en-ZA', { hour:'2-digit', minute:'2-digit' });
+}
+
+function fmtCurrency(n) {
+  return new Intl.NumberFormat('en-ZA', { style:'currency', currency:'ZAR', maximumFractionDigits:0 }).format(n || 0);
+}
+
+function greet() {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+function detectRole(emp) {
+  const title    = (emp.JobTitle  || '').toLowerCase();
+  const campaign = (emp.Campaign  || '').toLowerCase();
+  if (CONFIG.hrCampaigns.some(k => campaign.includes(k)))  return 'hr';
+  if (CONFIG.managerTitles.some(k => title.includes(k)))   return 'manager';
+  return 'employee';
+}
+
+function leaveCalc(emp, det) {
+  const total = emp.AnnualLeaveEntitlement || 15;
+  const aT = det.annual_taken  || det.annualTaken  || 0;
+  const sT = det.sick_taken    || det.sickTaken    || 0;
+  const fT = det.family_taken  || det.familyTaken  || 0;
+  return {
+    annual: { taken:aT, total, remaining: Math.max(0, total - aT) },
+    sick:   { taken:sT, total:30, remaining: Math.max(0, 30 - sT) },
+    family: { taken:fT, total:3,  remaining: Math.max(0, 3 - fT) },
+  };
+}
+
+function cntClass(remaining, total) {
+  const p = remaining / total;
+  return p > 0.5 ? 'cnt-good' : p > 0.2 ? 'cnt-warn' : 'cnt-bad';
+}
+
+function progressBar(pct, cls) {
+  return `<div class="pbar"><div class="pfill ${cls}" style="width:0%" data-w="${Math.min(100,pct).toFixed(1)}%"></div></div>`;
+}
+
+function animateBars() {
+  // Trigger CSS transition after first paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.pfill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w;
+    });
+  });
+}
+
+function isOnLeaveToday(leaveRecords) {
+  if (!Array.isArray(leaveRecords)) return false;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return leaveRecords.some(r => {
+    const s = new Date(r.StartDate || r.startDate || '');
+    const e = new Date(r.EndDate   || r.endDate   || '');
+    return s <= today && today <= e;
+  });
+}
+
+// SA Public Holidays 2026
+const HOLIDAYS = [
+  { date:'2026-01-01', name:"New Year's Day"       },
+  { date:'2026-03-21', name:'Human Rights Day'      },
+  { date:'2026-04-03', name:'Good Friday'           },
+  { date:'2026-04-06', name:'Family Day'            },
+  { date:'2026-04-27', name:'Freedom Day'           },
+  { date:'2026-05-01', name:"Workers' Day"          },
+  { date:'2026-06-16', name:'Youth Day'             },
+  { date:'2026-08-09', name:"National Women's Day"  },
+  { date:'2026-09-24', name:'Heritage Day'          },
+  { date:'2026-12-16', name:'Day of Reconciliation' },
+  { date:'2026-12-25', name:'Christmas Day'         },
+  { date:'2026-12-26', name:'Day of Goodwill'       },
+];
+
+function upcomingHolidays(n = 4) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  return HOLIDAYS.filter(h => new Date(h.date) >= today).slice(0, n);
+}
+
+function weekBounds() {
+  const today = new Date();
+  const dow = today.getDay();
+  const mon = new Date(today); mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1)); mon.setHours(0,0,0,0);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  return [mon, sun];
+}
+
+function birthdaysThisWeek(employees) {
+  const [mon, sun] = weekBounds();
+  const yr = new Date().getFullYear();
+  return employees.filter(e => {
+    if (!e.DateOfBirth || e.Status !== 'Active') return false;
+    const dob = new Date(e.DateOfBirth);
+    const b = new Date(yr, dob.getMonth(), dob.getDate());
+    return b >= mon && b <= sun;
+  });
+}
+
+function anniversariesThisWeek(employees) {
+  const [mon, sun] = weekBounds();
+  const yr = new Date().getFullYear();
+  return employees.filter(e => {
+    if (!e.StartDate || e.Status !== 'Active') return false;
+    const s = new Date(e.StartDate);
+    const a = new Date(yr, s.getMonth(), s.getDate());
+    return a >= mon && a <= sun && yr - s.getFullYear() > 0;
+  }).map(e => ({ ...e, years: yr - new Date(e.StartDate).getFullYear() }));
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  🎨  SCREEN HELPERS
+// ─────────────────────────────────────────────────────────────────
+
+function showScreen(id) {
+  document.getElementById('login-screen').style.display    = id === 'login-screen' ? 'flex' : 'none';
+  document.getElementById('loading-overlay').style.display = id === 'loading' ? 'flex' : 'none';
+  document.getElementById('portal-app').style.display      = id === 'portal' ? 'block' : 'none';
+}
+
+function setLoad(msg) {
+  document.getElementById('load-txt').textContent = msg;
+}
+
+function showLoginErr(msg) {
+  const el = document.getElementById('login-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  🔐  AUTH
+// ─────────────────────────────────────────────────────────────────
+
+let msalApp;
+
+async function init() {
+  // Show setup note if config is still placeholder
+  if (CONFIG.azureClientId === 'YOUR_AZURE_CLIENT_ID') {
+    document.getElementById('setup-note').style.display = 'flex';
+  }
+
+  msalApp = new msal.PublicClientApplication({
+    auth: {
+      clientId:    CONFIG.azureClientId,
+      authority:   'https://login.microsoftonline.com/' + CONFIG.azureTenantId,
+      redirectUri: CONFIG.redirectUri,
+    },
+    cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: true },
+  });
+
+  await msalApp.initialize();
+
+  // Handle redirect response (mobile or popup-blocked fallback)
+  try {
+    const resp = await msalApp.handleRedirectPromise();
+    if (resp) { await loadDashboard(resp.account); return; }
+  } catch (e) {
+    console.warn('Redirect promise error:', e);
+  }
+
+  const accounts = msalApp.getAllAccounts();
+  if (accounts.length) {
+    await loadDashboard(accounts[0]);
+  } else {
+    showScreen('login-screen');
+  }
+}
+
+async function signIn() {
+  document.getElementById('login-err').style.display = 'none';
+  try {
+    const resp = await msalApp.loginPopup({ scopes: GRAPH_SCOPES });
+    await loadDashboard(resp.account);
+  } catch (e) {
+    if (e.errorCode === 'popup_window_error' || (e.message && e.message.includes('popup'))) {
+      // Popup blocked — fall back to redirect
+      await msalApp.loginRedirect({ scopes: GRAPH_SCOPES });
+    } else if (e.errorCode !== 'user_cancelled') {
+      showLoginErr(e.message || 'Sign-in failed. Please try again.');
+    }
+  }
+}
+
+async function signOut() {
+  try { await msalApp.logoutPopup(); }
+  catch (e) { await msalApp.logoutRedirect(); }
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  📊  DATA LOADING
+// ─────────────────────────────────────────────────────────────────
+
+async function loadDashboard(account) {
+  showScreen('loading');
+
+  try {
+    // 1. Acquire Graph token
+    setLoad('Authenticating…');
+    const token = await msalApp.acquireTokenSilent({ scopes: GRAPH_SCOPES, account })
+      .catch(() => msalApp.acquireTokenPopup({ scopes: GRAPH_SCOPES, account }));
+    S.graphToken = token.accessToken;
+
+    // 2. Load Graph profile + all HR employees in parallel
+    setLoad('Loading employee data…');
+    const [msMe, rawEmployees] = await Promise.all([
+      graph('/me'),
+      flow(FLOWS.GET_EMPLOYEES),
+    ]);
+
+    S.msUser = msMe;
+    S.allEmployees = Array.isArray(rawEmployees)
+      ? rawEmployees
+      : (rawEmployees.employees || rawEmployees.value || []);
+
+    // 3. Match user to HR record by email
+    const email = (account.username || '').toLowerCase();
+    S.employee = S.allEmployees.find(e =>
+      (e.WorkEmail     || '').toLowerCase() === email ||
+      (e.PersonalEmail || '').toLowerCase() === email
+    );
+
+    if (!S.employee) {
+      showScreen('login-screen');
+      showLoginErr(
+        `No HR record found for "${account.username}".\n` +
+        `Ask HR to set your Work Email to match your Microsoft account.`
+      );
+      return;
+    }
+
+    // 4. Get personal detail (leave balances, disciplinary count)
+    setLoad('Loading your leave data…');
+    S.detail = await flow(FLOWS.GET_DETAIL, { employeeId: S.employee.EmployeeID });
+
+    // 5. Determine role and teammates
+    S.role      = detectRole(S.employee);
+    S.teammates = S.allEmployees.filter(e =>
+      e.Campaign    === S.employee.Campaign &&
+      e.EmployeeID  !== S.employee.EmployeeID &&
+      e.Status      === 'Active'
+    );
+
+    // 6. Show portal and render synchronously
+    showScreen('portal');
+    renderAll();
+
+    // 7. Load Microsoft 365 data async (non-blocking)
+    loadM365Async();
+
+    // 8. Load team leave status async (non-blocking, up to 8 teammates)
+    loadTeamLeaveAsync();
+
+  } catch (err) {
+    console.error('loadDashboard:', err);
+    showScreen('login-screen');
+    showLoginErr('Failed to load portal: ' + (err.message || 'Unknown error'));
+  }
+}
+
+async function loadM365Async() {
+  const today    = new Date();
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const iso      = d => d.toISOString().split('T')[0] + 'T00:00:00';
+
+  const [calR, filesR, mailR] = await Promise.allSettled([
+    graph(`/me/calendarView?startDateTime=${iso(today)}&endDateTime=${iso(tomorrow)}&$orderby=start/dateTime&$top=8&$select=subject,start,end,location,isAllDay`),
+    graph(`/me/drive/recent?$top=6&$select=name,lastModifiedDateTime,webUrl,file`),
+    graph(`/me/messages?$filter=isRead eq false&$top=5&$select=subject,from,receivedDateTime&$orderby=receivedDateTime desc`),
+  ]);
+
+  if (calR.status   === 'fulfilled') S.calEvents    = calR.value.value   || [];
+  if (filesR.status === 'fulfilled') S.recentFiles  = filesR.value.value || [];
+  if (mailR.status  === 'fulfilled') S.recentEmails = mailR.value.value  || [];
+
+  renderOffice();
+}
+
+async function loadTeamLeaveAsync() {
+  // Parallel GET_DETAIL calls for first 8 teammates to check current leave
+  const batch = S.teammates.slice(0, 8);
+  if (!batch.length) return;
+
+  const results = await Promise.allSettled(
+    batch.map(t => flow(FLOWS.GET_DETAIL, { employeeId: t.EmployeeID }))
+  );
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') batch[i]._detail = r.value;
+  });
+
+  renderTeam(); // Re-render with leave status populated
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  🖼️  RENDER
+// ─────────────────────────────────────────────────────────────────
+
+function renderAll() {
+  const { employee: e, detail: d, role } = S;
+
+  // ── Nav ──
+  document.getElementById('nav-av').textContent    = initials(e.FirstName + ' ' + e.LastName);
+  document.getElementById('nav-name').textContent  = e.FirstName;
+  document.getElementById('nav-badge').textContent =
+    role === 'hr' ? 'HR Admin' : role === 'manager' ? 'Manager' : 'Employee';
+
+  // ── Hero ──
+  document.getElementById('hero-greeting').textContent = greet() + ', ' + e.FirstName;
+  document.getElementById('hero-sub').textContent      = (e.JobTitle || 'Team Member') + ' · Trilogy BPO';
+
+  const leave = leaveCalc(e, d);
+  document.getElementById('stat-campaign').textContent = e.Campaign  || '—';
+  document.getElementById('stat-days').textContent     = daysEmployed(e.StartDate).toLocaleString('en-ZA');
+  document.getElementById('stat-leave').textContent    = leave.annual.remaining + ' days';
+  const leafNum = document.getElementById('stat-leave');
+  leafNum.className = 'hstat-num ' + (leave.annual.remaining < 5 ? 'red' : leave.annual.remaining < 8 ? 'orange' : 'green');
+  document.getElementById('stat-team').textContent    = (S.teammates.length + 1);
+
+  // ── Manager tiles ──
+  document.querySelectorAll('.manager-only').forEach(el => {
+    el.style.display = (role !== 'employee') ? '' : 'none';
+  });
+
+  // ── Cards ──
+  renderSnapshot();
+  renderLeave(leave);
+  renderQuickActions();
+  renderTeam();
+  renderAlerts(leave);
+  renderNoticeboard();
+  renderOffice();
+
+  if (role !== 'employee') {
+    renderFinance();
+    renderPipeline();
+  }
+}
+
+function renderSnapshot() {
+  const e = S.employee;
+  const st = e.Status || 'Active';
+  const pill = document.getElementById('snap-pill');
+  pill.className = st.toLowerCase() === 'active' ? 's-active' :
+                   st.toLowerCase() === 'onboarded' ? 's-onboarded' : 's-exited';
+  pill.textContent = st;
+
+  document.getElementById('snap-av').textContent    = initials(e.FirstName + ' ' + e.LastName);
+  document.getElementById('snap-name').textContent  = e.FirstName + ' ' + e.LastName;
+  document.getElementById('snap-role').textContent  = e.JobTitle || '—';
+  document.getElementById('snap-campaign').textContent = '📋 ' + (e.Campaign || '—');
+
+  const mgr  = S.allEmployees.find(m => m.EmployeeID == e.ReportsTo);
+  const mgrN = mgr ? mgr.FirstName + ' ' + mgr.LastName : '—';
+
+  document.getElementById('snap-grid').innerHTML = `
+    <div class="snap-row">
+      <div class="snap-key">Employee ID</div>
+      <div class="snap-val">${e.EmployeeID}</div>
+    </div>
+    <div class="snap-row">
+      <div class="snap-key">Start Date</div>
+      <div class="snap-val">${fmtDate(e.StartDate)}</div>
+    </div>
+    <div class="snap-row">
+      <div class="snap-key">Work Email</div>
+      <div class="snap-val"><a href="mailto:${e.WorkEmail}">${e.WorkEmail || '—'}</a></div>
+    </div>
+    <div class="snap-row">
+      <div class="snap-key">Mobile</div>
+      <div class="snap-val">${e.Mobile || '—'}</div>
+    </div>
+    <div class="snap-row">
+      <div class="snap-key">Reports To</div>
+      <div class="snap-val">${mgrN}</div>
+    </div>
+    <div class="snap-row">
+      <div class="snap-key">Salary Freq.</div>
+      <div class="snap-val">${e.SalaryFrequency || '—'}</div>
+    </div>
+  `;
+}
+
+function renderLeave(leave) {
+  document.getElementById('leave-yr').textContent = new Date().getFullYear();
+  const aP = (leave.annual.taken / leave.annual.total) * 100;
+  const sP = (leave.sick.taken   / leave.sick.total)   * 100;
+  const fP = (leave.family.taken / leave.family.total)  * 100;
+
+  document.getElementById('leave-body').innerHTML = `
+    <div class="leave-block">
+      <div class="leave-row">
+        <span class="leave-lbl">🌴 Annual Leave</span>
+        <span class="leave-cnt ${cntClass(leave.annual.remaining, leave.annual.total)}">
+          ${leave.annual.remaining} / ${leave.annual.total} days remaining
+        </span>
+      </div>
+      ${progressBar(aP, leave.annual.remaining < 5 ? 'pf-red' : 'pf-green')}
+    </div>
+    <div class="leave-block">
+      <div class="leave-row">
+        <span class="leave-lbl">🤒 Sick Leave <span style="font-weight:400;color:var(--text3)">(BCEA cycle)</span></span>
+        <span class="leave-cnt ${cntClass(leave.sick.remaining, leave.sick.total)}">
+          ${leave.sick.remaining} / 30 days remaining
+        </span>
+      </div>
+      ${progressBar(sP, 'pf-blue')}
+    </div>
+    <div class="leave-block">
+      <div class="leave-row">
+        <span class="leave-lbl">👨‍👩‍👧 Family Responsibility</span>
+        <span class="leave-cnt ${cntClass(leave.family.remaining, leave.family.total)}">
+          ${leave.family.remaining} / 3 days remaining
+        </span>
+      </div>
+      ${progressBar(fP, 'pf-orange')}
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);
+                font-size:11px;color:var(--text3);text-align:center;line-height:1.6">
+      Entitlement: ${leave.annual.total} days annual · Leave year resets on employment anniversary
+    </div>
+  `;
+  setTimeout(animateBars, 80);
+}
+
+function renderQuickActions() {
+  const base = CONFIG.hrBase;
+  const eid  = S.employee.EmployeeID;
+  document.getElementById('quick-body').innerHTML = `
+    <a class="action-btn" href="${base}/leave/?prefill=${eid}">
+      <div class="action-ico">📋</div>
+      <div class="action-lbl">Log Leave</div>
+      <div class="action-arrow">›</div>
+    </a>
+    <a class="action-btn" href="${base}/employees/?id=${eid}">
+      <div class="action-ico">👤</div>
+      <div class="action-lbl">My Employee Record</div>
+      <div class="action-arrow">›</div>
+    </a>
+    <a class="action-btn" href="${base}/payroll/?id=${eid}">
+      <div class="action-ico">💰</div>
+      <div class="action-lbl">View Payslip</div>
+      <div class="action-arrow">›</div>
+    </a>
+    <a class="action-btn" href="${base}/disciplinary/?id=${eid}">
+      <div class="action-ico">📁</div>
+      <div class="action-lbl">Disciplinary Records</div>
+      <div class="action-arrow">›</div>
+    </a>
+  `;
+}
+
+function renderTeam() {
+  const { teammates: team, employee: me } = S;
+  document.getElementById('team-badge').textContent = me.Campaign || '—';
+
+  if (!team.length) {
+    document.getElementById('team-body').innerHTML =
+      `<div class="empty-state"><div class="empty-ico">👥</div>
+       <div class="empty-txt">No other active team members found in this campaign.</div></div>`;
+    return;
+  }
+
+  const rows = team.slice(0, 9).map(t => {
+    let statusEl;
+    if (t._detail) {
+      const recs = t._detail.leave_records || t._detail.leaveRecords || [];
+      statusEl = isOnLeaveToday(recs)
+        ? '<span class="pill-leave">On Leave</span>'
+        : '<div class="dot-avail"></div>';
+    } else {
+      statusEl = '<div class="dot-load"></div>';
+    }
+    return `
+      <div class="member">
+        <div class="mem-av">${initials(t.FirstName + ' ' + t.LastName)}</div>
+        <div>
+          <div class="mem-name">${t.FirstName} ${t.LastName}</div>
+          <div class="mem-role">${t.JobTitle || '—'}</div>
+        </div>
+        <div class="mem-status">${statusEl}</div>
+      </div>`;
+  }).join('');
+
+  const more = team.length > 9
+    ? `<div style="text-align:center;padding-top:10px;font-size:11px;color:var(--text3)">
+         +${team.length - 9} more in campaign</div>`
+    : '';
+
+  document.getElementById('team-body').innerHTML = rows + more;
+}
+
+function renderAlerts(leave) {
+  const d = S.detail;
+  const e = S.employee;
+  const alerts = [];
+
+  const disc = d.active_disciplinary || d.activeDisciplinary || 0;
+  if (disc > 0) {
+    alerts.push({ type:'danger', icon:'⚠️',
+      title: disc + ' Active Disciplinary Record' + (disc > 1 ? 's' : ''),
+      body:  'Contact your line manager or HR for details and next steps.'
+    });
+  }
+
+  if (leave.annual.remaining < 5) {
+    alerts.push({ type:'warn', icon:'🌴',
+      title: 'Low Annual Leave: ' + leave.annual.remaining + ' day' + (leave.annual.remaining !== 1 ? 's' : '') + ' remaining',
+      body:  'Plan carefully — you\'re running low on annual leave for this cycle.'
+    });
+  }
+
+  if (e.OnboardingComplete === false || e.OnboardingComplete === 0 || e.OnboardingComplete === '0') {
+    alerts.push({ type:'info', icon:'📋',
+      title: 'Onboarding Incomplete',
+      body:  'You have outstanding onboarding steps. Contact HR to complete the process.'
+    });
+  }
+
+  document.getElementById('alerts-badge').textContent = alerts.length;
+  document.getElementById('alerts-badge').className   = 'badge ' + (alerts.length ? 'badge-red' : 'badge-grey');
+
+  if (!alerts.length) {
+    document.getElementById('alerts-body').innerHTML = `
+      <div class="no-alerts">
+        <div class="no-alerts-ico">✅</div>
+        <div class="no-alerts-txt">All clear — no alerts right now.</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('alerts-body').innerHTML = alerts.map(a => `
+    <div class="alert alert-${a.type}">
+      <div class="a-ico">${a.icon}</div>
+      <div>
+        <div class="a-title">${a.title}</div>
+        <div class="a-body">${a.body}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderNoticeboard() {
+  const holidays     = upcomingHolidays(4);
+  const birthdays    = birthdaysThisWeek(S.allEmployees);
+  const anniversaries= anniversariesThisWeek(S.allEmployees);
+
+  const holHtml = holidays.map(h => {
+    const d = new Date(h.date);
+    return `<div class="n-row">
+      <div class="n-date">
+        <div class="n-day">${d.getDate()}</div>
+        <div class="n-mon">${d.toLocaleString('en-ZA',{month:'short'})}</div>
+      </div>
+      <div class="n-name">${h.name}</div>
+      <span class="n-tag tag-hol">SA Holiday</span>
+    </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--text3)">No upcoming public holidays.</div>';
+
+  const bdHtml = birthdays.map(e => {
+    const d = new Date(e.DateOfBirth);
+    return `<div class="n-row">
+      <div class="n-date">
+        <div class="n-day">${d.getDate()}</div>
+        <div class="n-mon">${d.toLocaleString('en-ZA',{month:'short'})}</div>
+      </div>
+      <div class="n-name">${e.FirstName} ${e.LastName}</div>
+      <span class="n-tag tag-bday">🎂 Birthday</span>
+    </div>`;
+  }).join('');
+
+  const anvHtml = anniversaries.map(e => {
+    const d = new Date(e.StartDate);
+    return `<div class="n-row">
+      <div class="n-date">
+        <div class="n-day">${d.getDate()}</div>
+        <div class="n-mon">${d.toLocaleString('en-ZA',{month:'short'})}</div>
+      </div>
+      <div class="n-name">${e.FirstName} ${e.LastName}</div>
+      <span class="n-tag tag-anniv">🎉 ${e.years} yr${e.years > 1 ? 's' : ''}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('notice-body').innerHTML = `
+    <div class="notice-sec">
+      <div class="notice-sec-hd">🇿🇦 Upcoming Public Holidays</div>
+      ${holHtml}
+    </div>
+    ${bdHtml  ? `<div class="notice-sec"><div class="notice-sec-hd">🎂 Birthdays This Week</div>${bdHtml}</div>`  : ''}
+    ${anvHtml ? `<div class="notice-sec"><div class="notice-sec-hd">🎉 Work Anniversaries This Week</div>${anvHtml}</div>` : ''}
+  `;
+}
+
+function switchTab(tab, el) {
+  S.activeTab = tab;
+  document.querySelectorAll('.o-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderOffice();
+}
+
+function renderOffice() {
+  const tab = S.activeTab;
+  let html  = '';
+
+  if (tab === 'meetings') {
+    if (!S.calEvents.length) {
+      html = `<div class="empty-state"><div class="empty-ico">📅</div>
+        <div class="empty-txt">${S.graphToken ? 'No meetings scheduled for today.' : 'Loading calendar…'}</div></div>`;
+    } else {
+      html = S.calEvents.map(ev => `
+        <div class="o-item">
+          <div class="o-ico" style="background:#dbeafe">📅</div>
+          <div style="flex:1;min-width:0">
+            <div class="o-title">${ev.subject || 'Untitled meeting'}</div>
+            <div class="o-sub">${ev.isAllDay ? 'All day' :
+              fmtTime(ev.start?.dateTime) + ' – ' + fmtTime(ev.end?.dateTime)}
+              ${ev.location?.displayName ? ' · ' + ev.location.displayName : ''}</div>
+          </div>
+          <div class="o-time">${ev.isAllDay ? 'All day' : fmtTime(ev.start?.dateTime)}</div>
+        </div>`).join('');
+    }
+  }
+
+  if (tab === 'files') {
+    if (!S.recentFiles.length) {
+      html = `<div class="empty-state"><div class="empty-ico">📄</div>
+        <div class="empty-txt">${S.graphToken ? 'No recent files found.' : 'Loading files…'}</div></div>`;
+    } else {
+      html = S.recentFiles.map(f => {
+        const ext = (f.name || '').split('.').pop().toUpperCase();
+        const ico = ext === 'DOCX' || ext === 'DOC' ? '📝' :
+                    ext === 'XLSX' || ext === 'XLS' ? '📊' :
+                    ext === 'PPTX' || ext === 'PPT' ? '📊' :
+                    ext === 'PDF'  ? '📄' : '📎';
+        const when = f.lastModifiedDateTime
+          ? new Date(f.lastModifiedDateTime).toLocaleDateString('en-ZA',{day:'numeric',month:'short'}) : '';
+        return `
+          <div class="o-item">
+            <div class="o-ico" style="background:#f3e8ff">${ico}</div>
+            <div style="flex:1;min-width:0">
+              <div class="o-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                <a href="${f.webUrl}" target="_blank" style="color:var(--text);text-decoration:none">
+                  ${f.name || 'Unnamed file'}
+                </a>
+              </div>
+              <div class="o-sub">SharePoint / OneDrive</div>
+            </div>
+            <div class="o-time">${when}</div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  if (tab === 'email') {
+    if (!S.recentEmails.length) {
+      html = `<div class="empty-state"><div class="empty-ico">✉️</div>
+        <div class="empty-txt">${S.graphToken ? 'No unread emails — inbox zero! 🎉' : 'Loading emails…'}</div></div>`;
+    } else {
+      html = S.recentEmails.map(m => {
+        const when = m.receivedDateTime
+          ? new Date(m.receivedDateTime).toLocaleDateString('en-ZA',{day:'numeric',month:'short'}) : '';
+        const from = m.from?.emailAddress?.name || m.from?.emailAddress?.address || '—';
+        return `
+          <div class="o-item">
+            <div class="o-ico" style="background:#fce7f3">✉️</div>
+            <div style="flex:1;min-width:0">
+              <div class="o-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                ${m.subject || '(no subject)'}
+              </div>
+              <div class="o-sub">From: ${from}</div>
+            </div>
+            <div class="o-time">${when}</div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  document.getElementById('office-body').innerHTML = html;
+}
+
+function renderFinance() {
+  const active  = S.allEmployees.filter(e => e.Status === 'Active').length;
+  const pipeline= S.allEmployees.filter(e =>
+    ['Offer Sent','Offer Signed','Contract Sent','Contract Signed','Onboarded'].includes(e.Status)
+  ).length;
+
+  // Gross estimate — actual payroll uses PAYE/UIF/SDL (see /payroll/)
+  const monthly = S.allEmployees
+    .filter(e => e.Status === 'Active' && e.Salary)
+    .reduce((sum, e) => {
+      const s = parseFloat(e.Salary) || 0;
+      return sum + (e.SalaryFrequency === 'Hourly' ? s * 160 :
+                    e.SalaryFrequency === 'Weekly'  ? s * 4.33 : s);
+    }, 0);
+
+  document.getElementById('stat-headcount').textContent = active;
+
+  document.getElementById('finance-body').innerHTML = `
+    <div class="fin-stat">
+      <div class="fin-num">${active}</div>
+      <div class="fin-lbl">Active Employees</div>
+    </div>
+    <div class="fin-stat">
+      <div class="fin-num" style="color:var(--green-dark)">${fmtCurrency(monthly)}</div>
+      <div class="fin-lbl">Est. Monthly Gross Payroll</div>
+    </div>
+    <div class="fin-stat">
+      <div class="fin-num">${pipeline}</div>
+      <div class="fin-lbl">Candidates in Pipeline</div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--text3);line-height:1.5">
+      Gross estimate only. Run full payroll in the
+      <a href="${CONFIG.hrBase}/payroll/" style="color:var(--green-dark)">Payroll module</a>
+      for PAYE / UIF / SDL.
+    </div>
+  `;
+}
+
+function renderPipeline() {
+  const stages = [
+    { key:'Offer Sent',      label:'Offer Sent',      bg:'#dbeafe' },
+    { key:'Offer Signed',    label:'Offer Signed',    bg:'#dcfce7' },
+    { key:'Contract Sent',   label:'Contract Sent',   bg:'#fef9c3' },
+    { key:'Contract Signed', label:'Contract Signed', bg:'#fce7f3' },
+    { key:'Onboarded',       label:'Onboarded',       bg:'#ede9fe' },
+  ];
+  const counts = Object.fromEntries(
+    stages.map(s => [s.key, S.allEmployees.filter(e => e.Status === s.key).length])
+  );
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+  document.getElementById('pipeline-body').innerHTML = `
+    <div style="margin-bottom:14px;font-size:13px;color:var(--text2)">
+      <strong>${total}</strong> candidate${total !== 1 ? 's' : ''} currently in the hiring pipeline
+    </div>
+    <div class="pip-stages">
+      ${stages.map((s, i) => `
+        ${i > 0 ? '<div class="pip-arrow">›</div>' : ''}
+        <div class="pip-stage">
+          <div class="pip-bar" style="background:${s.bg}">
+            <div class="pip-count">${counts[s.key]}</div>
+          </div>
+          <div class="pip-name">${s.label}</div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;text-align:right">
+      <a href="${CONFIG.hrBase}/onboarding/"
+         style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;
+                color:var(--navy);text-decoration:none;border:1px solid var(--border2);
+                padding:6px 14px;border-radius:6px">
+        Manage Pipeline →
+      </a>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  🚀  BOOT
+// ─────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
