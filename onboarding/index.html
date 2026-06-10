@@ -539,7 +539,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     var ws=XLSX.utils.aoa_to_sheet([headers,sample,note]);
     // Column widths
     ws['!cols']=headers.map(function(h){return{wch:Math.max(h.length+4,16)};});
-    XLSX.utils.book_append_sheet(wb,'Employee Data',ws);
+    XLSX.utils.book_append_sheet(wb, ws, 'Employee Data');
     XLSX.writeFile(wb,'Trilogy_Onboarding_Template.xlsx');
   };
 
