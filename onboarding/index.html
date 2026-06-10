@@ -3,537 +3,751 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilogy BPO — Employee Records</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Trilogy BPO — Employee Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--blue:#2980b9}
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
-.nav-logo{height:28px}
-.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
-.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
-.nav-back:hover{color:var(--green)}
-.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
-.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
-.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
-.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
-.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
-.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
-.hero-stats{display:flex;gap:2.5rem;margin-top:1.5rem;flex-wrap:wrap}
-.hstat{border-left:2px solid var(--green);padding-left:1rem}
-.hstat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
-.hstat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
-.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 440px;gap:1.5rem;align-items:start}
-.shell-left{min-width:0}
-@media(max-width:980px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
-.search-wrap{flex:1;min-width:200px;position:relative}
-.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
-.search-wrap input:focus{outline:none;border-color:var(--navy)}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
-.filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
-.count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
-.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
-td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr.clickable{cursor:pointer;transition:background .12s}
-tr.clickable:hover td{background:#f7f6f2}
-tr.selected td{background:#edffd6}
-.emp-name{font-weight:700;color:var(--text)}
-.emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
-.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
-.s-tobe{background:#fff3cd;color:#856404}
-.s-onboarded{background:#d1ecf1;color:#0c5460}
-.s-active{background:var(--green-light);color:var(--green-dark)}
-.s-exited{background:#f0f0f0;color:#888}
-.emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
-.loading-row td{text-align:center;padding:3rem;color:var(--text3)}
-.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
-.detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
-.detail-empty-icon{font-size:40px;margin-bottom:.75rem}
-.panel-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:12px}
-.panel-avatar{width:44px;height:44px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#111;font-family:'Montserrat',sans-serif;flex-shrink:0}
-.panel-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
-.panel-ref{font-size:11px;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif}
-.panel-body{padding:1.25rem;max-height:calc(100vh - 160px);overflow-y:auto}
-.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem;flex-wrap:wrap}
-.tab-btn{padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.field-group{margin-bottom:1rem}
-.field-group label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
-.field-val{font-size:13px;color:var(--text);background:var(--offwhite);border-radius:var(--radius);padding:8px 10px;border:1px solid var(--border)}
-.field-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
-.field-input:focus{outline:none;border-color:var(--navy)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.save-field-btn{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border:none;border-radius:var(--radius);background:var(--navy);color:#fff;cursor:pointer;margin-top:6px}
-.save-result{font-size:11px;color:var(--green-dark);margin-top:4px;min-height:14px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none}
-.btn-primary{background:var(--navy);color:#fff}
-.btn-green{background:var(--green);color:#111}
-.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
-.btn-danger{background:var(--red);color:#fff}
-.btn-block{width:100%;margin-bottom:8px}
-.missing-card{background:#fff8e1;border:1px solid #ffc107;border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem}
-.missing-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;color:#856404;margin-bottom:.5rem}
-.missing-list{font-size:12px;color:#856404;line-height:1.8}
-.leave-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
-.leave-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
-.leave-type{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.leave-balance{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;color:var(--navy);line-height:1}
-.leave-unit{font-size:11px;color:var(--text3);margin-top:2px}
-.leave-detail{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
-.disc-clear{background:#d4edda;border:1px solid #28a745;border-radius:var(--radius-lg);padding:1rem;text-align:center;color:#155724;font-weight:600;font-size:13px;margin-bottom:1rem}
-.stage-track{display:flex;margin-bottom:.5rem;gap:4px}
-.stage-dot{flex:1;height:6px;border-radius:3px;background:var(--border)}
-.stage-dot.done{background:var(--navy)}
-.stage-dot.active{background:var(--green)}
-.stage-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;margin-bottom:1.25rem}
-.placeholder-btn{opacity:.6}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;margin-bottom:.25rem}
-.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
-.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
-.footer{background:var(--navy);padding:1.25rem 2rem}
-.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.footer-logo{height:18px}
-.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+:root{
+  --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --navy:#1B2A4A;--navy2:#243659;
+  --border:#dddcda;--border2:#c4c3bf;--bg:#e8e7e3;--surface:#ffffff;--surface2:#f2f1ed;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;
+  --red:#c0392b;
+}
+html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.shell{max-width:740px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--navy);padding:1rem 1.75rem;border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-1.75rem -1.75rem 1.5rem}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;letter-spacing:.04em}
+.badge-hop{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(74,253,14,.2);color:var(--green);padding:4px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.tab{flex:1;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text2);text-align:center;border-right:1px solid var(--border);transition:all .15s;font-family:'Montserrat',sans-serif}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--navy);color:#fff}
+.tab:hover:not(.active){background:var(--border)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1rem}
+.card-title{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'Montserrat',sans-serif;color:var(--navy)}
+.card-sub{font-size:12px;color:var(--text2);margin-bottom:1.5rem}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:1.5rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--green);font-family:'Montserrat',sans-serif}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,42,74,.1)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.field select.err,.field input.err{border-color:var(--red)}
+.err-msg{font-size:11px;color:var(--red);margin-top:3px;display:none}
+.err-msg.show{display:block}
+.hint{font-size:11px;color:var(--text3);margin-top:3px}
+.manager-status{font-size:11px;color:var(--text3);margin-top:4px}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:1.5rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-primary:hover{background:var(--navy2)}
+.btn-primary:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed}
+.btn-outline{background:var(--surface);color:var(--navy);border-color:var(--navy);font-family:'Montserrat',sans-serif}
+.btn-outline:hover{background:var(--surface2)}
+.global-err{background:#fdf0ef;border:1px solid #f5c0bb;border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--red);margin-bottom:1rem;display:none}
+.global-err.show{display:block}
+.success-icon{width:56px;height:56px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.success-icon svg{width:28px;height:28px;stroke:var(--green-dark);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* CSV UPLOAD AREA */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:2rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2);margin-bottom:1rem}
+.upload-zone:hover{border-color:var(--navy);background:var(--surface)}
+.upload-zone.dragover{border-color:var(--green);background:var(--green-light)}
+.uz-icon{font-size:32px;margin-bottom:.5rem}
+.uz-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Montserrat',sans-serif}
+.uz-sub{font-size:12px;color:var(--text3)}
+
+/* PREVIEW TABLE */
+.preview-wrap{display:none;margin-top:1rem}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.preview-header h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.preview-counts{display:flex;gap:10px}
+.preview-count{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;font-family:'Montserrat',sans-serif}
+.pc-valid{background:var(--green-light);color:var(--green-dark)}
+.pc-error{background:#fdf0ef;color:var(--red)}
+.preview-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.preview-table thead tr{background:var(--navy)}
+.preview-table thead th{padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.6);text-align:left;white-space:nowrap}
+.preview-table tbody tr{border-bottom:1px solid var(--border)}
+.preview-table tbody tr:last-child{border-bottom:none}
+.preview-table tbody tr.row-error{background:#fdf0ef}
+.preview-table td{padding:8px 12px;color:var(--text2);vertical-align:middle}
+.preview-table td.td-name{font-weight:600;color:var(--text)}
+.row-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.rs-valid{background:var(--green-light);color:var(--green-dark)}
+.rs-error{background:#fdf0ef;color:var(--red)}
+.rs-sent{background:#d1ecf1;color:#0c5460}
+.rs-sending{background:#fff3cd;color:#856404}
+.bulk-progress{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;font-size:12px;color:var(--text2);margin-top:.75rem;display:none}
+.bulk-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-top:.5rem;overflow:hidden}
+.bulk-bar{height:100%;background:var(--green-dark);border-radius:3px;width:0%;transition:width .3s}
+
+@media(max-width:520px){.grid2{grid-template-columns:1fr}.shell{padding:1rem 1rem 4rem}}
 </style>
 </head>
 <body>
-
-<nav class="nav">
-  <div style="display:flex;align-items:center;gap:12px">
-    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
-    <div class="nav-divider"></div>
-    <div class="nav-section">Employee Records</div>
-  </div>
-  <a href="../" class="nav-back">← HR Portal</a>
-</nav>
-
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-label">Trilogy BPO</div>
-    <div class="hero-title">Employee Records</div>
-    <div class="hero-sub">Search, onboard and manage employees. An employee is anyone who has signed a contract.</div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-num" id="statToBe">—</div><div class="hstat-label">To be onboarded</div></div>
-      <div class="hstat"><div class="hstat-num" id="statOnboarded">—</div><div class="hstat-label">Onboarded</div></div>
-      <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active</div></div>
-    </div>
-  </div>
-</div>
-
 <div class="shell">
-  <div class="shell-left">
-    <div class="toolbar">
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search by name, ID, reference or job title…" oninput="filterTable()">
-      </div>
-      <select class="filter-sel" id="onboardFilter" onchange="filterTable()">
-        <option value="">All employees</option>
-        <option value="tobe">To be onboarded</option>
-        <option value="onboarded">Onboarded</option>
-        <option value="active">Active</option>
-      </select>
-      <span class="count-badge" id="countBadge">Loading…</span>
+
+<div class="topbar">
+  <div class="brand">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:28px;display:block">
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 6px"></div>
+    <div class="brand-sub">Onboarding Portal</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="../" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
+    <div class="badge-hop">Head of People</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('single')">Single offer</div>
+  <div class="tab" onclick="switchTab('bulk')">Bulk offers (CSV)</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1 — SINGLE OFFER
+══════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-single">
+
+  <div id="formCard" class="card">
+    <div class="card-title">New employee — letter of offer</div>
+    <p class="card-sub">Complete all fields or <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="downloadSingleTemplate()">⬇ Download CSV template</button> to pre-fill from a file <input type="file" id="singleCsvFile" accept=".csv" style="display:none" onchange="loadSingleCSV(this)"> <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="document.getElementById('singleCsvFile').click()">📂 Upload filled CSV</button></p>
+
+    <div class="global-err" id="globalErr">Please fill in all required fields before sending.</div>
+
+    <div class="section-label">Candidate details</div>
+    <div class="grid2">
+      <div class="field"><label>First name <span class="req">*</span></label><input type="text" id="fn" placeholder="e.g. Thandi"><div class="err-msg" id="fn-err">Required</div></div>
+      <div class="field"><label>Last name <span class="req">*</span></label><input type="text" id="ln" placeholder="e.g. Mokoena"><div class="err-msg" id="ln-err">Required</div></div>
     </div>
-    <div class="tbl-wrap">
-      <table id="empTable">
-        <thead><tr><th></th><th>Employee</th><th>Job title</th><th>Start date</th><th>Onboarding</th></tr></thead>
-        <tbody id="empBody"><tr class="loading-row"><td colspan="5"><div class="spinner"></div>Loading employees…</td></tr></tbody>
-      </table>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>SA ID number <span class="req">*</span></label><input type="text" id="idno" placeholder="13-digit RSA ID" maxlength="13"><div class="err-msg" id="idno-err">Required</div></div>
+      <div class="field"><label>Mobile number <span class="req">*</span></label><input type="text" id="mob" placeholder="+27 81 234 5678"><div class="err-msg" id="mob-err">Required</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="field"><label>Candidate email address <span class="req">*</span></label><input type="email" id="em" placeholder="candidate@email.com"><div class="err-msg" id="em-err">Enter a valid email address</div></div>
+    <div style="height:14px"></div>
+    <div class="field"><label>Physical / residential address <span class="req">*</span></label><input type="text" id="addr" placeholder="Street, Suburb, City, Postal Code"><div class="err-msg" id="addr-err">Required</div></div>
+
+    <div class="section-label">Position details</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="field"><label>Job title <span class="req">*</span></label><input type="text" id="jt" placeholder="e.g. Customer Service Agent"><div class="err-msg" id="jt-err">Required</div></div>
+      <div class="field"><label>Campaign / Project</label><select id="campaign" style="width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)"><option value="">Loading…</option></select></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Monthly salary (ZAR) <span class="req">*</span></label><input type="text" id="sal" placeholder="e.g. 8 500"><div class="err-msg" id="sal-err">Required</div></div>
+      <div class="field"><label>Start date <span class="req">*</span></label><input type="date" id="sd"><div class="err-msg" id="sd-err">Required</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>Date of offer <span class="req">*</span></label><input type="date" id="offerdate"><div class="hint">Defaults to today</div></div>
+      <div class="field">
+        <label>Reporting to <span class="req">*</span></label>
+        <select id="mgrSelect" onchange="onManagerSelect(this)">
+          <option value="">Loading managers…</option>
+        </select>
+        <div class="err-msg" id="mgrSelect-err">Please select a manager</div>
+        <div class="manager-status" id="mgrStatus"></div>
+      </div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="grid2">
+      <div class="field"><label>Place of work <span class="req">*</span></label><input type="text" id="pow" value="Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town"><div class="err-msg" id="pow-err">Required</div></div>
+      <div class="field"><label>Annual leave (days) <span class="req">*</span></label><input type="number" id="al" value="15" min="15" max="365"><div class="hint">Minimum 15 days per BCEA</div></div>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <label>Background / criminal check <span class="req">*</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+        <label id="bgcLabelDone" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--navy);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:var(--offwhite)">
+          <input type="radio" name="bgcheck" value="Complete" checked onchange="toggleBgc(this)" style="accent-color:var(--navy);width:16px;height:16px;flex-shrink:0;margin:0">
+          Completed
+        </label>
+        <label id="bgcLabelNA" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:#fff">
+          <input type="radio" name="bgcheck" value="Not Applicable" onchange="toggleBgc(this)" style="accent-color:var(--navy);width:16px;height:16px;flex-shrink:0;margin:0">
+          Not applicable
+        </label>
+      </div>
+      <div class="hint">Confirm whether a background/criminal check has been completed for this candidate</div>
+    </div>
+
+    <input type="hidden" id="mgr">
+    <input type="hidden" id="mgrem">
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="sendBtn" onclick="submitForm()">Send letter of offer to candidate</button>
     </div>
   </div>
 
-  <div class="detail-panel" id="detailPanel">
-    <div class="detail-empty" id="detailEmpty">
-      <div class="detail-empty-icon">👤</div>
-      <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:.25rem">Select an employee</div>
-      <div style="font-size:12px;color:var(--text3)">Click any row to view and manage their record</div>
+  <div id="successCard" class="card" style="display:none;text-align:center;padding:2.5rem 1.75rem">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:.5rem;font-family:'Montserrat',sans-serif">Offer sent successfully</div>
+    <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem" id="successMsg"></p>
+    <button class="btn btn-primary" onclick="resetForm()">+ Start another onboarding</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 2 — BULK CSV
+══════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-bulk">
+  <div class="card">
+    <div class="card-title">Bulk offer letters — CSV upload</div>
+    <p class="card-sub">Download the template, fill in one row per candidate, upload it here, review the list, then send all offers in one go.</p>
+
+    <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="downloadBulkTemplate()">⬇ Download CSV template</button>
     </div>
-    <div id="detailContent" style="display:none">
-      <div class="panel-header">
-        <div class="panel-avatar" id="panelAvatar">—</div>
-        <div><div class="panel-name" id="panelName">—</div><div class="panel-ref" id="panelRef">—</div></div>
+
+    <div class="upload-zone" id="bulkDropZone" onclick="document.getElementById('bulkCsvFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <div class="uz-icon">📂</div>
+      <div class="uz-title" id="uzTitle">Drop your CSV here or click to browse</div>
+      <div class="uz-sub">Accepted format: .csv — one candidate per row</div>
+      <input type="file" id="bulkCsvFile" accept=".csv" style="display:none" onchange="loadBulkCSV(this)">
+    </div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-header">
+        <h3>Preview — review before sending</h3>
+        <div class="preview-counts">
+          <span class="preview-count pc-valid" id="validCount">0 valid</span>
+          <span class="preview-count pc-error" id="errorCount" style="display:none">0 errors</span>
+        </div>
       </div>
-      <div class="panel-body">
-        <div class="stage-labels"><span>Contract</span><span>Onboarded</span><span>Active</span></div>
-        <div class="stage-track"><div class="stage-dot" id="st1"></div><div class="stage-dot" id="st2"></div><div class="stage-dot" id="st3"></div></div>
-
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
-          <button class="tab-btn" onclick="switchTab('leave',this)">Leave</button>
-          <button class="tab-btn" onclick="switchTab('disc',this)">Disciplinary</button>
-          <button class="tab-btn" onclick="switchTab('edit',this)">Edit</button>
-        </div>
-
-        <!-- OVERVIEW -->
-        <div class="tab-content active" id="tab-overview">
-          <div id="missingCard" class="missing-card" style="display:none">
-            <div class="missing-title">⚠️ Onboarding incomplete — info still needed</div>
-            <div class="missing-list" id="missingList"></div>
-            <button class="btn btn-primary btn-block" style="margin-top:.75rem" onclick="sendOnboardForm()" id="btnOnboard">📋 Send onboarding form to employee</button>
-            <div id="onboardResult" style="font-size:11px;text-align:center;min-height:14px"></div>
-          </div>
-          <div id="onboardedBadge" class="disc-clear" style="display:none">✓ Onboarding complete — all information captured</div>
-
-          <div class="field-row">
-            <div class="field-group"><label>First name</label><div class="field-val" id="d-fn">—</div></div>
-            <div class="field-group"><label>Last name</label><div class="field-val" id="d-ln">—</div></div>
-          </div>
-          <div class="field-row">
-            <div class="field-group"><label>ID number</label><div class="field-val" id="d-id">—</div></div>
-            <div class="field-group"><label>Mobile</label><div class="field-val" id="d-mob">—</div></div>
-          </div>
-          <div class="field-group"><label>Email</label><div class="field-val" id="d-email">—</div></div>
-          <div class="field-row">
-            <div class="field-group"><label>Job title</label><div class="field-val" id="d-jt">—</div></div>
-            <div class="field-group"><label>Campaign</label><div class="field-val" id="d-camp">—</div></div>
-          </div>
-          <div class="field-row">
-            <div class="field-group"><label>Start date</label><div class="field-val" id="d-sd">—</div></div>
-            <div class="field-group"><label>Salary</label><div class="field-val" id="d-sal">—</div></div>
-          </div>
-          <div class="field-group"><label>Reporting line</label><div class="field-val" id="d-mgr">—</div></div>
-          <div class="field-group"><label>Status</label><div class="field-val" id="d-status">—</div></div>
-
-          <button class="btn btn-green btn-block" id="btnActivate" onclick="markActive()" style="display:none;margin-top:1rem">✓ Mark as Active (started work)</button>
-        </div>
-
-        <!-- LEAVE -->
-        <div class="tab-content" id="tab-leave">
-          <div class="leave-grid">
-            <div class="leave-card"><div class="leave-type">Annual leave</div><div class="leave-balance" id="lv-annual">—</div><div class="leave-unit">days available</div><div class="leave-detail" id="lv-annual-detail"></div></div>
-            <div class="leave-card"><div class="leave-type">Sick leave</div><div class="leave-balance" id="lv-sick">—</div><div class="leave-unit">days available</div><div class="leave-detail">30 days / 36-month cycle</div></div>
-            <div class="leave-card"><div class="leave-type">Family responsibility</div><div class="leave-balance" id="lv-family">—</div><div class="leave-unit">days available</div><div class="leave-detail">3 days / annual cycle</div></div>
-            <div class="leave-card"><div class="leave-type" id="lv-mat-label">Maternity / Parental</div><div class="leave-balance" id="lv-mat">—</div><div class="leave-unit">days entitlement</div><div class="leave-detail" id="lv-mat-detail"></div></div>
-          </div>
-          <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
-          <a class="btn btn-outline btn-block" href="../leave/" style="text-decoration:none">Open full leave management →</a>
-        </div>
-
-        <!-- DISCIPLINARY -->
-        <div class="tab-content" id="tab-disc">
-          <div id="discClear" class="disc-clear">✓ Clear disciplinary record</div>
-          <div id="discList"></div>
-          <button class="btn btn-primary btn-block" onclick="openDiscModal()">＋ Log disciplinary action</button>
-          <a class="btn btn-outline btn-block" href="../disciplinary/" style="text-decoration:none">Open full disciplinary management →</a>
-        </div>
-
-        <!-- EDIT -->
-        <div class="tab-content" id="tab-edit">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit fields — saved immediately to the database.</div>
-          <div class="field-group"><label>Job title</label><input type="text" class="field-input" id="edit-jt"><button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button><div class="save-result" id="save-jt"></div></div>
-          <div class="field-group"><label>Campaign</label><input type="text" class="field-input" id="edit-camp"><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
-          <div class="field-group"><label>Work email</label><input type="email" class="field-input" id="edit-wemail"><button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button><div class="save-result" id="save-wemail"></div></div>
-          <div class="field-group"><label>Reports to</label><input type="text" class="field-input" id="edit-mgr"><button class="save-field-btn" onclick="saveField('ReportsTo','edit-mgr')">Save</button><div class="save-result" id="save-mgr"></div></div>
-          <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
-          <a class="btn btn-danger btn-block" href="../offboarding/" style="text-decoration:none;margin-top:1rem">⚠ Offboard this employee →</a>
-        </div>
-
+      <div class="preview-table-wrap">
+        <table class="preview-table">
+          <thead><tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Job title</th>
+            <th>Start date</th><th>Salary</th><th>Reports to</th><th>Status</th>
+          </tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <div class="bulk-progress" id="bulkProgress">
+        <span id="bulkProgressText">Sending offers…</span>
+        <div class="bulk-bar-wrap"><div class="bulk-bar" id="bulkBar"></div></div>
+      </div>
+      <div class="btn-row" style="margin-top:1rem">
+        <button class="btn btn-primary" id="sendAllBtn" onclick="sendAllOffers()">Send all valid offers</button>
+        <button class="btn" onclick="clearBulk()">Clear</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- LEAVE MODAL -->
-<div class="modal-overlay" id="leaveModal">
-  <div class="modal">
-    <div class="modal-title">Log / request leave</div>
-    <div class="modal-sub">Record leave for <strong id="leaveEmpName"></strong></div>
-    <div class="field-group"><label>Leave type</label><select class="field-input" id="leaveType"><option>Annual</option><option>Sick</option><option>Family Responsibility</option><option>Maternity</option><option>Parental</option><option>Unpaid</option></select></div>
-    <div class="field-row"><div class="field-group"><label>From</label><input type="date" class="field-input" id="leaveFrom"></div><div class="field-group"><label>To</label><input type="date" class="field-input" id="leaveTo"></div></div>
-    <div class="field-group"><label>Days</label><input type="number" class="field-input" id="leaveDays" step="0.5" placeholder="Number of days"></div>
-    <div class="field-group"><label>Reason (optional)</label><input type="text" class="field-input" id="leaveReason"></div>
-    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('leaveModal')">Cancel</button><button class="btn btn-green" onclick="saveLeave()">Save leave</button></div>
-    <div id="leaveResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
-  </div>
-</div>
-
-<!-- DISCIPLINARY MODAL -->
-<div class="modal-overlay" id="discModal">
-  <div class="modal">
-    <div class="modal-title">Log disciplinary action</div>
-    <div class="modal-sub">Record a disciplinary action for <strong id="discEmpName"></strong></div>
-    <div class="field-group"><label>Date</label><input type="date" class="field-input" id="discDate"></div>
-    <div class="field-group"><label>Category</label><select class="field-input" id="discCategory"><option>Verbal Warning</option><option>Written Warning</option><option>Final Written Warning</option><option>Disciplinary Hearing</option><option>Suspension</option><option>Dismissal</option></select></div>
-    <div class="field-group"><label>Description</label><textarea class="field-input" id="discDescription" rows="2"></textarea></div>
-    <div class="field-group"><label>Outcome</label><input type="text" class="field-input" id="discOutcome"></div>
-    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('discModal')">Cancel</button><button class="btn btn-danger" onclick="saveDisc()">Save record</button></div>
-    <div id="discResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
-  </div>
-</div>
-
-<div class="footer"><div class="footer-inner"><img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo"><div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div></div></div>
+</div><!-- end shell -->
 
 <script>
-var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
-var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
-var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
-var SEND_FORM_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c174dcf2a6e04fab97dac9f1dbac04b7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-LE7GTa6KDsoNzgjFn23JIj6UlnOrMl6X3x7g9Q35J0';
-var SAVE_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f9acaa0f0254a72a662cbf4541f4da3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6K_5uXvdvOz7pFfDeQtwhdqfRSxmxz1Ib_sfZHHSD4k';
-var SAVE_DISC_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8ef7ff35f9f45aea1b8844dff8acdf4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TB2XdL0cTuf6xXNy3QBIbCORYriYOygOVYPx-Bv_03M';
-var SITE_URL='https://hr.trilogybpo.com';
+(function(){
+  var ZAPIER = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fcea2bf9fe254cebad7fb036acdf4e44/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WZK-GcDKtcigueZ_n53_96dF9qUDRQy8qYyfdIeDeEI';
+  var BASE   = '';
+  var MANAGERS_URL = BASE + '/managers.json';
+  var CAMPAIGNS_URL = BASE + '/campaigns.json';
+  var managersData = [];
+  var bulkRows = [];
 
-var allEmployees=[], selectedEmp=null, currentDetail=null;
+  // ── UTILS ──
+  function gi(id){ return document.getElementById(id); }
 
-function gi(id){return document.getElementById(id);}
-function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
-function initials(f,l){return ((f||'')[0]||'')+((l||'')[0]||'');}
+  window.toggleBgc = function(el){
+    gi('bgcLabelDone').style.borderColor = 'var(--border)';
+    gi('bgcLabelNA').style.borderColor = 'var(--border)';
+    gi('bgcLabelDone').style.background = '#fff';
+    gi('bgcLabelNA').style.background = '#fff';
+    if(el.value === 'Complete'){ gi('bgcLabelDone').style.borderColor = 'var(--navy)'; gi('bgcLabelDone').style.background = 'var(--offwhite)'; }
+    else { gi('bgcLabelNA').style.borderColor = 'var(--navy)'; gi('bgcLabelNA').style.background = 'var(--offwhite)'; }
+  };  // Fix SA ID numbers mangled to scientific notation by Excel (e.g. 6.90908E+12 → 6909080000000)
+  function fixIdNumber(val){
+    if(!val) return '';
+    val = val.toString().trim();
+    // Handle scientific notation, including comma decimal separator (e.g. 9,00102E+12)
+    if(val.toUpperCase().indexOf('E+') > -1){
+      try { return parseInt(parseFloat(val.replace(',','.'))).toString(); } catch(e){ return val; }
+    }
+    return val;
+  }
+  function fmtDate(v){ if(!v)return''; var p=v.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  function cap(s){ return s?(s[0].toUpperCase()+s.slice(1)):''; }
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function buildToken(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
 
-// ── ONBOARD STATE ──
-function onboardState(e){
-  if(e.Status==='Active') return 'active';
-  if(e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes') return 'onboarded';
-  return 'tobe';
-}
-
-// ── LOAD ──
-function loadEmployees(){
-  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
-    allEmployees=Array.isArray(data)?data:(data.employees||[]);
-    renderStats(); renderTable(allEmployees);
-  })
-  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
-}
-
-function renderStats(){
-  var tobe=0,onb=0,act=0;
-  allEmployees.forEach(function(e){var s=onboardState(e);if(s==='tobe')tobe++;else if(s==='onboarded')onb++;else if(s==='active')act++;});
-  gi('statToBe').textContent=tobe; gi('statOnboarded').textContent=onb; gi('statActive').textContent=act;
-}
-
-function renderTable(list){
-  gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
-  if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
-  gi('empBody').innerHTML=list.map(function(e){
-    var st=onboardState(e);
-    var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
-    return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
-      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
-      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
-      '<td>'+(e.JobTitle||'—')+'</td>'+
-      '<td>'+(e.StartDate?e.StartDate.split('T')[0]:'—')+'</td>'+
-      '<td>'+pill+'</td></tr>';
-  }).join('');
-}
-
-function filterTable(){
-  var q=gi('searchInput').value.toLowerCase();
-  var f=gi('onboardFilter').value;
-  var filtered=allEmployees.filter(function(e){
-    var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
-    var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.IDNumber||'').includes(q);
-    var mf=!f||onboardState(e)===f;
-    return mq&&mf;
-  });
-  renderTable(filtered);
-}
-
-// ── LEAVE CALCULATIONS ──
-function monthsSince(dateStr){
-  if(!dateStr)return 0;
-  var start=new Date(dateStr.split('T')[0]);
-  var now=new Date();
-  if(start>now)return 0;
-  return (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth()) + (now.getDate()>=start.getDate()?0:-1);
-}
-
-function calcLeave(e,detail){
-  var entitlement=parseFloat(e.AnnualLeaveEntitlement||15);
-  var months=monthsSince(e.StartDate);
-  var accrued=Math.max(0,(entitlement/12)*months);
-  var annualTaken=parseFloat((detail&&detail.annual_taken)||0);
-  var annualAvail=(accrued-annualTaken).toFixed(2);
-
-  var sickTaken=parseFloat((detail&&detail.sick_taken)||0);
-  var sickAvail=(30-sickTaken).toFixed(0);
-
-  var famTaken=parseFloat((detail&&detail.family_taken)||0);
-  var famAvail=(3-famTaken).toFixed(0);
-
-  var isFemale=(e.Gender||'').toLowerCase()==='female';
-  var matDays=isFemale?'~120':'10';
-  var matLabel=isFemale?'Maternity leave':'Parental leave';
-  var matDetail=isFemale?'4 consecutive months (BCEA)':'10 days (BCEA parental)';
-
-  return {annualAvail:annualAvail,accrued:accrued.toFixed(2),entitlement:entitlement,months:months,sickAvail:sickAvail,famAvail:famAvail,matDays:matDays,matLabel:matLabel,matDetail:matDetail};
-}
-
-// ── SELECT ──
-function selectEmployee(id){
-  var e=allEmployees.find(function(x){return x.EmployeeID===id;});
-  if(!e)return;
-  selectedEmp=e; currentDetail=null;
-  gi('detailEmpty').style.display='none';
-  gi('detailContent').style.display='block';
-  gi('panelAvatar').textContent=initials(e.FirstName,e.LastName).toUpperCase();
-  gi('panelName').textContent=(e.FirstName||'')+' '+(e.LastName||'');
-  gi('panelRef').textContent=e.EmployeeID;
-
-  var st=onboardState(e);
-  gi('st1').className='stage-dot done';
-  gi('st2').className='stage-dot '+(st==='onboarded'||st==='active'?'done':'active');
-  gi('st3').className='stage-dot '+(st==='active'?'done':(st==='onboarded'?'active':''));
-
-  // Overview
-  gi('d-fn').textContent=e.FirstName||'—';
-  gi('d-ln').textContent=e.LastName||'—';
-  gi('d-id').textContent=e.IDNumber||'—';
-  gi('d-mob').textContent=e.Mobile||'—';
-  gi('d-email').textContent=e.PersonalEmail||e.WorkEmail||'—';
-  gi('d-jt').textContent=e.JobTitle||'—';
-  gi('d-camp').textContent=e.Campaign||'—';
-  gi('d-sd').textContent=e.StartDate?e.StartDate.split('T')[0]:'—';
-  gi('d-sal').textContent=e.Salary?'R '+parseFloat(e.Salary).toLocaleString('en-ZA'):'—';
-  gi('d-mgr').textContent=e.ReportsTo||'—';
-  gi('d-status').textContent=e.Status||'—';
-
-  // Missing info / onboarded badge
-  var missing=[];
-  if(!e.Title)missing.push('Title');
-  if(!e.Gender)missing.push('Gender');
-  if(!e.Race)missing.push('Race');
-  if(!e.HomeLanguage)missing.push('Home language');
-  if(!e.TaxNumber)missing.push('Tax number');
-  if(st==='tobe'){
-    gi('missingCard').style.display='block';
-    gi('onboardedBadge').style.display='none';
-    gi('missingList').innerHTML=missing.length?'Still required: '+missing.join(', ')+', emergency contact, banking details':'Awaiting employee onboarding form completion';
-  } else {
-    gi('missingCard').style.display='none';
-    gi('onboardedBadge').style.display='block';
+  function buildRef(){
+    var t=buildToken();
+    return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6).toUpperCase()};
   }
 
-  // Activate button — show if onboarded but not active
-  gi('btnActivate').style.display=(st==='onboarded')?'flex':'none';
+  var SITE_URL = 'https://hr.trilogybpo.com';
 
-  // Edit fields
-  gi('edit-jt').value=e.JobTitle||'';
-  gi('edit-camp').value=e.Campaign||'';
-  gi('edit-wemail').value=e.WorkEmail||'';
-  gi('edit-mgr').value=e.ReportsTo||'';
-  gi('edit-status').value=e.Status||'Contract Signed';
+  function buildSigningUrl(d, token, ref){
+    return SITE_URL+'/onboarding/offer.html?'+[
+      'token='+encodeURIComponent(token),
+      'ref='+encodeURIComponent(ref),
+      'fn='+encodeURIComponent(d.fn),
+      'ln='+encodeURIComponent(d.ln),
+      'id='+encodeURIComponent(d.idno),
+      'mob='+encodeURIComponent(d.mob),
+      'em='+encodeURIComponent(d.em),
+      'addr='+encodeURIComponent(d.addr),
+      'jt='+encodeURIComponent(d.jt),
+      'sal='+encodeURIComponent(d.sal),
+      'sd='+encodeURIComponent(d.sd),
+      'od='+encodeURIComponent(d.od),
+      'mgr='+encodeURIComponent(d.mgr),
+      'mgrem='+encodeURIComponent(d.mgrem),
+      'pow='+encodeURIComponent(d.pow||'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town'),
+      'al='+encodeURIComponent(d.al||'15')
+    ].join('&');
+  }
 
-  // Leave (show entitlement immediately, refine with detail)
-  renderLeave(e,null);
+  function postToZapier(payload, cb){
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',ZAPIER,true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.onreadystatechange=function(){ if(xhr.readyState===4) cb(); };
+    xhr.onerror=function(){ cb(); };
+    xhr.send(JSON.stringify(payload));
+  }
 
-  // Disciplinary default
-  gi('discClear').style.display='block';
-  gi('discList').innerHTML='';
+  // ── TABS ──
+  window.switchTab=function(tab){
+    document.querySelectorAll('.tab').forEach(function(t,i){
+      t.classList.toggle('active', (tab==='single'&&i===0)||(tab==='bulk'&&i===1));
+    });
+    gi('panel-single').classList.toggle('active', tab==='single');
+    gi('panel-bulk').classList.toggle('active', tab==='bulk');
+  };
 
-  filterTable();
+  // ── MANAGERS ──
+  function loadManagers(){
+    fetch(MANAGERS_URL+'?v='+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        managersData=data;
+        populateManagerSelect(data);
+        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">✓ '+data.length+' managers loaded</span>';
+      })
+      .catch(function(){
+        managersData=[
+          {name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},
+          {name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},
+          {name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}
+        ];
+        populateManagerSelect(managersData);
+        gi('mgrStatus').innerHTML='<span style="color:var(--text3)">Using cached list</span>';
+      });
+  }
 
-  // Fetch detail (leave taken, disciplinary, emergency, banking)
-  fetch(GET_DETAIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:e.EmployeeID})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var detail=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
-    currentDetail=detail;
-    renderLeave(e,detail);
-    if(detail.active_disciplinary&&parseInt(detail.active_disciplinary)>0){
-      gi('discClear').style.display='none';
-      gi('discList').innerHTML='<div style="background:#fdf0ef;border:1px solid '+'#c0392b;border-radius:8px;padding:1rem;color:#c0392b;font-size:12px">⚠️ '+detail.active_disciplinary+' active disciplinary record(s). Open full disciplinary management to view details.</div>';
+  function loadCampaigns(){
+    fetch(CAMPAIGNS_URL+'?v='+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(data){ populateCampaignSelect(data); })
+      .catch(function(){ populateCampaignSelect([{name:'UK Telco Campaign'},{name:'NADClinic'}]); });
+  }
+
+  function populateCampaignSelect(data){
+    var sel=gi('campaign');
+    sel.innerHTML='<option value="">Select campaign / project…</option>';
+    data.forEach(function(c){
+      var o=document.createElement('option');
+      o.value=c.name; o.textContent=c.name;
+      sel.appendChild(o);
+    });
+  }
+
+  function populateManagerSelect(data){
+    var sel=gi('mgrSelect');
+    sel.innerHTML='<option value="">Select reporting-to manager…</option>';
+    data.forEach(function(m){
+      var opt=document.createElement('option');
+      opt.value=m.email; opt.setAttribute('data-name',m.name); opt.textContent=m.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  window.onManagerSelect=function(sel){
+    var opt=sel.options[sel.selectedIndex];
+    gi('mgr').value=opt.getAttribute('data-name')||'';
+    gi('mgrem').value=opt.value||'';
+    var st=gi('mgrStatus');
+    st.innerHTML=opt.value?'<span style="color:var(--green-dark)">✓ '+opt.value+'</span>':'';
+    sel.classList.remove('err');
+    var e=gi('mgrSelect-err'); if(e) e.classList.remove('show');
+  };
+
+  // ── SINGLE OFFER ──
+  gi('offerdate').value=new Date().toISOString().slice(0,10);
+
+  function validate(){
+    var ok=true;
+    ['fn','ln','idno','mob','em','addr','jt','sal','sd','offerdate'].forEach(function(id){
+      var el=gi(id), val=el.value.trim(), fail=!val;
+      if(id==='em'&&val&&!isEmail(val)) fail=true;
+      el.classList.toggle('err',fail);
+      var e=gi(id+'-err'); if(e) e.classList.toggle('show',fail);
+      if(fail) ok=false;
+    });
+    return ok;
+  }
+
+  window.submitForm=function(){
+    gi('globalErr').classList.remove('show');
+    if(!validate()){gi('globalErr').classList.add('show');return;}
+    var mgrSel=gi('mgrSelect');
+    if(!mgrSel.value){
+      mgrSel.classList.add('err');
+      gi('mgrSelect-err').classList.add('show');
+      gi('globalErr').classList.add('show');
+      return;
     }
-  })
-  .catch(function(err){console.error('Detail fetch error:',err);});
-}
+    var d={
+      fn:gi('fn').value.trim(), ln:gi('ln').value.trim(),
+      idno:gi('idno').value.trim(), mob:gi('mob').value.trim(),
+      em:gi('em').value.trim(), addr:gi('addr').value.trim(),
+      jt:gi('jt').value.trim(), campaign:gi('campaign').value.trim(), sal:gi('sal').value.trim(),
+      sd:fmtDate(gi('sd').value), od:fmtDate(gi('offerdate').value),
+      mgr:gi('mgr').value.trim(), mgrem:gi('mgrem').value.trim(),
+      pow:gi('pow').value.trim(), al:gi('al').value.trim(),
+      bgcheck:(document.querySelector('input[name="bgcheck"]:checked')||{}).value||'Complete'
+    };
+    var tr=buildRef();
+    var sigUrl=buildSigningUrl(d,tr.token,tr.ref);
+    var payload={
+      action:'send_offer', ref:tr.ref,
+      candidate_first:d.fn, candidate_last:d.ln,
+      candidate_email:d.em, candidate_id:d.idno,
+      candidate_mobile:d.mob, candidate_address:d.addr,
+      job_title:d.jt, campaign:d.campaign, salary:d.sal,
+      start_date:d.sd, offer_date:d.od,
+      reports_to:d.mgr, reports_to_email:d.mgrem,
+      place_of_work:d.pow, annual_leave:d.al,
+      background_check:d.bgcheck,
+      signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
+    };
+    gi('sendBtn').disabled=true;
+    gi('sendBtn').textContent='Reviewing…';
+    // Show verification checklist first
+    showVerifyModal(d, tr, sigUrl, payload);
+  };
 
-function renderLeave(e,detail){
-  var l=calcLeave(e,detail);
-  gi('lv-annual').textContent=l.annualAvail;
-  gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued';
-  gi('lv-sick').textContent=l.sickAvail;
-  gi('lv-family').textContent=l.famAvail;
-  gi('lv-mat').textContent=l.matDays;
-  gi('lv-mat-label').textContent=l.matLabel;
-  gi('lv-mat-detail').textContent=l.matDetail;
-}
+  function showVerifyModal(d, tr, sigUrl, payload){
+    var modal = gi('verifyModal');
+    var rows = [
+      ['Reference', tr.ref],
+      ['First name', cap(d.fn)],
+      ['Last name', cap(d.ln)],
+      ['ID number', d.idno],
+      ['Mobile', d.mob],
+      ['Email', d.em],
+      ['Address', d.addr],
+      ['Job title', d.jt],
+      ['Salary', 'R '+d.sal],
+      ['Start date', d.sd],
+      ['Offer date', d.od],
+      ['Place of work', d.pow],
+      ['Annual leave', d.al+' days'],
+      ['Background check', d.bgcheck],
+      ['Reports to', d.mgr]
+    ];
+    gi('verifyTable').innerHTML = rows.map(function(r){
+      return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
+    }).join('');
+    modal.style.display = 'flex';
+    gi('verifyConfirmBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').textContent='Sending…';
+      postToZapier(payload, function(){
+        gi('formCard').style.display='none';
+        gi('successCard').style.display='block';
+        gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
+        gi('sendBtn').disabled=false;
+        gi('sendBtn').textContent='Send letter of offer to candidate';
+      });
+    };
+    gi('verifyCancelBtn').onclick = function(){
+      modal.style.display = 'none';
+      gi('sendBtn').disabled=false;
+      gi('sendBtn').textContent='Send letter of offer to candidate';
+    };
+  }
 
-// ── TABS ──
-function switchTab(tab,btn){
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-  document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
-  btn.classList.add('active'); gi('tab-'+tab).classList.add('active');
-}
+  window.resetForm=function(){
+    ['fn','ln','idno','mob','em','addr','jt','campaign','sal','sd','mgr','mgrem'].forEach(function(id){
+      var el=gi(id); if(el){el.value='';el.classList.remove('err');}
+      var e=gi(id+'-err'); if(e) e.classList.remove('show');
+    });
+    gi('offerdate').value=new Date().toISOString().slice(0,10);
+    gi('mgrSelect').selectedIndex=0; gi('mgrSelect').classList.remove('err');
+    gi('mgrStatus').innerHTML=''; gi('globalErr').classList.remove('show');
+    gi('sendBtn').disabled=false; gi('sendBtn').textContent='Send letter of offer to candidate';
+    gi('formCard').style.display='block'; gi('successCard').style.display='none';
+  };
 
-// ── SAVE FIELD ──
-function saveField(field,inputId){
-  if(!selectedEmp)return;
-  var val=gi(inputId).value.trim();
-  var resultEl=gi('save-'+inputId.replace('edit-',''));
-  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:field,value:val})})
-  .then(function(r){if(r.ok||r.status===202){resultEl.textContent='✓ Saved';resultEl.style.color='var(--green-dark)';selectedEmp[field]=val;setTimeout(function(){resultEl.textContent='';},3000);}else{throw new Error('Failed');}})
-  .catch(function(){resultEl.textContent='✗ Failed';resultEl.style.color='var(--red)';});
-}
+  // ── SINGLE CSV TEMPLATE ──
+  window.downloadSingleTemplate=function(){
+    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
+      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+new Date().toISOString().slice(0,10)+',Tanya Phillips,tanyap@trilogybpo.com\n';
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_single.csv'; a.click();
+  };
 
-// ── MARK ACTIVE ──
-function markActive(){
-  if(!selectedEmp)return;
-  if(!confirm('Mark '+selectedEmp.FirstName+' as Active? This confirms they have started work.'))return;
-  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'Status',value:'Active'})})
-  .then(function(){selectedEmp.Status='Active';gi('d-status').textContent='Active';gi('btnActivate').style.display='none';renderStats();renderTable(allEmployees);selectEmployee(selectedEmp.EmployeeID);})
-  .catch(function(){alert('Failed to update status.');});
-}
+  window.loadSingleCSV=function(input){
+    var file=input.files[0]; if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var lines=e.target.result.split('\n').filter(Boolean);
+      if(lines.length<2){alert('No data found in file.');return;}
+      var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s/g,'_');});
+      var vals=parseCSVLine(lines[1]);
+      function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
+      gi('fn').value=get('first_name');
+      gi('ln').value=get('last_name');
+      gi('idno').value=fixIdNumber(get('id_number'));
+      gi('mob').value=get('mobile');
+      gi('em').value=get('email');
+      gi('addr').value=get('address');
+      gi('jt').value=get('job_title');
+      gi('campaign').value=get('campaign')||'';
+      gi('sal').value=get('salary');
+      gi('sd').value=get('start_date');
+      gi('offerdate').value=get('offer_date')||new Date().toISOString().slice(0,10);
+      // Match manager by name or email
+      var mgrName=get('reports_to_name'), mgrEmail=get('reports_to_email');
+      var sel=gi('mgrSelect');
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===mgrEmail||sel.options[i].getAttribute('data-name')===mgrName){
+          sel.selectedIndex=i; onManagerSelect(sel); break;
+        }
+      }
+    };
+    reader.readAsText(file);
+    input.value='';
+  };
 
-// ── SEND ONBOARD FORM ──
-function sendOnboardForm(){
-  if(!selectedEmp)return;
-  var e=selectedEmp;
-  var token='EMP-'+Date.now()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();
-  var url=SITE_URL+'/onboarding/employee-form.html?'+[
-    'token='+encodeURIComponent(token),'ref='+encodeURIComponent(e.EmployeeID),
-    'fn='+encodeURIComponent(e.FirstName||''),'ln='+encodeURIComponent(e.LastName||''),
-    'id='+encodeURIComponent(e.IDNumber||''),'mob='+encodeURIComponent(e.Mobile||''),
-    'em='+encodeURIComponent(e.PersonalEmail||e.WorkEmail||''),'addr='+encodeURIComponent(e.Address||'')
-  ].join('&');
-  var btn=gi('btnOnboard'), res=gi('onboardResult');
-  btn.disabled=true; btn.textContent='Sending…';
-  fetch(SEND_FORM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    employee_id:e.EmployeeID,first_name:e.FirstName,last_name:e.LastName,
-    email:e.PersonalEmail||e.WorkEmail,mobile:e.Mobile,form_url:url
-  })})
-  .then(function(){res.innerHTML='<span style="color:var(--green-dark)">✓ Onboarding form sent to '+(e.PersonalEmail||e.WorkEmail)+'</span>';btn.textContent='📋 Resend onboarding form';btn.disabled=false;})
-  .catch(function(){res.innerHTML='<span style="color:var(--red)">✗ Failed to send</span>';btn.textContent='📋 Send onboarding form to employee';btn.disabled=false;});
-}
+  // ── BULK CSV ──
+  window.downloadBulkTemplate=function(){
+    var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
+    var today=new Date().toISOString().slice(0,10);
+    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,annual_leave,start_date,offer_date,reports_to_name,reports_to_email\n'+
+      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,15,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
+      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,21,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
+  };
 
-// ── LEAVE MODAL ──
-function openLeaveModal(){gi('leaveEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;gi('leaveModal').classList.add('open');gi('leaveResult').textContent='';}
-function saveLeave(){
-  var payload={employee_id:selectedEmp.EmployeeID,leave_type:gi('leaveType').value,start_date:gi('leaveFrom').value,end_date:gi('leaveTo').value,days:gi('leaveDays').value,reason:gi('leaveReason').value,status:'Approved'};
-  if(!payload.days){gi('leaveResult').innerHTML='<span style="color:var(--red)">Enter number of days</span>';return;}
-  fetch(SAVE_LEAVE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-  .then(function(){gi('leaveResult').innerHTML='<span style="color:var(--green-dark)">✓ Leave saved</span>';setTimeout(function(){closeModal('leaveModal');selectEmployee(selectedEmp.EmployeeID);},1200);})
-  .catch(function(){gi('leaveResult').innerHTML='<span style="color:var(--red)">✗ Failed</span>';});
-}
+  var CSV_SEP = ',';
+  function detectSep(headerLine){
+    // Count each candidate separator in the header; pick the most frequent
+    var commas=(headerLine.match(/,/g)||[]).length;
+    var semis=(headerLine.match(/;/g)||[]).length;
+    var tabs=(headerLine.match(/\t/g)||[]).length;
+    if(tabs>=commas && tabs>=semis && tabs>0) return '\t';
+    if(semis>commas) return ';';
+    return ',';
+  }
 
-// ── DISCIPLINARY MODAL ──
-function openDiscModal(){gi('discEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;gi('discDate').value=new Date().toISOString().split('T')[0];gi('discModal').classList.add('open');gi('discResult').textContent='';}
-function saveDisc(){
-  var payload={employee_id:selectedEmp.EmployeeID,incident_date:gi('discDate').value,category:gi('discCategory').value,description:gi('discDescription').value,outcome:gi('discOutcome').value,issued_by:'HR Portal',status:'Active'};
-  fetch(SAVE_DISC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-  .then(function(){gi('discResult').innerHTML='<span style="color:var(--green-dark)">✓ Record saved</span>';setTimeout(function(){closeModal('discModal');selectEmployee(selectedEmp.EmployeeID);},1200);})
-  .catch(function(){gi('discResult').innerHTML='<span style="color:var(--red)">✗ Failed</span>';});
-}
+  function parseCSVLine(line){
+    var result=[],cur='',inQ=false;
+    for(var i=0;i<line.length;i++){
+      var c=line[i];
+      if(c==='"'){inQ=!inQ;}
+      else if(c===CSV_SEP&&!inQ){result.push(cur);cur='';}
+      else{cur+=c;}
+    }
+    result.push(cur);
+    return result;
+  }
 
-function closeModal(id){gi(id).classList.remove('open');}
+  function parseCSV(text){
+    var lines=text.split('\n').filter(Boolean);
+    if(lines.length<2)return[];
+    CSV_SEP=detectSep(lines[0]);
+    var headers=lines[0].split(CSV_SEP).map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
+    var rows=[];
+    for(var i=1;i<lines.length;i++){
+      var vals=parseCSVLine(lines[i]);
+      if(vals.every(function(v){return!v.trim();}))continue;
+      var row={};
+      headers.forEach(function(h,j){row[h]=(vals[j]||'').replace(/"/g,'').trim();});
+      rows.push(row);
+    }
+    return rows;
+  }
 
-loadEmployees();
+  function validateBulkRow(row){
+    var errors=[];
+    if(!row.first_name) errors.push('first name');
+    if(!row.last_name) errors.push('last name');
+    if(!row.email||!isEmail(row.email)) errors.push('valid email');
+    if(!row.job_title) errors.push('job title');
+    if(!row.start_date) errors.push('start date');
+    if(!row.reports_to_email) errors.push('reports to email');
+    return errors;
+  }
+
+  window.loadBulkCSV=function(input){
+    var file=input.files[0]; if(!file)return;
+    gi('uzTitle').textContent='📄 '+file.name;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var rows=parseCSV(e.target.result);
+      if(!rows.length){alert('No data rows found.');return;}
+      bulkRows=rows.map(function(r,i){
+        var errors=validateBulkRow(r);
+        return {index:i+1, data:r, errors:errors, status:errors.length?'error':'valid'};
+      });
+      renderPreview();
+    };
+    reader.readAsText(file);
+    input.value='';
+  };
+
+  window.dragOver=function(e){e.preventDefault();gi('bulkDropZone').classList.add('dragover');};
+  window.dragLeave=function(){gi('bulkDropZone').classList.remove('dragover');};
+  window.dropFile=function(e){
+    e.preventDefault();gi('bulkDropZone').classList.remove('dragover');
+    var file=e.dataTransfer.files[0];
+    if(file&&file.name.endsWith('.csv')){
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        gi('uzTitle').textContent='📄 '+file.name;
+        var rows=parseCSV(ev.target.result);
+        bulkRows=rows.map(function(r,i){
+          var errors=validateBulkRow(r);
+          return {index:i+1,data:r,errors:errors,status:errors.length?'error':'valid'};
+        });
+        renderPreview();
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  function renderPreview(){
+    var valid=bulkRows.filter(function(r){return r.status==='valid'||r.status==='sent';}).length;
+    var errors=bulkRows.filter(function(r){return r.status==='error';}).length;
+    gi('validCount').textContent=valid+' valid';
+    gi('errorCount').textContent=errors+' error'+(errors===1?'':'s');
+    gi('errorCount').style.display=errors?'':'none';
+
+    var tbody=gi('previewBody'); tbody.innerHTML='';
+    bulkRows.forEach(function(row){
+      var tr=document.createElement('tr');
+      if(row.status==='error') tr.className='row-error';
+      var statusHtml='<span class="row-status '+(row.status==='sent'?'rs-sent':row.status==='sending'?'rs-sending':row.status==='error'?'rs-error':'rs-valid')+'">'+(row.status==='sent'?'✓ Sent':row.status==='sending'?'Sending…':row.status==='error'?'⚠ '+row.errors.join(', '):'Ready')+'</span>';
+      var d=row.data;
+      tr.innerHTML=
+        '<td>'+row.index+'</td>'+
+        '<td class="td-name">'+(d.first_name||'')+' '+(d.last_name||'')+'</td>'+
+        '<td>'+(d.email||'')+'</td>'+
+        '<td>'+(d.job_title||'')+'</td>'+
+        '<td>'+(d.start_date||'')+'</td>'+
+        '<td>'+(d.salary?'R '+d.salary:'')+'</td>'+
+        '<td>'+(d.reports_to_name||d.reports_to_email||'')+'</td>'+
+        '<td>'+statusHtml+'</td>';
+      tbody.appendChild(tr);
+    });
+    gi('previewWrap').style.display='block';
+    gi('sendAllBtn').disabled=valid===0;
+  }
+
+  window.sendAllOffers=function(){
+    var validRows=bulkRows.filter(function(r){return r.status==='valid';});
+    if(!validRows.length)return;
+    gi('sendAllBtn').disabled=true;
+    gi('bulkProgress').style.display='block';
+    var sent=0, total=validRows.length;
+
+    function sendNext(i){
+      if(i>=validRows.length){
+        gi('bulkProgressText').textContent='✓ All '+total+' offers sent successfully!';
+        gi('bulkBar').style.width='100%';
+        return;
+      }
+      var row=validRows[i];
+      row.status='sending';
+      renderPreview();
+      var d=row.data;
+      var sd=d.start_date, od=d.offer_date||new Date().toISOString().slice(0,10);
+      // Format dates → always DD/MM/YYYY for SQL style 103
+      function fmt(v){
+        if(!v) return '';
+        v = v.toString().trim();
+        var p;
+        if(v.indexOf('/')>-1){ p = v.split('/'); } 
+        else if(v.indexOf('-')>-1){ p = v.split('-'); }
+        else { return v; }
+        if(p.length!==3) return v;
+        // If first part is 4 digits → YYYY/MM/DD or YYYY-MM-DD → convert to DD/MM/YYYY
+        if(p[0].length===4){ return p[2]+'/'+p[1]+'/'+p[0]; }
+        // Otherwise assume already DD/MM/YYYY
+        return p[0]+'/'+p[1]+'/'+p[2];
+      }
+      var fmtSd=fmt(sd), fmtOd=fmt(od);
+      var tr=buildRef();
+      var cleanSal=(d.salary||'').toString().replace(/^R\s*/i,'').replace(/,/g,'').trim()||'0';
+      var cleanLeave=(d.annual_leave||'').toString().trim()||'15';
+      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:cleanSal,sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email,al:cleanLeave};
+      var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
+      var payload={
+        action:'send_offer', ref:tr.ref,
+        candidate_first:d.first_name, candidate_last:d.last_name,
+        candidate_email:d.email, candidate_id:d.id_number||'',
+        candidate_mobile:d.mobile||'', candidate_address:d.address||'',
+        job_title:d.job_title, campaign:d.campaign||'', salary:cleanSal,
+        start_date:fmtSd, offer_date:fmtOd,
+        reports_to:d.reports_to_name||'', reports_to_email:d.reports_to_email,
+        place_of_work:'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town',
+        annual_leave:cleanLeave, background_check:'Complete',
+        signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
+      };
+      postToZapier(payload, function(){
+        row.status='sent'; sent++;
+        var pct=Math.round((sent/total)*100);
+        gi('bulkBar').style.width=pct+'%';
+        gi('bulkProgressText').textContent='Sending… '+sent+' of '+total;
+        renderPreview();
+        setTimeout(function(){sendNext(i+1);},600);
+      });
+    }
+    sendNext(0);
+  };
+
+  window.clearBulk=function(){
+    bulkRows=[];
+    gi('previewWrap').style.display='none';
+    gi('bulkProgress').style.display='none';
+    gi('uzTitle').textContent='Drop your CSV here or click to browse';
+    gi('sendAllBtn').disabled=false;
+  };
+
+  loadManagers();
+  loadCampaigns();
+})();
 </script>
+<!-- VERIFICATION MODAL -->
+<div id="verifyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:.25rem">✅ Verify offer details</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem">Please review all details carefully before sending. Once sent, the candidate will receive the offer immediately.</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden" id="verifyTable"></table>
+    <div style="display:flex;gap:10px;margin-top:1.5rem">
+      <button id="verifyCancelBtn" style="flex:1;padding:11px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:var(--text);font-family:'Montserrat',sans-serif">✏️ Go back & edit</button>
+      <button id="verifyConfirmBtn" style="flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif">✅ Confirm & send offer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
