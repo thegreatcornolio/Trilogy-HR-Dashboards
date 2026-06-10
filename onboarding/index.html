@@ -540,7 +540,18 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
 
     return dataRows.map(function(row){
       var obj={};
-      headers.forEach(function(h,i){obj[h]=(row[i]!==null&&row[i]!==undefined)?row[i].toString().trim():'';});
+      headers.forEach(function(h,i){
+        var val=row[i];
+        if(val instanceof Date){
+          // Format as YYYY-MM-DD — matches what HTML date inputs send to the flow
+          var y=val.getFullYear();
+          var m=('0'+(val.getMonth()+1)).slice(-2);
+          var d=('0'+val.getDate()).slice(-2);
+          obj[h]=y+'-'+m+'-'+d;
+        } else {
+          obj[h]=(val!==null&&val!==undefined)?val.toString().trim():'';
+        }
+      });
       // Combine split address parts
       var parts=[obj.address_street,obj.address_city,obj.address_postal].filter(Boolean);
       obj.address=parts.join(', ');
