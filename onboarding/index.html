@@ -95,6 +95,8 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
 
 @media(max-width:520px){.grid2{grid-template-columns:1fr}.shell{padding:1rem 1rem 4rem}}
 </style>
+  <!-- SheetJS — parse .xlsx in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -114,7 +116,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="switchTab('single')">Single offer</div>
-  <div class="tab" onclick="switchTab('bulk')">Bulk offers (CSV)</div>
+  <div class="tab" onclick="switchTab('bulk')">Bulk offers (Excel)</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -124,7 +126,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
 
   <div id="formCard" class="card">
     <div class="card-title">New employee — letter of offer</div>
-    <p class="card-sub">Complete all fields or <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="downloadSingleTemplate()">⬇ Download CSV template</button> to pre-fill from a file <input type="file" id="singleCsvFile" accept=".csv" style="display:none" onchange="loadSingleCSV(this)"> <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="document.getElementById('singleCsvFile').click()">📂 Upload filled CSV</button></p>
+    <p class="card-sub">Complete all fields or <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="downloadBulkTemplate()">⬇ Download Excel template</button> to pre-fill from a file <input type="file" id="singleXlsxFile" accept=".xlsx" style="display:none" onchange="loadSingleXLSX(this)"> <button class="btn btn-outline" style="padding:4px 12px;font-size:12px;margin-left:4px" onclick="document.getElementById('singleXlsxFile').click()">📂 Upload filled Excel</button></p>
 
     <div class="global-err" id="globalErr">Please fill in all required fields before sending.</div>
 
@@ -207,18 +209,18 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
 ══════════════════════════════════════════════ -->
 <div class="tab-panel" id="panel-bulk">
   <div class="card">
-    <div class="card-title">Bulk offer letters — CSV upload</div>
-    <p class="card-sub">Download the template, fill in one row per candidate, upload it here, review the list, then send all offers in one go.</p>
+    <div class="card-title">Bulk offer letters — Excel upload</div>
+    <p class="card-sub">Download the template, fill in one row per candidate (skip the grey sample row), upload it here, review the list, then send all offers in one go.</p>
 
     <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap">
-      <button class="btn btn-outline" onclick="downloadBulkTemplate()">⬇ Download CSV template</button>
+      <button class="btn btn-outline" onclick="downloadBulkTemplate()">⬇ Download Excel template</button>
     </div>
 
-    <div class="upload-zone" id="bulkDropZone" onclick="document.getElementById('bulkCsvFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+    <div class="upload-zone" id="bulkDropZone" onclick="document.getElementById('bulkXlsxFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
       <div class="uz-icon">📂</div>
-      <div class="uz-title" id="uzTitle">Drop your CSV here or click to browse</div>
-      <div class="uz-sub">Accepted format: .csv — one candidate per row</div>
-      <input type="file" id="bulkCsvFile" accept=".csv" style="display:none" onchange="loadBulkCSV(this)">
+      <div class="uz-title" id="uzTitle">Drop your Excel file here or click to browse</div>
+      <div class="uz-sub">Accepted format: .xlsx — one candidate per row · Use the template above</div>
+      <input type="file" id="bulkXlsxFile" accept=".xlsx" style="display:none" onchange="loadBulkXLSX(this)">
     </div>
 
     <div class="preview-wrap" id="previewWrap">
@@ -497,139 +499,132 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     gi('formCard').style.display='block'; gi('successCard').style.display='none';
   };
 
-  // ── SINGLE CSV TEMPLATE ──
-  window.downloadSingleTemplate=function(){
-    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,start_date,offer_date,reports_to_name,reports_to_email\n'+
-      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,2026-07-01,'+new Date().toISOString().slice(0,10)+',Tanya Phillips,tanyap@trilogybpo.com\n';
-    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_single.csv'; a.click();
+  // ── XLSX HELPERS ──
+  function readXLSXRows(arrayBuffer){
+    var wb=XLSX.read(new Uint8Array(arrayBuffer),{type:'array',cellDates:true});
+    var sheetName=wb.SheetNames.find(function(n){return n.indexOf('Employee Data')>=0;})||wb.SheetNames[0];
+    var ws=wb.Sheets[sheetName];
+    // range:1 = start from Excel row 2 where our headers live
+    var all=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:''});
+    if(!all.length)return[];
+    var headers=all[0].map(function(h){return(h||'').toString().toLowerCase().replace(/\s*\*\s*$/,'').trim().replace(/\s+/g,'_');});
+    // all[1] is the grey sample row — skip it; real data starts at all[2]
+    var dataRows=all.slice(2).filter(function(row){return row.some(function(v){return v!==null&&v!==undefined&&v.toString().trim()!=='';});});
+    return dataRows.map(function(row){
+      var obj={};
+      headers.forEach(function(h,i){obj[h]=(row[i]!==undefined&&row[i]!==null)?row[i].toString().trim():'';});
+      // Combine split address fields → single address string for the offer flow
+      var parts=[obj.address_street,obj.address_city,obj.address_postal].filter(Boolean);
+      obj.address=parts.join(', ');
+      // personal_email is the candidate-facing email used for sending the offer
+      if(!obj.email)obj.email=obj.personal_email;
+      return obj;
+    });
+  }
+
+  // ── DOWNLOAD TEMPLATE (generates .xlsx via SheetJS) ──
+  window.downloadBulkTemplate=function(){
+    var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
+    var today=new Date().toISOString().slice(0,10);
+    var headers=['first_name','last_name','id_number','gender','date_of_birth','mobile',
+                 'personal_email','work_email','address_street','address_city','address_postal',
+                 'job_title','campaign','salary','salary_frequency','annual_leave',
+                 'start_date','offer_date','reports_to_name','reports_to_email'];
+    var sample=['Jane','Doe','9505120012083','Female','','+ 27821234567',
+                'jane.doe@gmail.com','janed@trilogybpo.com','7 Long Street','Cape Town','8001',
+                'Customer Service Agent','Customer Service','9500','Monthly','15',
+                '2026-07-01',today,mgr.name,mgr.email];
+    var note=['→ Fill in from row 3 onwards. Do not edit row 1 (headers). Row 2 is a sample — leave it or delete it.'];
+    var wb=XLSX.utils.book_new();
+    var ws=XLSX.utils.aoa_to_sheet([headers,sample,note]);
+    // Column widths
+    ws['!cols']=headers.map(function(h){return{wch:Math.max(h.length+4,16)};});
+    XLSX.utils.book_append_sheet(wb,'Employee Data',ws);
+    XLSX.writeFile(wb,'Trilogy_Onboarding_Template.xlsx');
   };
 
-  window.loadSingleCSV=function(input){
+  function validateBulkRow(row){
+    var errors=[];
+    if(!row.first_name)errors.push('first name');
+    if(!row.last_name)errors.push('last name');
+    var em=row.personal_email||row.email||'';
+    if(!em||!isEmail(em))errors.push('valid email');
+    if(!row.job_title)errors.push('job title');
+    if(!row.start_date)errors.push('start date');
+    if(!row.reports_to_email)errors.push('reports to email');
+    return errors;
+  }
+
+  function processBulkRows(rows){
+    bulkRows=rows.map(function(r,i){
+      var errors=validateBulkRow(r);
+      return{index:i+1,data:r,errors:errors,status:errors.length?'error':'valid'};
+    });
+    renderPreview();
+  }
+
+  // ── SINGLE XLSX UPLOAD ──
+  window.loadSingleXLSX=function(input){
     var file=input.files[0]; if(!file)return;
     var reader=new FileReader();
     reader.onload=function(e){
-      var lines=e.target.result.split('\n').filter(Boolean);
-      if(lines.length<2){alert('No data found in file.');return;}
-      var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s/g,'_');});
-      var vals=parseCSVLine(lines[1]);
-      function get(key){var i=headers.indexOf(key);return i>=0?(vals[i]||'').replace(/"/g,'').trim():'';}
-      gi('fn').value=get('first_name');
-      gi('ln').value=get('last_name');
-      gi('idno').value=fixIdNumber(get('id_number'));
-      gi('mob').value=get('mobile');
-      gi('em').value=get('email');
-      gi('addr').value=get('address');
-      gi('jt').value=get('job_title');
-      gi('campaign').value=get('campaign')||'';
-      gi('sal').value=get('salary');
-      gi('sd').value=get('start_date');
-      gi('offerdate').value=get('offer_date')||new Date().toISOString().slice(0,10);
-      // Match manager by name or email
-      var mgrName=get('reports_to_name'), mgrEmail=get('reports_to_email');
+      var rows=readXLSXRows(e.target.result);
+      if(!rows.length){alert('No data rows found.\nMake sure you filled in rows below the grey sample row.');return;}
+      var r=rows[0];
+      gi('fn').value=r.first_name||'';
+      gi('ln').value=r.last_name||'';
+      gi('idno').value=fixIdNumber(r.id_number||'');
+      gi('mob').value=r.mobile||'';
+      gi('em').value=r.personal_email||r.email||'';
+      gi('addr').value=r.address||'';
+      gi('jt').value=r.job_title||'';
+      if(r.campaign)gi('campaign').value=r.campaign;
+      gi('sal').value=r.salary||'';
+      if(r.start_date)gi('sd').value=r.start_date.slice(0,10);
+      gi('offerdate').value=(r.offer_date||new Date().toISOString()).toString().slice(0,10);
       var sel=gi('mgrSelect');
       for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===mgrEmail||sel.options[i].getAttribute('data-name')===mgrName){
+        if(sel.options[i].value===r.reports_to_email||sel.options[i].getAttribute('data-name')===r.reports_to_name){
           sel.selectedIndex=i; onManagerSelect(sel); break;
         }
       }
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
     input.value='';
   };
 
-  // ── BULK CSV ──
-  window.downloadBulkTemplate=function(){
-    var mgr=managersData.length?managersData[0]:{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'};
-    var today=new Date().toISOString().slice(0,10);
-    var csv='first_name,last_name,id_number,mobile,email,address,job_title,salary,annual_leave,start_date,offer_date,reports_to_name,reports_to_email\n'+
-      'Thandi,Mokoena,9001015009087,+27812345678,thandi@email.com,"12 Main St, Cape Town, 8001",Customer Service Agent,8500,15,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n'+
-      'John,Smith,8505105009083,+27823456789,john@email.com,"45 Oak Ave, Johannesburg, 2001",Team Leader,12000,21,2026-07-01,'+today+','+mgr.name+','+mgr.email+'\n';
-    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offer_template_bulk.csv'; a.click();
-  };
-
-  var CSV_SEP = ',';
-  function detectSep(headerLine){
-    // Count each candidate separator in the header; pick the most frequent
-    var commas=(headerLine.match(/,/g)||[]).length;
-    var semis=(headerLine.match(/;/g)||[]).length;
-    var tabs=(headerLine.match(/\t/g)||[]).length;
-    if(tabs>=commas && tabs>=semis && tabs>0) return '\t';
-    if(semis>commas) return ';';
-    return ',';
-  }
-
-  function parseCSVLine(line){
-    var result=[],cur='',inQ=false;
-    for(var i=0;i<line.length;i++){
-      var c=line[i];
-      if(c==='"'){inQ=!inQ;}
-      else if(c===CSV_SEP&&!inQ){result.push(cur);cur='';}
-      else{cur+=c;}
-    }
-    result.push(cur);
-    return result;
-  }
-
-  function parseCSV(text){
-    var lines=text.split('\n').filter(Boolean);
-    if(lines.length<2)return[];
-    CSV_SEP=detectSep(lines[0]);
-    var headers=lines[0].split(CSV_SEP).map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/[\s-]/g,'_');});
-    var rows=[];
-    for(var i=1;i<lines.length;i++){
-      var vals=parseCSVLine(lines[i]);
-      if(vals.every(function(v){return!v.trim();}))continue;
-      var row={};
-      headers.forEach(function(h,j){row[h]=(vals[j]||'').replace(/"/g,'').trim();});
-      rows.push(row);
-    }
-    return rows;
-  }
-
-  function validateBulkRow(row){
-    var errors=[];
-    if(!row.first_name) errors.push('first name');
-    if(!row.last_name) errors.push('last name');
-    if(!row.email||!isEmail(row.email)) errors.push('valid email');
-    if(!row.job_title) errors.push('job title');
-    if(!row.start_date) errors.push('start date');
-    if(!row.reports_to_email) errors.push('reports to email');
-    return errors;
-  }
-
-  window.loadBulkCSV=function(input){
+  // ── BULK XLSX UPLOAD ──
+  window.loadBulkXLSX=function(input){
     var file=input.files[0]; if(!file)return;
     gi('uzTitle').textContent='📄 '+file.name;
     var reader=new FileReader();
     reader.onload=function(e){
-      var rows=parseCSV(e.target.result);
-      if(!rows.length){alert('No data rows found.');return;}
-      bulkRows=rows.map(function(r,i){
-        var errors=validateBulkRow(r);
-        return {index:i+1, data:r, errors:errors, status:errors.length?'error':'valid'};
-      });
-      renderPreview();
+      var rows=readXLSXRows(e.target.result);
+      if(!rows.length){alert('No data rows found.\nMake sure you filled in rows below the grey sample row.');return;}
+      processBulkRows(rows);
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
     input.value='';
   };
 
   window.dragOver=function(e){e.preventDefault();gi('bulkDropZone').classList.add('dragover');};
-  window.dragLeave=function(){gi('bulkDropZone').classList.remove('dragover');};
   window.dropFile=function(e){
     e.preventDefault();gi('bulkDropZone').classList.remove('dragover');
     var file=e.dataTransfer.files[0];
-    if(file&&file.name.endsWith('.csv')){
+    if(file&&(file.name.endsWith('.xlsx')||file.name.endsWith('.xls'))){
+      gi('uzTitle').textContent='📄 '+file.name;
       var reader=new FileReader();
       reader.onload=function(ev){
-        gi('uzTitle').textContent='📄 '+file.name;
-        var rows=parseCSV(ev.target.result);
-        bulkRows=rows.map(function(r,i){
-          var errors=validateBulkRow(r);
-          return {index:i+1,data:r,errors:errors,status:errors.length?'error':'valid'};
-        });
-        renderPreview();
+        var rows=readXLSXRows(ev.target.result);
+        if(!rows.length){alert('No data rows found. Fill in rows below the grey sample row.');return;}
+        processBulkRows(rows);
       };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert('Please upload an .xlsx file. Use the Download template button above.');
+    }
+  };
+
       reader.readAsText(file);
     }
   };
@@ -650,7 +645,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
       tr.innerHTML=
         '<td>'+row.index+'</td>'+
         '<td class="td-name">'+(d.first_name||'')+' '+(d.last_name||'')+'</td>'+
-        '<td>'+(d.email||'')+'</td>'+
+        '<td>'+(d.personal_email||d.email||'')+'</td>'+
         '<td>'+(d.job_title||'')+'</td>'+
         '<td>'+(d.start_date||'')+'</td>'+
         '<td>'+(d.salary?'R '+d.salary:'')+'</td>'+
@@ -698,12 +693,12 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
       var tr=buildRef();
       var cleanSal=(d.salary||'').toString().replace(/^R\s*/i,'').replace(/,/g,'').trim()||'0';
       var cleanLeave=(d.annual_leave||'').toString().trim()||'15';
-      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.email,addr:d.address||'',jt:d.job_title,sal:cleanSal,sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email,al:cleanLeave};
+      var payload_data={fn:d.first_name,ln:d.last_name,idno:fixIdNumber(d.id_number||''),mob:d.mobile||'',em:d.personal_email||d.email,addr:d.address||'',jt:d.job_title,sal:cleanSal,sd:fmtSd,od:fmtOd,mgr:d.reports_to_name||'',mgrem:d.reports_to_email,al:cleanLeave};
       var sigUrl=buildSigningUrl(payload_data,tr.token,tr.ref);
       var payload={
         action:'send_offer', ref:tr.ref,
         candidate_first:d.first_name, candidate_last:d.last_name,
-        candidate_email:d.email, candidate_id:d.id_number||'',
+        candidate_email:d.personal_email||d.email, candidate_id:d.id_number||'',
         candidate_mobile:d.mobile||'', candidate_address:d.address||'',
         job_title:d.job_title, campaign:d.campaign||'', salary:cleanSal,
         start_date:fmtSd, offer_date:fmtOd,
@@ -728,7 +723,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     bulkRows=[];
     gi('previewWrap').style.display='none';
     gi('bulkProgress').style.display='none';
-    gi('uzTitle').textContent='Drop your CSV here or click to browse';
+    gi('uzTitle').textContent='Drop your Excel file here or click to browse';
     gi('sendAllBtn').disabled=false;
   };
 
