@@ -504,19 +504,46 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     var wb=XLSX.read(new Uint8Array(arrayBuffer),{type:'array',cellDates:true});
     var sheetName=wb.SheetNames.find(function(n){return n.indexOf('Employee Data')>=0;})||wb.SheetNames[0];
     var ws=wb.Sheets[sheetName];
-    // range:1 = start from Excel row 2 where our headers live
-    var all=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:''});
+
+    // Read every row — we'll find the header row ourselves
+    var all=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
     if(!all.length)return[];
-    var headers=all[0].map(function(h){return(h||'').toString().toLowerCase().replace(/\s*\*\s*$/,'').trim().replace(/\s+/g,'_');});
-    // all[1] is the grey sample row — skip it; real data starts at all[2]
-    var dataRows=all.slice(2).filter(function(row){return row.some(function(v){return v!==null&&v!==undefined&&v.toString().trim()!=='';});});
+
+    // Find the header row: look for a row containing known field names
+    var knownCols=['first_name','last_name','personal_email','email','mobile','job_title'];
+    var headerRowIdx=-1;
+    for(var i=0;i<Math.min(all.length,6);i++){
+      var rowStr=all[i].map(function(v){return(v||'').toString().toLowerCase();}).join('|');
+      var hits=knownCols.filter(function(k){return rowStr.indexOf(k)>=0;});
+      if(hits.length>=3){headerRowIdx=i;break;}
+    }
+    if(headerRowIdx===-1)return[];
+
+    var headers=all[headerRowIdx].map(function(h){
+      return(h||'').toString().toLowerCase().replace(/\s*\*\s*$/,'').trim().replace(/\s+/g,'_');
+    });
+
+    // Data starts right after headers
+    var dataStart=headerRowIdx+1;
+    // Skip a sample/example row if it has a @gmail.com address or name 'Jane'
+    if(all[dataStart]){
+      var emailIdx=headers.indexOf('personal_email')>=0?headers.indexOf('personal_email'):headers.indexOf('email');
+      var fnIdx=headers.indexOf('first_name');
+      var emailVal=emailIdx>=0?(all[dataStart][emailIdx]||'').toString().toLowerCase():'';
+      var fnVal=fnIdx>=0?(all[dataStart][fnIdx]||'').toString().toLowerCase():'';
+      if(emailVal.indexOf('@gmail.com')>=0||fnVal==='jane'){dataStart++;}
+    }
+
+    var dataRows=all.slice(dataStart).filter(function(row){
+      return row.some(function(v){return v!==null&&v!==undefined&&v.toString().trim()!=='';});
+    });
+
     return dataRows.map(function(row){
       var obj={};
-      headers.forEach(function(h,i){obj[h]=(row[i]!==undefined&&row[i]!==null)?row[i].toString().trim():'';});
-      // Combine split address fields → single address string for the offer flow
+      headers.forEach(function(h,i){obj[h]=(row[i]!==null&&row[i]!==undefined)?row[i].toString().trim():'';});
+      // Combine split address parts
       var parts=[obj.address_street,obj.address_city,obj.address_postal].filter(Boolean);
       obj.address=parts.join(', ');
-      // personal_email is the candidate-facing email used for sending the offer
       if(!obj.email)obj.email=obj.personal_email;
       return obj;
     });
