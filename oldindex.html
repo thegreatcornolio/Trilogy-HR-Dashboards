@@ -160,68 +160,7 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════════════════
-     HR PORTAL LOGIN GATE
-════════════════════════════════════════════════════════ -->
-<div id="hr-login-gate" style="position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 60" height="36" style="margin-bottom:24px">
-      <rect x="0"  y="0" width="14" height="60" rx="7" fill="#A2E000"/>
-      <rect x="19" y="0" width="14" height="60" rx="7" fill="#4AFD0E"/>
-      <rect x="38" y="0" width="14" height="60" rx="7" fill="#1AAA00"/>
-    </svg>
-    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">HR Portal</div>
-    <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised HR staff only</div>
-    <div style="margin-bottom:14px;text-align:left">
-      <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px">Username</label>
-      <input id="hr-usr" type="text" autocomplete="username" placeholder="Username"
-        style="width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none"
-        onkeydown="if(event.key==='Enter')document.getElementById('hr-pwd').focus()">
-    </div>
-    <div style="margin-bottom:22px;text-align:left">
-      <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px">Password</label>
-      <input id="hr-pwd" type="password" autocomplete="current-password" placeholder="Password"
-        style="width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none"
-        onkeydown="if(event.key==='Enter')hrLogin()">
-    </div>
-    <button onclick="hrLogin()"
-      style="width:100%;padding:13px;background:#4AFD0E;color:#111;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.02em">
-      Sign in
-    </button>
-    <div id="hr-login-err" style="margin-top:12px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none">
-      Incorrect username or password.
-    </div>
-    <div style="margin-top:28px;color:rgba(255,255,255,.15);font-size:11px">Trilogy CX (Pty) Ltd · Internal use only</div>
-  </div>
-</div>
-
-<script>
-// ── AUTH ──
-var HR_AUTH_KEY='hrportal_auth';
-var HR_AUTH_TOK='trilogy_hr_2026_secure';
-function hrLogin(){
-  var u=document.getElementById('hr-usr').value.trim();
-  var p=document.getElementById('hr-pwd').value;
-  if(u==='hradmin'&&p==='YouAreNotWelcome'){
-    sessionStorage.setItem(HR_AUTH_KEY,HR_AUTH_TOK);
-    var gate=document.getElementById('hr-login-gate');
-    gate.style.opacity='0';gate.style.transition='opacity .3s';
-    setTimeout(function(){gate.style.display='none';},300);
-  } else {
-    document.getElementById('hr-login-err').style.display='block';
-    document.getElementById('hr-pwd').value='';
-    document.getElementById('hr-pwd').focus();
-  }
-}
-// Check on load — if already authenticated this session, hide gate immediately
-(function(){
-  if(sessionStorage.getItem(HR_AUTH_KEY)===HR_AUTH_TOK){
-    document.getElementById('hr-login-gate').style.display='none';
-  }
-})();
-</script>
-
-
+<nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
     <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
     <div class="nav-divider"></div>
