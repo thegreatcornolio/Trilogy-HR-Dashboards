@@ -407,7 +407,7 @@ function hrLogin(){
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
       <div>
         <h3 style="color:#fff;font-size:15px">📲 Send this week's #vibecheck</h3>
-        <p style="color:rgba(255,255,255,.5);margin-bottom:0">Sends a WhatsApp to all employees with Contract Signed status. Every Thursday — or whenever you're ready.</p>
+        <p style="color:rgba(255,255,255,.5);margin-bottom:0">Sends an email to all active employees with a @trilogybpo.com address. Every Thursday — or whenever you're ready.</p>
       </div>
       <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
         <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
@@ -786,7 +786,7 @@ window.sendVibecheck = function(){
   var btn = document.getElementById('sendVibeBtn');
   var lbl = document.getElementById('sendVibeBtnLabel');
   var res = document.getElementById('sendVibeResult');
-  if(!confirm('Send this week\'s #vibecheck WhatsApp to all active employees now?')) return;
+  if(!confirm('Send this week\'s #vibecheck email to all active @trilogybpo.com employees now?')) return;
   btn.disabled = true;
   lbl.textContent = 'Sending…';
   res.textContent = '';
@@ -798,7 +798,7 @@ window.sendVibecheck = function(){
   .then(function(r){
     if(r.ok || r.status === 202){
       lbl.textContent = '✌️ Send #vibecheck now';
-      res.innerHTML = '<span style="color:var(--green)">✓ #vibecheck sent! Employees will receive their WhatsApp shortly.</span>';
+      res.innerHTML = '<span style="color:var(--green)">✓ #vibecheck sent! Emails are on their way to all @trilogybpo.com staff.</span>';
     } else { throw new Error('Status '+r.status); }
     btn.disabled = false;
   })
