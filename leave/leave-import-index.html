@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Leave Import</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--red-light:#fde8e8;--amber:#f39c12;--amber-light:#fff3cd}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── NAV ── */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-crumbs{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Montserrat',sans-serif}
+.nav-crumb{color:rgba(255,255,255,.3);text-decoration:none}.nav-crumb:hover{color:var(--green)}
+.nav-crumb-sep{color:rgba(255,255,255,.2)}
+.nav-crumb.active{color:rgba(255,255,255,.6);font-weight:600}
+
+/* ── HERO ── */
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero-inner{max-width:1000px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+
+/* ── SHELL ── */
+.shell{max-width:1000px;margin:0 auto;padding:2rem 2rem 5rem}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-xl);background:var(--surface);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--navy);background:var(--green-light)}
+.uz-icon{font-size:40px;margin-bottom:.75rem}
+.uz-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.uz-sub{font-size:12px;color:var(--text3)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+/* ── PERIOD BANNER ── */
+.period-banner{background:var(--navy);color:#fff;border-radius:var(--radius-lg);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.period-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px}
+.period-val{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.period-count{text-align:right}
+.period-count-num{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--green)}
+.period-count-lbl{font-size:11px;color:rgba(255,255,255,.4)}
+
+/* ── SUMMARY PILLS ── */
+.summary-bar{display:flex;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+.sum-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700}
+.sum-green{background:var(--green-light);color:var(--green-dark)}
+.sum-amber{background:var(--amber-light);color:#856404}
+.sum-red{background:var(--red-light);color:var(--red)}
+
+/* ── PREVIEW TABLE ── */
+.tbl-wrap{border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 8px rgba(27,42,74,.08);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--navy);color:rgba(255,255,255,.65);padding:9px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+th.num{text-align:right}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.row-ok td{background:#fff}
+tr.row-warn td{background:var(--amber-light)}
+tr.row-err td{background:var(--red-light)}
+tr.row-warn:hover td{background:#fde68a}
+tr.row-err:hover td{background:#fca5a5}
+.emp-name{font-weight:700;color:var(--text)}
+.emp-matched{font-size:11px;color:var(--green-dark)}
+.emp-unmatched{font-size:11px;color:var(--text3);font-style:italic}
+td.num{text-align:right;font-family:'Montserrat',sans-serif;font-weight:600}
+td.num.zero{color:var(--text3)}
+.flag-pill{display:inline-block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.flag-ok{background:var(--green-light);color:var(--green-dark)}
+.flag-warn{background:var(--amber-light);color:#856404}
+.flag-err{background:var(--red-light);color:var(--red)}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-ok{background:var(--green)}
+.dot-warn{background:var(--amber)}
+.dot-err{background:var(--red)}
+.dot-grey{background:var(--border2)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy2)}
+.btn-green{background:var(--green);color:#111}.btn-green:hover{background:#5fff1a}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}.btn-outline:hover{background:var(--offwhite)}
+.btn:disabled{opacity:.4;pointer-events:none}
+
+/* ── ACTION BAR ── */
+.action-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:10px}
+.action-note{font-size:12px;color:var(--text3)}
+
+/* ── RESULT CARDS ── */
+.result-card{border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.result-success{background:var(--green-light);border:1px solid var(--green)}
+.result-partial{background:var(--amber-light);border:1px solid #fcd34d}
+.result-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;margin-bottom:.25rem}
+.result-sub{font-size:12px;color:var(--text2)}
+
+/* ── SPINNER ── */
+.spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SETUP NOTE ── */
+.setup-box{background:#f0f4ff;border:1px solid #c5d0e8;border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem}
+.setup-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#2c4a8c;margin-bottom:.5rem}
+.setup-box code{font-family:'Courier New',monospace;font-size:12px;background:#dde8ff;padding:1px 5px;border-radius:3px;color:#1e3a8a}
+
+/* ── FOOTER ── */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<script>if(sessionStorage.getItem('hrportal_auth')!=='trilogy_hr_2026_secure'){window.location.replace('../');}</script>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-crumbs">
+      <a href="../" class="nav-crumb">HR Portal</a>
+      <span class="nav-crumb-sep">›</span>
+      <a href="../leave/" class="nav-crumb">Leave</a>
+      <span class="nav-crumb-sep">›</span>
+      <span class="nav-crumb active">Monthly Import</span>
+    </div>
+  </div>
+  <a href="../leave/" style="font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif">← Back to Leave</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Leave</div>
+    <div class="hero-title">Monthly Leave Import</div>
+    <div class="hero-sub">Upload the leave report from the external tracker. The tool will match employees, flag any issues, and import the monthly balances.</div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- Setup note shown until flow URL is configured -->
+  <div class="setup-box" id="setupNote">
+    <div class="setup-title">⚙️ Setup required</div>
+    Before using this tool, create the <code>LeaveMonthlySnapshot</code> SQL table and a Power Automate flow,
+    then replace <code>SAVE_LEAVE_SNAPSHOT_URL</code> in this page's script with the flow URL.
+    See the technical documentation for the SQL and flow spec.
+  </div>
+
+  <!-- ── STEP 1: UPLOAD ── -->
+  <div id="step1">
+    <div class="upload-zone" id="dropZone"
+         ondragover="ev.preventDefault();this.classList.add('dragover')"
+         ondragleave="this.classList.remove('dragover')"
+         ondrop="handleDrop(event)">
+      <div class="uz-icon">📊</div>
+      <div class="uz-title" id="uzTitle">Drop the leave report here or click to browse</div>
+      <div class="uz-sub">Accepts .xlsx · Trilogy CX leave report format</div>
+      <input type="file" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+    </div>
+  </div>
+
+  <!-- ── STEP 2: PREVIEW ── -->
+  <div id="step2" style="display:none">
+
+    <div class="period-banner">
+      <div>
+        <div class="period-label">Report period</div>
+        <div class="period-val" id="periodVal">—</div>
+      </div>
+      <div class="period-count">
+        <div class="period-count-num" id="empCountVal">—</div>
+        <div class="period-count-lbl">employees in file</div>
+      </div>
+    </div>
+
+    <div class="summary-bar" id="summaryBar"></div>
+
+    <div class="action-bar">
+      <div class="action-note" id="actionNote"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="resetImport()">✕ Clear & re-upload</button>
+        <button class="btn btn-green" id="importBtn" onclick="runImport()">⬆ Import matched employees</button>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee (in file)</th>
+            <th>Matched to</th>
+            <th>Status</th>
+            <th class="num">Annual balance</th>
+            <th class="num">Sick balance</th>
+            <th class="num">Family balance</th>
+            <th>Issues</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ── STEP 3: RESULTS ── -->
+  <div id="step3" style="display:none">
+    <div id="resultCards"></div>
+    <div style="margin-top:1.25rem">
+      <button class="btn btn-outline" onclick="resetImport()">Import another file</button>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONFIG ──
+var GET_EMPLOYEES_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+
+// !! Replace with your new Power Automate flow URL once created !!
+var SAVE_LEAVE_SNAPSHOT_URL = 'REPLACE_WITH_YOUR_FLOW_URL';
+
+// ── STATE ──
+var allEmployees = [];
+var parsedRows   = [];   // processed rows ready for preview/import
+var reportPeriod = '';   // 'YYYY-MM'
+var reportLabel  = '';   // human-readable period label
+
+// ── UTILITIES ──
+function gi(id){ return document.getElementById(id); }
+function fmt(n){ return n !== null && n !== undefined && n !== '' ? parseFloat(n).toFixed(2) : '—'; }
+
+// Parse "Last, Mr First" → { first, last }
+function parseReportName(str) {
+  var TITLES = /^(mr\.?\s|mrs\.?\s|ms\.?\s|miss\s|dr\.?\s|prof\.?\s)/i;
+  var comma  = str.indexOf(', ');
+  if (comma < 0) return { first: str.trim(), last: '' };
+  var last = str.substring(0, comma).trim();
+  var rest = str.substring(comma + 2).trim().replace(TITLES, '').trim();
+  var first = rest.split(/\s+/)[0];
+  return { first: first, last: last };
+}
+
+// Match parsed name to employee record
+function matchEmployee(parsed) {
+  var lFirst = parsed.first.toLowerCase();
+  var lLast  = parsed.last.toLowerCase();
+  // Exact match
+  var m = allEmployees.find(function(e){
+    return e.LastName.toLowerCase()  === lLast &&
+           e.FirstName.toLowerCase() === lFirst;
+  });
+  if (m) return m;
+  // First-name prefix (e.g. "Rudi" matches "Rudolph")
+  return allEmployees.find(function(e){
+    return e.LastName.toLowerCase() === lLast &&
+           e.FirstName.toLowerCase().startsWith(lFirst);
+  }) || null;
+}
+
+// ── LOAD EMPLOYEES FROM SQL ──
+function loadEmployees(cb) {
+  fetch(GET_EMPLOYEES_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_employees' })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
+    allEmployees = Array.isArray(data) ? data : (data.employees || []);
+    cb(null);
+  })
+  .catch(function(e){ cb(e); });
+}
+
+// ── PARSE THE XLSX ──
+function parseLeaveReport(arrayBuffer) {
+  var wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
+  var ws = wb.Sheets[wb.SheetNames[0]];
+  var all = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+  // Row 3 (index 2): "Period:  2026-05-01 to 2026-05-31"
+  var periodRow = (all[2] || []).join(' ');
+  var periodMatch = periodRow.match(/(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/);
+  if (periodMatch) {
+    reportPeriod = periodMatch[1].substring(0, 7); // 'YYYY-MM'
+    var d = new Date(periodMatch[1] + 'T00:00:00');
+    reportLabel  = d.toLocaleString('en-ZA', { month: 'long', year: 'numeric' });
+  } else {
+    reportPeriod = '';
+    reportLabel  = 'Unknown period';
+  }
+
+  // Find header row (contains 'Employee' and 'Leave Type')
+  var hdrIdx = -1;
+  for (var i = 0; i < Math.min(all.length, 10); i++) {
+    var rowStr = all[i].join('|').toLowerCase();
+    if (rowStr.includes('employee') && rowStr.includes('leave type')) { hdrIdx = i; break; }
+  }
+  if (hdrIdx < 0) return {};
+
+  var headers = all[hdrIdx].map(function(h){ return (h||'').toString().toLowerCase().trim(); });
+  var colEmp     = headers.indexOf('employee');
+  var colType    = headers.indexOf('leave type');
+  var colTaken   = headers.indexOf('taken');
+  var colBalance = headers.indexOf('balance');
+
+  // Group rows by employee name
+  var groups = {}; // { nameStr: { annual, sick, family } }
+  for (var r = hdrIdx + 1; r < all.length; r++) {
+    var row  = all[r];
+    var name = (row[colEmp] || '').toString().trim();
+    if (!name) continue;
+    if (!groups[name]) groups[name] = { annual: null, sick: null, family: null };
+    var leaveType = (row[colType] || '').toString().toLowerCase();
+    var balance   = row[colBalance] !== '' ? parseFloat(row[colBalance]) || 0 : 0;
+    var taken     = row[colTaken]   !== '' ? parseFloat(row[colTaken])   || 0 : 0;
+    if      (leaveType === 'annual')                    groups[name].annual = { balance, taken };
+    else if (leaveType === 'sick')                      groups[name].sick   = { balance, taken };
+    else if (leaveType.includes('family'))              groups[name].family = { balance, taken };
+  }
+  return groups;
+}
+
+// ── HANDLE FILE ──
+function handleFile(file) {
+  if (!file) return;
+  gi('uzTitle').textContent = '⏳ Loading employees from system…';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var ab = e.target.result;
+    loadEmployees(function(err) {
+      if (err) { gi('uzTitle').textContent = '⚠️ Could not load employees: ' + err.message; return; }
+      var groups = parseLeaveReport(ab);
+      buildPreview(groups);
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function handleDrop(ev) {
+  ev.preventDefault();
+  gi('dropZone').classList.remove('dragover');
+  var file = ev.dataTransfer.files[0];
+  if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+    handleFile(file);
+  } else {
+    alert('Please drop an .xlsx file.');
+  }
+}
+
+// ── BUILD PREVIEW ──
+function buildPreview(groups) {
+  parsedRows = [];
+  var names = Object.keys(groups);
+
+  names.forEach(function(nameStr) {
+    var g       = groups[nameStr];
+    var parsed  = parseReportName(nameStr);
+    var emp     = matchEmployee(parsed);
+    var status  = emp ? (emp.Status || '') : '';
+    var eligible = status === 'Active' || status === 'Onboarded';
+
+    var flags = [];
+    if (!emp) flags.push('not_found');
+    else if (!eligible) flags.push('inactive');
+
+    parsedRows.push({
+      nameInFile: nameStr,
+      parsedName: parsed,
+      employee:   emp,
+      status:     status,
+      eligible:   eligible,
+      flags:      flags,
+      annual:     g.annual,
+      sick:       g.sick,
+      family:     g.family,
+    });
+  });
+
+  renderPreview();
+}
+
+function renderPreview() {
+  // Update header
+  gi('periodVal').textContent   = reportLabel || '—';
+  gi('empCountVal').textContent = parsedRows.length;
+
+  // Summary counts
+  var ok    = parsedRows.filter(function(r){ return r.flags.length === 0; }).length;
+  var warn  = parsedRows.filter(function(r){ return r.flags.includes('inactive'); }).length;
+  var err   = parsedRows.filter(function(r){ return r.flags.includes('not_found'); }).length;
+
+  gi('summaryBar').innerHTML =
+    '<span class="sum-pill sum-green">✓ ' + ok   + ' ready to import</span>' +
+    (warn ? '<span class="sum-pill sum-amber">⚠ ' + warn + ' not active/onboarded</span>' : '') +
+    (err  ? '<span class="sum-pill sum-red">✗ '  + err  + ' not found in system</span>'   : '');
+
+  gi('actionNote').textContent = 'Only employees marked ✓ will be imported. Flagged rows are excluded.';
+
+  // Disable import if nothing to import or URL not configured
+  var importBtn = gi('importBtn');
+  importBtn.disabled = ok === 0 || SAVE_LEAVE_SNAPSHOT_URL === 'REPLACE_WITH_YOUR_FLOW_URL';
+  if (SAVE_LEAVE_SNAPSHOT_URL === 'REPLACE_WITH_YOUR_FLOW_URL') {
+    importBtn.title = 'Configure SAVE_LEAVE_SNAPSHOT_URL first';
+  }
+
+  // Table rows
+  gi('previewBody').innerHTML = parsedRows.map(function(r) {
+    var rowClass = r.flags.length === 0 ? 'row-ok' : r.flags.includes('not_found') ? 'row-err' : 'row-warn';
+
+    var matchCell, statusCell, flagCell;
+
+    if (!r.employee) {
+      matchCell  = '<span class="emp-unmatched">No match found</span>';
+      statusCell = '<span class="status-dot dot-grey"></span>—';
+      flagCell   = '<span class="flag-pill flag-err">✗ Not in system</span>';
+    } else {
+      matchCell  = '<div class="emp-name">' + r.employee.FirstName + ' ' + r.employee.LastName + '</div>' +
+                   '<div style="font-size:10px;color:var(--text3);font-family:\'Montserrat\',sans-serif">' + r.employee.EmployeeID + '</div>';
+      var dotCls = r.eligible ? 'dot-ok' : 'dot-warn';
+      statusCell = '<span class="status-dot ' + dotCls + '"></span>' + (r.status || '—');
+      flagCell   = r.eligible
+        ? '<span class="flag-pill flag-ok">✓ Ready</span>'
+        : '<span class="flag-pill flag-warn">⚠ ' + r.status + ' — excluded</span>';
+    }
+
+    var annualVal  = r.annual  ? r.annual.balance  : null;
+    var sickVal    = r.sick    ? r.sick.balance    : null;
+    var familyVal  = r.family  ? r.family.balance  : null;
+
+    function numCell(v) {
+      if (v === null || v === undefined) return '<td class="num zero">—</td>';
+      var n = parseFloat(v);
+      return '<td class="num' + (n === 0 ? ' zero' : '') + '">' + n.toFixed(2) + '</td>';
+    }
+
+    return '<tr class="' + rowClass + '">' +
+      '<td><div class="emp-name">' + r.nameInFile + '</div><div style="font-size:10px;color:var(--text3)">' + r.parsedName.first + ' ' + r.parsedName.last + '</div></td>' +
+      '<td>' + matchCell + '</td>' +
+      '<td>' + statusCell + '</td>' +
+      numCell(annualVal) +
+      numCell(sickVal) +
+      numCell(familyVal) +
+      '<td>' + flagCell + '</td>' +
+      '</tr>';
+  }).join('');
+
+  gi('step1').style.display = 'none';
+  gi('step2').style.display = 'block';
+  gi('setupNote').style.display = SAVE_LEAVE_SNAPSHOT_URL === 'REPLACE_WITH_YOUR_FLOW_URL' ? 'block' : 'none';
+}
+
+// ── RUN IMPORT ──
+function runImport() {
+  var toImport = parsedRows.filter(function(r){ return r.flags.length === 0 && r.employee; });
+  if (!toImport.length) return;
+
+  gi('importBtn').disabled = true;
+  gi('importBtn').innerHTML = '<div class="spinner"></div> Importing…';
+
+  var promises = toImport.map(function(r) {
+    var payload = {
+      employee_id:      r.employee.EmployeeID,
+      report_month:     reportPeriod + '-01',
+      annual_balance:   r.annual  ? parseFloat(r.annual.balance)  || 0 : 0,
+      sick_balance:     r.sick    ? parseFloat(r.sick.balance)    || 0 : 0,
+      family_balance:   r.family  ? parseFloat(r.family.balance)  || 0 : 0,
+      annual_taken:     r.annual  ? parseFloat(r.annual.taken)    || 0 : 0,
+      sick_taken:       r.sick    ? parseFloat(r.sick.taken)      || 0 : 0,
+      family_taken:     r.family  ? parseFloat(r.family.taken)    || 0 : 0,
+    };
+    return fetch(SAVE_LEAVE_SNAPSHOT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(res){ return { row: r, ok: res.ok || res.status === 202, status: res.status }; })
+    .catch(function(e){ return { row: r, ok: false, error: e.message }; });
+  });
+
+  Promise.all(promises).then(function(results) {
+    var ok  = results.filter(function(x){ return x.ok; });
+    var bad = results.filter(function(x){ return !x.ok; });
+    showResults(ok, bad, toImport.length);
+  });
+}
+
+function showResults(ok, bad, total) {
+  var html = '';
+
+  if (ok.length) {
+    html += '<div class="result-card result-success">' +
+      '<div class="result-title">✓ ' + ok.length + ' of ' + total + ' employee' + (total > 1 ? 's' : '') + ' imported successfully</div>' +
+      '<div class="result-sub">Leave balances for <strong>' + reportLabel + '</strong> saved to LeaveMonthlySnapshot.</div>' +
+      '</div>';
+  }
+
+  if (bad.length) {
+    html += '<div class="result-card" style="background:#fee2e2;border:1px solid #fca5a5">' +
+      '<div class="result-title">✗ ' + bad.length + ' record' + (bad.length > 1 ? 's' : '') + ' failed</div>' +
+      '<div class="result-sub">' +
+        bad.map(function(x){ return x.row.employee.FirstName + ' ' + x.row.employee.LastName + (x.error ? ': ' + x.error : ''); }).join(' · ') +
+      '</div>' +
+      '</div>';
+  }
+
+  var skipped = parsedRows.filter(function(r){ return r.flags.length > 0; });
+  if (skipped.length) {
+    html += '<div class="result-card" style="background:var(--amber-light);border:1px solid #fcd34d">' +
+      '<div class="result-title">⚠ ' + skipped.length + ' row' + (skipped.length > 1 ? 's' : '') + ' skipped</div>' +
+      '<div class="result-sub">' +
+        skipped.map(function(r){
+          return r.nameInFile + ' — ' + (r.flags.includes('not_found') ? 'not found in system' : 'status: ' + r.status);
+        }).join(' · ') +
+      '</div>' +
+      '</div>';
+  }
+
+  gi('resultCards').innerHTML = html;
+  gi('step2').style.display = 'none';
+  gi('step3').style.display = 'block';
+}
+
+function resetImport() {
+  parsedRows   = [];
+  reportPeriod = '';
+  reportLabel  = '';
+  gi('step1').style.display = 'block';
+  gi('step2').style.display = 'none';
+  gi('step3').style.display = 'none';
+  gi('uzTitle').textContent = 'Drop the leave report here or click to browse';
+  gi('importBtn').innerHTML = '⬆ Import matched employees';
+}
+</script>
+</body>
+</html>
