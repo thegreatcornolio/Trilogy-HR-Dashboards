@@ -232,7 +232,7 @@ td.num.zero{color:var(--text3)}
 var GET_EMPLOYEES_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
 
 // !! Replace with your new Power Automate flow URL once created !!
-var SAVE_LEAVE_SNAPSHOT_URL = 'REPLACE_WITH_YOUR_FLOW_URL';
+var SAVE_LEAVE_SNAPSHOT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a72aeebd233d4997a10afbc37952f11e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WWmtJ57xsD3lnUufqtVVF_GF_dfT7IvIxTT-i87Tijs';
 
 // ── STATE ──
 var allEmployees = [];
@@ -463,7 +463,7 @@ function renderPreview() {
 
   gi('step1').style.display = 'none';
   gi('step2').style.display = 'block';
-  gi('setupNote').style.display = SAVE_LEAVE_SNAPSHOT_URL === 'REPLACE_WITH_YOUR_FLOW_URL' ? 'block' : 'none';
+  
 }
 
 // ── RUN IMPORT ──
