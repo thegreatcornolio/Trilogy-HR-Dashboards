@@ -453,22 +453,17 @@ function renderTable(list){
   gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
   if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
   gi('empBody').innerHTML=list.map(function(e){
+    var l=calcLeave(e,null);
     var snap=snapshotMap[e.EmployeeID];
-    var annualVal=snap?snap.annual:calcLeave(e,null).annualAvail;
-    var chipLabel=snap?annualVal.toFixed(2)+' days':calcLeave(e,null).annualAvail+' days (est.)';
+    var chipVal=snap?snap.annual:l.annualAvail;
     var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
     var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
-    var chip;
-    var n=parseFloat(annualVal);
-    if(n>10)chip='<span class="leave-chip chip-ok">'+chipLabel+'</span>';
-    else if(n>5)chip='<span class="leave-chip chip-low">'+chipLabel+'</span>';
-    else chip='<span class="leave-chip chip-none">'+chipLabel+'</span>';
-    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+\
-      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+\
-      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+\
-      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+\
-      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+\
-      '<td>'+chip+'</td>'+\
+    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
+      '<td>'+leaveChip(chipVal)+'</td>'+
       '</tr>';
   }).join('');
 }
