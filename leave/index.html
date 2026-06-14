@@ -130,7 +130,7 @@ tr.selected td{background:var(--green-light)}
     <div class="nav-divider"></div>
     <div class="nav-section">Leave Management</div>
   </div>
-  <a href="../../trilogy-hr" class="nav-back">← HR Portal</a>
+  <a href="../" class="nav-back">← HR Portal</a>
 </nav>
 
 <div class="hero">
@@ -160,7 +160,7 @@ tr.selected td{background:var(--green-light)}
         <option value="Onboarded">Onboarded only</option>
       </select>
       <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
-      <a href="../leave-import" class="export-btn" style="text-decoration:none">📥 Monthly import</a>
+      <a href="../leave-import/" class="export-btn" style="text-decoration:none">📥 Monthly import</a>
       <span class="count-badge" id="countBadge">Loading…</span>
     </div>
     <div class="tbl-wrap">
@@ -217,7 +217,7 @@ tr.selected td{background:var(--green-light)}
         </div>
 
         <!-- Leave balance cards -->
-        <div class="detail-section">Leave balances</div>
+        <div class="detail-section">Leave balances <span id="leave-source-badge" style="font-family:'Wix Madefor Text',sans-serif;font-weight:400;font-size:10px;color:var(--text3);text-transform:none;letter-spacing:0;margin-left:4px"></span></div>
         <div id="detailLoadingMsg" class="detail-loading" style="display:none"><span class="mini-spinner"></span>Loading actual taken amounts…</div>
         <div class="leave-grid" id="leaveGrid">
           <div class="leave-card" id="card-annual">
@@ -248,7 +248,7 @@ tr.selected td{background:var(--green-light)}
 
         <!-- Action buttons -->
         <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
-        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees" style="text-decoration:none">↗ Open full employee record</a>
+        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees/" style="text-decoration:none">↗ Open full employee record</a>
 
         <!-- BCEA reference -->
         <div class="detail-section">BCEA reference</div>
@@ -321,9 +321,11 @@ tr.selected td{background:var(--green-light)}
 var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
 var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 var SAVE_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f9acaa0f0254a72a662cbf4541f4da3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6K_5uXvdvOz7pFfDeQtwhdqfRSxmxz1Ib_sfZHHSD4k';
+var GET_SNAPSHOTS_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/767c17ab296443f3a7af81f4f91c88c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=FZFGAv95SRSp7SfURLYeimSyoD03FlxTN_30X_9qBzI';
 
 var ELIGIBLE_STATUSES=['Active','Onboarded','Resigned','Dismissed','Retrenched','AWOL','Deceased'];
 var allEmployees=[], filteredEmployees=[], selectedEmp=null;
+var snapshotMap={}; // { EmployeeID: {AnnualBalance, SickBalance, FamilyBalance, Period} }
 
 function gi(id){return document.getElementById(id);}
 function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
@@ -382,13 +384,36 @@ function leaveChip(annualAvail){
 
 // ── LOAD ──
 function loadEmployees(){
-  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
-  .then(function(r){return r.json();})
-  .then(function(d){
+  var empPromise=fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})}).then(function(r){return r.json();});
+  var snapPromise=fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})}).then(function(r){return r.json();}).catch(function(){return null;});
+
+  Promise.all([empPromise,snapPromise])
+  .then(function(results){
+    // Employees
+    var d=results[0];
     var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
     var all=Array.isArray(data)?data:(data.employees||[]);
-    // Filter to employees (not candidates)
     allEmployees=all.filter(function(e){return ELIGIBLE_STATUSES.indexOf(e.Status)>=0;});
+
+    // Snapshots — build lookup map
+    snapshotMap={};
+    var sd=results[1];
+    if(sd){
+      var sbody=sd.body?(typeof sd.body==='string'?JSON.parse(sd.body):sd.body):sd;
+      var rs=sbody.ResultSets||sbody.resultSets||sbody;
+      var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
+      if(Array.isArray(rows)){
+        rows.forEach(function(row){
+          if(row.EmployeeID)snapshotMap[row.EmployeeID]={
+            annual:parseFloat(row.AnnualBalance)||0,
+            sick:parseFloat(row.SickBalance)||0,
+            family:parseFloat(row.FamilyBalance)||0,
+            period:row.Period||''
+          };
+        });
+      }
+    }
+
     renderStats();
     filterTable();
   })
@@ -400,8 +425,11 @@ function renderStats(){
   allEmployees.forEach(function(e){
     if(e.Status==='Active')active++;
     if(e.Status==='Onboarded')onboarded++;
-    var l=calcLeave(e,null);
-    if(e.Status==='Active'&&parseFloat(l.annualAvail)<=5)lowLeave++;
+    if(e.Status==='Active'){
+      var snap=snapshotMap[e.EmployeeID];
+      var bal=snap?snap.annual:calcLeave(e,null).annualAvail;
+      if(parseFloat(bal)<=5)lowLeave++;
+    }
   });
   gi('statActive').textContent=active;
   gi('statOnboarded').textContent=onboarded;
@@ -424,15 +452,22 @@ function renderTable(list){
   gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
   if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
   gi('empBody').innerHTML=list.map(function(e){
-    var l=calcLeave(e,null);
+    var snap=snapshotMap[e.EmployeeID];
+    var annualVal=snap?snap.annual:calcLeave(e,null).annualAvail;
+    var chipLabel=snap?annualVal.toFixed(2)+' days':calcLeave(e,null).annualAvail+' days (est.)';
     var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
     var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
-    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
-      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
-      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
-      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
-      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
-      '<td>'+leaveChip(l.annualAvail)+'</td>'+
+    var chip;
+    var n=parseFloat(annualVal);
+    if(n>10)chip='<span class="leave-chip chip-ok">'+chipLabel+'</span>';
+    else if(n>5)chip='<span class="leave-chip chip-low">'+chipLabel+'</span>';
+    else chip='<span class="leave-chip chip-none">'+chipLabel+'</span>';
+    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+\
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+\
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+\
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+\
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+\
+      '<td>'+chip+'</td>'+\
       '</tr>';
   }).join('');
 }
@@ -470,21 +505,37 @@ function selectEmployee(id){
 }
 
 function renderLeave(e,detail){
-  var l=calcLeave(e,detail);
-  // Annual
-  var annNum=parseFloat(l.annualAvail);
-  var annEl=gi('lv-annual');
-  annEl.textContent=l.annualAvail;
-  annEl.className='leave-balance'+(annNum<=3?' critical':annNum<=7?' low':'');
-  gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued'+(detail?' · '+l.annualTaken+' taken':'');
-  // Sick
-  gi('lv-sick').textContent=l.sickAvail+(detail?'':'+');
-  // Family
-  gi('lv-family').textContent=l.famAvail+(detail?'':'+');
-  // Mat/Parental
-  gi('lv-mat').textContent=l.matDays;
-  gi('lv-mat-label').textContent=l.matLabel;
-  gi('lv-mat-detail').textContent=l.matDetail;
+  var snap=snapshotMap[e.EmployeeID];
+  if(snap){
+    // ── External tracker data ──
+    var annNum=snap.annual;
+    var annEl=gi('lv-annual');
+    annEl.textContent=annNum.toFixed(2);
+    annEl.className='leave-balance'+(annNum<=3?' critical':annNum<=7?' low':'');
+    gi('lv-annual-detail').textContent='From external tracker · '+snap.period+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
+    gi('lv-sick').textContent=snap.sick.toFixed(2);
+    gi('lv-family').textContent=snap.family.toFixed(2);
+    // Source badge — update the section label
+    var srcBadge=gi('leave-source-badge');
+    if(srcBadge)srcBadge.textContent='📊 '+snap.period;
+  } else {
+    // ── BCEA estimate ──
+    var l=calcLeave(e,detail);
+    var annNum2=parseFloat(l.annualAvail);
+    var annEl2=gi('lv-annual');
+    annEl2.textContent=l.annualAvail;
+    annEl2.className='leave-balance'+(annNum2<=3?' critical':annNum2<=7?' low':'');
+    gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued'+(detail?' · '+l.annualTaken+' taken':'');
+    gi('lv-sick').textContent=l.sickAvail+(detail?'':'+');
+    gi('lv-family').textContent=l.famAvail+(detail?'':'+');
+    var srcBadge2=gi('leave-source-badge');
+    if(srcBadge2)srcBadge2.textContent='BCEA estimate';
+  }
+  // Mat/Parental always from BCEA
+  var lm=calcLeave(e,detail);
+  gi('lv-mat').textContent=lm.matDays;
+  gi('lv-mat-label').textContent=lm.matLabel;
+  gi('lv-mat-detail').textContent=lm.matDetail;
 }
 
 // ── LEAVE MODAL ──
