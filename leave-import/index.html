@@ -328,10 +328,11 @@ function parseLeaveReport(arrayBuffer) {
   if (hdrIdx < 0) return {};
 
   var headers = all[hdrIdx].map(function(h){ return (h||'').toString().toLowerCase().trim(); });
-  var colEmp     = headers.indexOf('employee');
-  var colType    = headers.indexOf('leave type');
-  var colTaken   = headers.indexOf('taken');
-  var colBalance = headers.indexOf('balance');
+  var colEmp         = headers.indexOf('employee');
+  var colType        = headers.indexOf('leave type');
+  var colTaken       = headers.indexOf('taken');
+  var colEntitlement = headers.indexOf('entitlement');
+  var colBalance     = headers.indexOf('balance');
 
   // Group rows by employee name
   var groups = {}; // { nameStr: { annual, sick, family } }
@@ -340,12 +341,15 @@ function parseLeaveReport(arrayBuffer) {
     var name = (row[colEmp] || '').toString().trim();
     if (!name) continue;
     if (!groups[name]) groups[name] = { annual: null, sick: null, family: null };
-    var leaveType = (row[colType] || '').toString().toLowerCase();
-    var balance   = row[colBalance] !== '' ? parseFloat(row[colBalance]) || 0 : 0;
-    var taken     = row[colTaken]   !== '' ? parseFloat(row[colTaken])   || 0 : 0;
-    if      (leaveType === 'annual')                    groups[name].annual = { balance, taken };
-    else if (leaveType === 'sick')                      groups[name].sick   = { balance, taken };
-    else if (leaveType.includes('family'))              groups[name].family = { balance, taken };
+    var leaveType   = (row[colType] || '').toString().toLowerCase();
+    var balance     = row[colBalance]     !== '' ? parseFloat(row[colBalance])     || 0 : 0;
+    var entitlement = row[colEntitlement] !== '' ? parseFloat(row[colEntitlement]) || 0 : 0;
+    var taken       = row[colTaken]       !== '' ? parseFloat(row[colTaken])       || 0 : 0;
+    // Sick and family show 0 balance when nothing has been taken yet — use entitlement instead
+    var effectiveBal = (leaveType !== 'annual' && balance === 0 && entitlement > 0) ? entitlement : balance;
+    if      (leaveType === 'annual')           groups[name].annual = { balance: balance,      taken };
+    else if (leaveType === 'sick')             groups[name].sick   = { balance: effectiveBal, taken };
+    else if (leaveType.includes('family'))     groups[name].family = { balance: effectiveBal, taken };
   }
   return groups;
 }
