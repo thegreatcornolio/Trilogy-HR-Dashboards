@@ -56,8 +56,8 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 .sum-red{background:var(--red-light);color:var(--red)}
 
 /* ── PREVIEW TABLE ── */
-.tbl-wrap{border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 8px rgba(27,42,74,.08);border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:12px}
+.tbl-wrap{border-radius:var(--radius-lg);overflow-x:auto;box-shadow:0 1px 8px rgba(27,42,74,.08);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:680px}
 th{background:var(--navy);color:rgba(255,255,255,.65);padding:9px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
 th.num{text-align:right}
 td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
@@ -109,7 +109,28 @@ td.num.zero{color:var(--text3)}
 .setup-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#2c4a8c;margin-bottom:.5rem}
 .setup-box code{font-family:'Courier New',monospace;font-size:12px;background:#dde8ff;padding:1px 5px;border-radius:3px;color:#1e3a8a}
 
-/* ── FOOTER ── */
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .nav{padding:0 1rem}
+  .nav-crumbs{gap:4px;font-size:10px}
+  .nav-crumb-sep{display:none}
+  .nav-crumb:not(.active){display:none}
+  .hero{padding:1.5rem 1rem 1.25rem}
+  .shell{padding:1.25rem 1rem 4rem}
+  .upload-zone{padding:2rem 1rem}
+  .uz-title{font-size:13px}
+  .period-banner{flex-direction:column;align-items:flex-start;gap:.75rem;padding:.875rem 1rem}
+  .period-count{text-align:left}
+  .period-count-num{font-size:16px}
+  .period-val{font-size:16px}
+  .summary-bar{gap:6px}
+  .action-bar{flex-direction:column;align-items:stretch}
+  .action-bar>div{display:flex;gap:8px;flex-wrap:wrap}
+  .action-bar>div .btn{flex:1;min-width:120px;justify-content:center}
+  .result-card{padding:1rem}
+  .footer-inner{flex-direction:column;gap:.5rem;text-align:center}
+}
+
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
 .footer-logo{height:18px}
