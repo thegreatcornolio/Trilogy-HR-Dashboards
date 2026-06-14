@@ -384,40 +384,41 @@ function leaveChip(annualAvail){
 
 // ── LOAD ──
 function loadEmployees(){
-  var empPromise=fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})}).then(function(r){return r.json();});
-  var snapPromise=fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})}).then(function(r){return r.json();}).catch(function(){return null;});
-
-  Promise.all([empPromise,snapPromise])
-  .then(function(results){
-    // Employees
-    var d=results[0];
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
     var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
     var all=Array.isArray(data)?data:(data.employees||[]);
     allEmployees=all.filter(function(e){return ELIGIBLE_STATUSES.indexOf(e.Status)>=0;});
+    renderStats();
+    filterTable();
+    // Load snapshots in background — page is already usable
+    loadSnapshots();
+  })
+  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+}
 
-    // Snapshots — build lookup map
-    snapshotMap={};
-    var sd=results[1];
-    if(sd){
-      var sbody=sd.body?(typeof sd.body==='string'?JSON.parse(sd.body):sd.body):sd;
-      var rs=sbody.ResultSets||sbody.resultSets||sbody;
-      var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
-      if(Array.isArray(rows)){
-        rows.forEach(function(row){
-          if(row.EmployeeID)snapshotMap[row.EmployeeID]={
-            annual:parseFloat(row.AnnualBalance)||0,
-            sick:parseFloat(row.SickBalance)||0,
-            family:parseFloat(row.FamilyBalance)||0,
-            period:row.Period||''
-          };
-        });
-      }
-    }
-
+function loadSnapshots(){
+  fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var sbody=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var rs=sbody.ResultSets||sbody.resultSets||sbody;
+    var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
+    if(!Array.isArray(rows))return;
+    rows.forEach(function(row){
+      if(row.EmployeeID)snapshotMap[row.EmployeeID]={
+        annual:parseFloat(row.AnnualBalance)||0,
+        sick:parseFloat(row.SickBalance)||0,
+        family:parseFloat(row.FamilyBalance)||0,
+        period:row.Period||''
+      };
+    });
+    // Refresh table and stats now snapshot data is available
     renderStats();
     filterTable();
   })
-  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+  .catch(function(){/* Snapshots unavailable — BCEA fallback stays, no error shown */});
 }
 
 function renderStats(){
