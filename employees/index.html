@@ -50,6 +50,7 @@ tr.selected td{background:#edffd6}
 .s-tobe{background:#fff3cd;color:#856404}
 .s-onboarded{background:#d1ecf1;color:#0c5460}
 .s-active{background:var(--green-light);color:var(--green-dark)}
+.s-missing{background:#fdecea;color:#c0392b;border:1px solid #c0392b}
 .s-exited{background:#f0f0f0;color:#888}
 .emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
 .loading-row td{text-align:center;padding:3rem;color:var(--text3)}
@@ -147,6 +148,7 @@ tr.selected td{background:#edffd6}
         <option value="tobe">To be onboarded</option>
         <option value="onboarded">Onboarded</option>
         <option value="active">Active</option>
+        <option value="missing">⚠ Missing info</option>
       </select>
       <span class="count-badge" id="countBadge">Loading…</span>
     </div>
@@ -346,6 +348,14 @@ function onboardState(e){
   return 'tobe';
 }
 
+// True if core onboarding data is absent, regardless of status
+function isMissingInfo(e){
+  var hasComplete = e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes';
+  if(hasComplete) return false;
+  // Treat as missing if key onboarding fields are blank
+  return !(e.Title && e.Gender && e.Race && e.TaxNumber);
+}
+
 // ── LOAD ──
 function loadEmployees(){
   fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
@@ -370,6 +380,7 @@ function renderTable(list){
   gi('empBody').innerHTML=list.map(function(e){
     var st=onboardState(e);
     var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
+    if(isMissingInfo(e)){ pill+=' <span class="status-pill s-missing">⚠ Missing info</span>'; }
     return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
       '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
       '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
@@ -385,7 +396,7 @@ function filterTable(){
   var filtered=allEmployees.filter(function(e){
     var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
     var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.IDNumber||'').includes(q);
-    var mf=!f||onboardState(e)===f;
+    var mf=!f||(f==='missing'?isMissingInfo(e):onboardState(e)===f);
     return mq&&mf;
   });
   renderTable(filtered);
@@ -457,10 +468,11 @@ function selectEmployee(id){
   if(!e.Race)missing.push('Race');
   if(!e.HomeLanguage)missing.push('Home language');
   if(!e.TaxNumber)missing.push('Tax number');
-  if(st==='tobe'){
+  if(isMissingInfo(e)){
     gi('missingCard').style.display='block';
     gi('onboardedBadge').style.display='none';
-    gi('missingList').innerHTML=missing.length?'Still required: '+missing.join(', ')+', emergency contact, banking details':'Awaiting employee onboarding form completion';
+    var prefix = st==='active' ? 'This employee is Active but their onboarding details are incomplete. ' : '';
+    gi('missingList').innerHTML=prefix+(missing.length?'Still required: '+missing.join(', ')+', emergency contact, banking details':'Awaiting employee onboarding form completion')+'. Complete it via the Edit tab, or re-send the onboarding form below.';
   } else {
     gi('missingCard').style.display='none';
     gi('onboardedBadge').style.display='block';
