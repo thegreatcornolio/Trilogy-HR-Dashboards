@@ -348,12 +348,10 @@ function onboardState(e){
   return 'tobe';
 }
 
-// True if core onboarding data is absent, regardless of status
+// True if the employee has not completed full onboarding (form or manual capture).
+// OnboardingComplete='yes' is set only when ALL details (personal + emergency + banking) are submitted together.
 function isMissingInfo(e){
-  var hasComplete = e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes';
-  if(hasComplete) return false;
-  // Treat as missing if key onboarding fields are blank
-  return !(e.Title && e.Gender && e.Race && e.TaxNumber);
+  return !(e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes');
 }
 
 // ── LOAD ──
