@@ -147,15 +147,32 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
     <!-- SIGNATURE -->
     <div class="card">
       <div class="section-label">Confirm &amp; sign</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem">I verify that the above information is accurate and complete.</div>
+
+      <div style="background:#fdf0ef;border:2px solid #c0392b;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="font-size:22px;line-height:1;flex-shrink:0">⚠️</div>
+          <div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#c0392b;margin-bottom:.4rem">Please check every detail carefully before signing</div>
+            <div style="font-size:12.5px;color:#7a2e26;line-height:1.6">Your banking details, ID number and tax number are used to pay your salary and meet statutory requirements. <strong>Incorrect information may result in your salary being paid late, paid to the wrong account, or payroll and tax errors.</strong> Once you sign and submit, you are confirming that everything above is 100% correct.</div>
+          </div>
+        </div>
+      </div>
+
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:1.25rem;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--offwhite)">
+        <input type="checkbox" id="acceptCheck" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
+        <span style="font-size:13px;color:var(--text)">I confirm that all the information I have provided above — including my banking, ID and tax details — is accurate, complete and correct. I understand that incorrect information may cause payroll and salary issues.</span>
+      </label>
+
+      <div style="font-size:12px;color:var(--text3);margin-bottom:.5rem">Please sign below to confirm:</div>
       <div class="sig-wrap">
         <canvas id="sigCanvas" width="700" height="150"></canvas>
         <div class="sig-toolbar"><button class="sig-clear" onclick="clearSig()">Clear signature</button></div>
       </div>
       <div id="sigError" style="font-size:11px;color:var(--red);margin-top:4px;display:none">Please provide your signature.</div>
+      <div id="acceptError" style="font-size:11px;color:var(--red);margin-top:4px;display:none">Please tick the confirmation box above before signing.</div>
       <div style="margin-top:1.25rem">
         <button class="submit-btn" id="submitBtn" onclick="submitForm()">
-          <span id="submitLabel">Submit my information</span>
+          <span id="submitLabel">Confirm &amp; submit my information</span>
           <div class="spinner" id="submitSpinner"></div>
         </button>
       </div>
@@ -283,11 +300,14 @@ window.submitForm=function(){
   }
   if(gi('nationalityField').style.display !== 'none' && !gi('nationality').value.trim()){ alert('Please enter your nationality.'); return; }
   if(!gi('dob').value.trim()){ alert('Please enter your date of birth.'); return; }
+  if(!gi('acceptCheck').checked){ gi('acceptError').style.display='block'; gi('acceptCheck').focus(); return; }
+  gi('acceptError').style.display='none';
   if(!hasSig){ gi('sigError').style.display='block'; return; }
 
   var btn=gi('submitBtn'), lbl=gi('submitLabel'), spin=gi('submitSpinner');
   btn.disabled=true; lbl.style.display='none'; spin.style.display='block';
 
+  var acceptedAt = new Date().toISOString();
   var payload = {
     action:'employee_form_submitted',
     employee_id: D.ref, token: D.token,
@@ -307,6 +327,9 @@ window.submitForm=function(){
     account_number: gi('accountNumber').value,
     tax_number: gi('taxNumber').value,
     submitted_at: new Date().toLocaleDateString('en-ZA'),
+    accepted: 'yes',
+    accepted_at: acceptedAt,
+    accepted_statement: 'I confirm that all the information I have provided is accurate, complete and correct. I understand incorrect information may cause payroll and salary issues.',
     signature_data: canvas.toDataURL('image/png')
   };
 
