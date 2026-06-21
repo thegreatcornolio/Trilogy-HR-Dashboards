@@ -269,6 +269,50 @@ tr.selected td{background:#edffd6}
           <div class="field-group"><label>Work email</label><input type="email" class="field-input" id="edit-wemail"><button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button><div class="save-result" id="save-wemail"></div></div>
           <div class="field-group"><label>Reports to</label><input type="text" class="field-input" id="edit-mgr"><button class="save-field-btn" onclick="saveField('ReportsTo','edit-mgr')">Save</button><div class="save-result" id="save-mgr"></div></div>
           <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
+
+          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.4rem">Onboarding details</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit and re-save the employee's onboarding information. Saving updates all fields below.</div>
+
+            <div class="field-row">
+              <div class="field-group"><label>Title</label><select class="field-input" id="ob-title"><option value="">—</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option><option>Dr</option><option>Prof</option></select></div>
+              <div class="field-group"><label>Initials</label><input type="text" class="field-input" id="ob-initials"></div>
+            </div>
+            <div class="field-group"><label>Preferred name</label><input type="text" class="field-input" id="ob-preferred"></div>
+            <div class="field-row">
+              <div class="field-group"><label>Gender</label><select class="field-input" id="ob-gender"><option value="">—</option><option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option></select></div>
+              <div class="field-group"><label>Race</label><select class="field-input" id="ob-race"><option value="">—</option><option>African</option><option>Coloured</option><option>Indian</option><option>White</option><option>Other</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field-group"><label>Home language</label><input type="text" class="field-input" id="ob-lang"></div>
+              <div class="field-group"><label>Nationality</label><input type="text" class="field-input" id="ob-nat" placeholder="South African"></div>
+            </div>
+            <div class="field-row">
+              <div class="field-group"><label>Home number</label><input type="text" class="field-input" id="ob-home"></div>
+              <div class="field-group"><label>Tax number</label><input type="text" class="field-input" id="ob-tax"></div>
+            </div>
+
+            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin:1rem 0 .5rem">Emergency contact</div>
+            <div class="field-row">
+              <div class="field-group"><label>Full name</label><input type="text" class="field-input" id="ob-ecname"></div>
+              <div class="field-group"><label>Relationship</label><input type="text" class="field-input" id="ob-ecrel"></div>
+            </div>
+            <div class="field-group"><label>Contact number</label><input type="text" class="field-input" id="ob-ecnum"></div>
+
+            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin:1rem 0 .5rem">Banking details</div>
+            <div class="field-row">
+              <div class="field-group"><label>Bank name</label><input type="text" class="field-input" id="ob-bank"></div>
+              <div class="field-group"><label>Account holder</label><input type="text" class="field-input" id="ob-holder"></div>
+            </div>
+            <div class="field-row">
+              <div class="field-group"><label>Account type</label><select class="field-input" id="ob-acctype"><option value="">—</option><option>Savings</option><option>Cheque / Current</option><option>Transmission</option></select></div>
+              <div class="field-group"><label>Account number</label><input type="text" class="field-input" id="ob-accnum"></div>
+            </div>
+
+            <button class="btn btn-primary btn-block" style="margin-top:.75rem" onclick="saveManualOnboarding()" id="btnManualOb">Save onboarding details</button>
+            <div id="manualObResult" style="font-size:12px;text-align:center;min-height:16px;margin-top:.5rem"></div>
+          </div>
+
           <a class="btn btn-danger btn-block" href="../offboarding/" style="text-decoration:none;margin-top:1rem">⚠ Offboard this employee →</a>
         </div>
 
@@ -311,6 +355,7 @@ tr.selected td{background:#edffd6}
 var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
 var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
+var FORM_SUBMIT_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca3acd1371c642deb0e3244b96a47875/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4GrSOQGwS9HY-OJAZKI6W_-m4u8ZtwpbUHwkj939AIU';
 var SEND_FORM_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c174dcf2a6e04fab97dac9f1dbac04b7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-LE7GTa6KDsoNzgjFn23JIj6UlnOrMl6X3x7g9Q35J0';
 var SAVE_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f9acaa0f0254a72a662cbf4541f4da3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6K_5uXvdvOz7pFfDeQtwhdqfRSxmxz1Ib_sfZHHSD4k';
 var SAVE_DISC_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8ef7ff35f9f45aea1b8844dff8acdf4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TB2XdL0cTuf6xXNy3QBIbCORYriYOygOVYPx-Bv_03M';
@@ -479,6 +524,19 @@ function selectEmployee(id){
   gi('edit-wemail').value=e.WorkEmail||'';
   gi('edit-mgr').value=e.ReportsTo||'';
   gi('edit-status').value=e.Status||'Contract Signed';
+  // Prefill onboarding edit fields from employee record (emergency/banking filled async from detail)
+  gi('ob-title').value=e.Title||'';
+  gi('ob-initials').value=e.Initials||'';
+  gi('ob-preferred').value=e.PreferredName||'';
+  gi('ob-gender').value=e.Gender||'';
+  gi('ob-race').value=e.Race||'';
+  gi('ob-lang').value=e.HomeLanguage||'';
+  gi('ob-nat').value=e.Nationality||'';
+  gi('ob-home').value=e.AlternatePhone||'';
+  gi('ob-tax').value=e.TaxNumber||'';
+  gi('ob-ecname').value=''; gi('ob-ecrel').value=''; gi('ob-ecnum').value='';
+  gi('ob-bank').value=''; gi('ob-holder').value=''; gi('ob-acctype').value=''; gi('ob-accnum').value='';
+  gi('manualObResult').textContent='';
 
   // Leave (show entitlement immediately, refine with detail)
   renderLeave(e,null);
@@ -508,6 +566,12 @@ function selectEmployee(id){
     if(detail.emergency_phone)gi('d-ecnum').textContent=detail.emergency_phone;
     if(detail.bank_name)      gi('d-bank').textContent=detail.bank_name;
     if(detail.account_number) gi('d-accnum').textContent=detail.account_number;
+    // Also fill the editable fields on the Edit tab
+    if(detail.emergency_name) gi('ob-ecname').value=detail.emergency_name;
+    if(detail.emergency_rel)  gi('ob-ecrel').value=detail.emergency_rel;
+    if(detail.emergency_phone)gi('ob-ecnum').value=detail.emergency_phone;
+    if(detail.bank_name)      gi('ob-bank').value=detail.bank_name;
+    if(detail.account_number) gi('ob-accnum').value=detail.account_number;
     if(detail.active_disciplinary&&parseInt(detail.active_disciplinary)>0){
       gi('discClear').style.display='none';
       gi('discList').innerHTML='<div style="background:#fdf0ef;border:1px solid '+'#c0392b;border-radius:8px;padding:1rem;color:#c0392b;font-size:12px">⚠️ '+detail.active_disciplinary+' active disciplinary record(s). Open full disciplinary management to view details.</div>';
@@ -544,7 +608,49 @@ function saveField(field,inputId){
   .catch(function(){resultEl.textContent='✗ Failed';resultEl.style.color='var(--red)';});
 }
 
-// ── MARK ACTIVE ──
+// ── MANUAL ONBOARDING CAPTURE (Employee Form Submit flow) ──
+function saveManualOnboarding(){
+  if(!selectedEmp)return;
+  var btn=gi('btnManualOb'), res=gi('manualObResult');
+  btn.disabled=true; btn.textContent='Saving…';
+  var payload={
+    action:'employee_form_submitted',
+    employee_id:selectedEmp.EmployeeID,
+    token:'MANUAL-'+Date.now(),
+    title:gi('ob-title').value, initials:gi('ob-initials').value,
+    preferred_name:gi('ob-preferred').value,
+    date_of_birth:'',
+    gender:gi('ob-gender').value, race:gi('ob-race').value,
+    home_language:gi('ob-lang').value,
+    nationality:gi('ob-nat').value||'South African',
+    home_number:gi('ob-home').value,
+    emergency_name:gi('ob-ecname').value,
+    emergency_number:gi('ob-ecnum').value,
+    emergency_relationship:gi('ob-ecrel').value,
+    bank_name:gi('ob-bank').value,
+    account_holder:gi('ob-holder').value,
+    account_type:gi('ob-acctype').value,
+    account_number:gi('ob-accnum').value,
+    tax_number:gi('ob-tax').value,
+    submitted_at:new Date().toLocaleDateString('en-ZA'),
+    signature_data:'Captured manually by HR'
+  };
+  fetch(FORM_SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){
+    if(r.ok||r.status===202){
+      res.innerHTML='<span style="color:var(--green-dark)">✓ Onboarding details saved</span>';
+      selectedEmp.Title=payload.title; selectedEmp.Initials=payload.initials;
+      selectedEmp.PreferredName=payload.preferred_name; selectedEmp.Gender=payload.gender;
+      selectedEmp.Race=payload.race; selectedEmp.HomeLanguage=payload.home_language;
+      selectedEmp.Nationality=payload.nationality; selectedEmp.AlternatePhone=payload.home_number;
+      selectedEmp.TaxNumber=payload.tax_number;
+      btn.textContent='Save onboarding details'; btn.disabled=false;
+      renderStats(); renderTable(allEmployees);
+      setTimeout(function(){selectEmployee(selectedEmp.EmployeeID);},1500);
+    } else { throw new Error('Failed'); }
+  })
+  .catch(function(){res.innerHTML='<span style="color:var(--red)">✗ Save failed — try again</span>';btn.textContent='Save onboarding details';btn.disabled=false;});
+}
 function markActive(){
   if(!selectedEmp)return;
   if(!confirm('Mark '+selectedEmp.FirstName+' as Active? This confirms they have started work.'))return;
