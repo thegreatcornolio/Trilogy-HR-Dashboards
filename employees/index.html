@@ -460,6 +460,31 @@ function calcLeave(e,detail){
 }
 
 // ── SELECT ──
+function recomputeMissing(e, detail){
+  // Personal fields from employee record
+  var missing=[];
+  if(!e.TaxNumber)missing.push('Tax number');
+  if(!e.Gender)missing.push('Gender');
+  if(!e.Race)missing.push('Race');
+  // Banking + emergency from detail (may not have loaded yet)
+  var bankMissing = !detail || !detail.bank_name || !detail.account_number;
+  var emergMissing = !detail || !detail.emergency_name || !detail.emergency_phone;
+  if(bankMissing) missing.push('banking details');
+  if(emergMissing) missing.push('emergency contact');
+
+  var anyMissing = missing.length>0;
+  if(anyMissing){
+    gi('missingCard').style.display='block';
+    gi('onboardedBadge').style.display='none';
+    var prefix = (e.Status==='Active') ? 'This employee is Active but their onboarding details are incomplete. ' : '';
+    var bankNote = !bankMissing ? '' : ' <strong>Banking is required before an employee can be made Active.</strong>';
+    gi('missingList').innerHTML = prefix + 'Still required: ' + missing.join(', ') + '.' + bankNote;
+  } else {
+    gi('missingCard').style.display='none';
+    gi('onboardedBadge').style.display='block';
+  }
+}
+
 function selectEmployee(id){
   var e=allEmployees.find(function(x){return x.EmployeeID===id;});
   if(!e)return;
@@ -499,21 +524,8 @@ function selectEmployee(id){
   gi('d-ecname').textContent='—'; gi('d-ecrel').textContent='—'; gi('d-ecnum').textContent='—';
   gi('d-bank').textContent='—'; gi('d-accnum').textContent='—';
 
-  // Missing info / onboarded badge
-  var missing=[];
-  if(!e.Title)missing.push('Title');
-  if(!e.Gender)missing.push('Gender');
-  if(!e.Race)missing.push('Race');
-  if(!e.HomeLanguage)missing.push('Home language');
-  if(!e.TaxNumber)missing.push('Tax number');
-  if(st==='tobe'){
-    gi('missingCard').style.display='block';
-    gi('onboardedBadge').style.display='none';
-    gi('missingList').innerHTML=missing.length?'Still required: '+missing.join(', ')+', emergency contact, banking details':'Awaiting employee onboarding form completion';
-  } else {
-    gi('missingCard').style.display='none';
-    gi('onboardedBadge').style.display='block';
-  }
+  // Missing info recomputed (also re-run after detail fetch for banking/emergency)
+  recomputeMissing(e, null);
 
   // Activate button — show if onboarded but not active
   gi('btnActivate').style.display=(st==='onboarded')?'flex':'none';
@@ -572,6 +584,8 @@ function selectEmployee(id){
     if(detail.emergency_phone)gi('ob-ecnum').value=detail.emergency_phone;
     if(detail.bank_name)      gi('ob-bank').value=detail.bank_name;
     if(detail.account_number) gi('ob-accnum').value=detail.account_number;
+    // Re-evaluate missing info now that banking/emergency are known
+    recomputeMissing(e, detail);
     if(detail.active_disciplinary&&parseInt(detail.active_disciplinary)>0){
       gi('discClear').style.display='none';
       gi('discList').innerHTML='<div style="background:#fdf0ef;border:1px solid '+'#c0392b;border-radius:8px;padding:1rem;color:#c0392b;font-size:12px">⚠️ '+detail.active_disciplinary+' active disciplinary record(s). Open full disciplinary management to view details.</div>';
@@ -602,6 +616,12 @@ function switchTab(tab,btn){
 function saveField(field,inputId){
   if(!selectedEmp)return;
   var val=gi(inputId).value.trim();
+  // Block setting Status to Active if banking is incomplete
+  if(field==='Status' && val==='Active' && !bankingComplete()){
+    alert('Cannot set status to Active — banking details are missing.\n\nCapture the bank name and account number in the onboarding details below before activating.');
+    gi(inputId).value=selectedEmp.Status||'Contract Signed';
+    return;
+  }
   var resultEl=gi('save-'+inputId.replace('edit-',''));
   fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:field,value:val})})
   .then(function(r){if(r.ok||r.status===202){resultEl.textContent='✓ Saved';resultEl.style.color='var(--green-dark)';selectedEmp[field]=val;setTimeout(function(){resultEl.textContent='';},3000);}else{throw new Error('Failed');}})
@@ -651,8 +671,16 @@ function saveManualOnboarding(){
   })
   .catch(function(){res.innerHTML='<span style="color:var(--red)">✗ Save failed — try again</span>';btn.textContent='Save onboarding details';btn.disabled=false;});
 }
+function bankingComplete(){
+  return currentDetail && currentDetail.bank_name && (''+currentDetail.bank_name).trim()!=='' &&
+         currentDetail.account_number && (''+currentDetail.account_number).trim()!=='';
+}
 function markActive(){
   if(!selectedEmp)return;
+  if(!bankingComplete()){
+    alert('Cannot mark '+selectedEmp.FirstName+' as Active — banking details are missing.\n\nBanking details (bank name and account number) must be captured before an employee can be made Active. Complete them in the Edit tab first.');
+    return;
+  }
   if(!confirm('Mark '+selectedEmp.FirstName+' as Active? This confirms they have started work.'))return;
   fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'Status',value:'Active'})})
   .then(function(){selectedEmp.Status='Active';gi('d-status').textContent='Active';gi('btnActivate').style.display='none';renderStats();renderTable(allEmployees);selectEmployee(selectedEmp.EmployeeID);})
