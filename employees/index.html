@@ -444,7 +444,13 @@ function selectEmployee(id){
   fetch(GET_DETAIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:e.EmployeeID})})
   .then(function(r){return r.json();})
   .then(function(d){
-    var detail=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var raw=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    // GET_DETAIL is a single-row SELECT — unwrap ResultSets.Table1[0] to a flat object
+    var detail=raw;
+    var rs=raw&&(raw.ResultSets||raw.resultSets||raw.resultsets);
+    if(rs){ var t=rs.Table1||rs.table1; if(Array.isArray(t)&&t.length) detail=t[0]; }
+    else if(raw&&Array.isArray(raw.Table1)&&raw.Table1.length) detail=raw.Table1[0];
+    else if(Array.isArray(raw)&&raw.length) detail=raw[0];
     currentDetail=detail;
     renderLeave(e,detail);
     // Populate emergency + banking fields from detail (they live in related tables)
