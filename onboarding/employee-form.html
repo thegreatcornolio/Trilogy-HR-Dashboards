@@ -65,10 +65,13 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
         <div class="hero-title">Employee Information</div>
         <div class="hero-sub">Welcome to Trilogy BPO, <strong id="welcomeName"></strong>! Please complete your details below to finalise your onboarding. This should take about 5 minutes.</div>
       </div>
+      <div id="onlyMissingNote" style="display:none;margin-top:1rem;background:var(--green-light,#edffd6);border:1px solid var(--green,#4AFD0E);border-radius:10px;padding:.75rem 1rem;font-size:13px;color:var(--green-dark,#2a8a00)">
+        ✓ We already have some of your details on file. We've only shown the sections that still need completing.
+      </div>
     </div>
 
     <!-- PERSONAL -->
-    <div class="card">
+    <div class="card" id="sec-personal">
       <div class="section-label">Personal details</div>
       <div class="grid3">
         <div class="field"><label>Title <span class="req">*</span></label>
@@ -111,7 +114,7 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
     </div>
 
     <!-- EMERGENCY -->
-    <div class="card">
+    <div class="card" id="sec-emergency">
       <div class="section-label">Emergency contact</div>
       <div class="grid2">
         <div class="field"><label>Full name <span class="req">*</span></label><input type="text" id="ecName" placeholder="Emergency contact name"></div>
@@ -121,7 +124,7 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
     </div>
 
     <!-- BANKING -->
-    <div class="card">
+    <div class="card" id="sec-banking">
       <div class="section-label">Banking details</div>
       <div class="hint" style="margin-bottom:1rem">Your salary will be paid into this account. Please ensure all details are correct.</div>
       <div class="grid2">
@@ -139,7 +142,7 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
     </div>
 
     <!-- STATUTORY -->
-    <div class="card">
+    <div class="card" id="sec-statutory">
       <div class="section-label">Statutory details</div>
       <div class="field"><label>Tax number <span class="req">*</span></label><input type="text" id="taxNumber" placeholder="SARS tax reference number"><div class="hint">If you don't have one, enter "Applied for" and we will assist you</div></div>
     </div>
@@ -193,10 +196,63 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
 <script>
 var SUBMIT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca3acd1371c642deb0e3244b96a47875/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4GrSOQGwS9HY-OJAZKI6W_-m4u8ZtwpbUHwkj939AIU';
 var TOKEN_CHECK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/038f0669bf7d479ea7bd8a67430c0b46/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=E_6JhcrOJ_Y3HHwN6RHXUMcr_zpiJlvsE_XuSN5SqiQ';
+var DETAIL_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 
 function gi(id){ return document.getElementById(id); }
 function gp(k){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(k)||''); }
 function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+// Fetch current data and hide sections that are already complete,
+// so the employee only fills in what's missing.
+var EXISTING = {};
+function hideCompletedSections(){
+  if(!D.ref) return;
+  fetch(DETAIL_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ref:D.ref}) })
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    var d={};
+    try {
+      d = JSON.parse(txt);
+      if(d.body){ d = typeof d.body==='string'?JSON.parse(d.body):d.body; }
+      var rs = d.ResultSets||d.resultSets||d.resultsets;
+      if(rs){ var t=rs.Table1||rs.table1; if(Array.isArray(t)&&t.length) d=t[0]; }
+      else if(Array.isArray(d.Table1)&&d.Table1.length) d=d.Table1[0];
+      else if(Array.isArray(d)&&d.length) d=d[0];
+    } catch(e){ return; }
+    EXISTING = d || {};
+
+    var nonEmpty=function(v){ return v!==undefined && v!==null && (''+v).trim()!==''; };
+    var hidden=[];
+
+    // Banking — hide if bank name + account number present
+    if(nonEmpty(d.bank_name) && nonEmpty(d.account_number)){
+      var b=gi('sec-banking'); if(b){ b.style.display='none'; clearReq(b); hidden.push('banking'); }
+    }
+    // Emergency — hide if name + number present
+    if(nonEmpty(d.emergency_name) && nonEmpty(d.emergency_phone)){
+      var e=gi('sec-emergency'); if(e){ e.style.display='none'; clearReq(e); hidden.push('emergency'); }
+    }
+    // Statutory (tax) — hide if tax_number present
+    if(nonEmpty(d.tax_number)){
+      var s=gi('sec-statutory'); if(s){ s.style.display='none'; clearReq(s); hidden.push('statutory'); }
+    }
+    // Personal — hide if the key personal fields are present
+    if(nonEmpty(d.gender) && nonEmpty(d.race) && nonEmpty(d.home_language) && nonEmpty(d.title)){
+      var p=gi('sec-personal'); if(p){ p.style.display='none'; clearReq(p); hidden.push('personal'); }
+    }
+
+    if(hidden.length){
+      var note=gi('onlyMissingNote');
+      if(note) note.style.display='block';
+    }
+  })
+  .catch(function(){ /* on error, show full form */ });
+}
+
+// Remove required markers + mark inputs in a hidden section as not-required
+function clearReq(sectionEl){
+  sectionEl.setAttribute('data-skip','1');
+}
 
 var D = {
   fn: gp('fn'), ln: gp('ln'), id: gp('id'), mob: gp('mob'),
@@ -264,7 +320,7 @@ if(D.ref){
       used = (v === 'used' || v === 'true');
     } catch(e){ console.error(e); }
     if(used){ gi('expiredScreen').style.display = 'block'; }
-    else { gi('mainForm').style.display = 'block'; }
+    else { gi('mainForm').style.display = 'block'; hideCompletedSections(); }
   })
   .catch(function(){ gi('loadingScreen').style.display = 'none'; gi('mainForm').style.display = 'block'; });
 } else {
@@ -288,6 +344,13 @@ window.clearSig=function(){ctx.clearRect(0,0,canvas.width,canvas.height);hasSig=
 window.submitForm=function(){
   if(sessionStorage.getItem('empform_used_'+D.ref)){ alert('This form has already been submitted.'); return; }
 
+  // Skip required fields whose section is hidden (already complete)
+  function fieldActive(id){
+    var el=gi(id); if(!el) return false;
+    var sec=el.closest('.card');
+    if(sec && sec.getAttribute('data-skip')==='1') return false;
+    return true;
+  }
   var required = [
     ['title','Title'],['initials','Initials'],['gender','Gender'],['race','Race'],
     ['homeLanguage','Home language'],['ecName','Emergency contact name'],
@@ -296,6 +359,7 @@ window.submitForm=function(){
     ['accountNumber','Account number'],['taxNumber','Tax number']
   ];
   for(var i=0;i<required.length;i++){
+    if(!fieldActive(required[i][0])) continue;
     if(!gi(required[i][0]).value.trim()){ alert('Please complete: '+required[i][1]); gi(required[i][0]).focus(); return; }
   }
   if(gi('nationalityField').style.display !== 'none' && !gi('nationality').value.trim()){ alert('Please enter your nationality.'); return; }
@@ -307,6 +371,7 @@ window.submitForm=function(){
   var btn=gi('submitBtn'), lbl=gi('submitLabel'), spin=gi('submitSpinner');
   btn.disabled=true; lbl.style.display='none'; spin.style.display='block';
 
+  var pick=function(formVal, existingVal){ var v=(formVal||'').trim(); return v!==''?v:(existingVal||''); };
   var acceptedAt = new Date().toISOString();
   var payload = {
     action:'employee_form_submitted',
@@ -318,14 +383,14 @@ window.submitForm=function(){
     home_language: gi('homeLanguage').value,
     nationality: gi('nationalityField').style.display !== 'none' ? gi('nationality').value : 'South African',
     home_number: gi('homeNumber').value,
-    emergency_name: gi('ecName').value,
-    emergency_number: gi('ecNumber').value,
-    emergency_relationship: gi('ecRelationship').value,
-    bank_name: gi('bankName').value,
+    emergency_name: pick(gi('ecName').value, EXISTING.emergency_name),
+    emergency_number: pick(gi('ecNumber').value, EXISTING.emergency_phone),
+    emergency_relationship: pick(gi('ecRelationship').value, EXISTING.emergency_rel),
+    bank_name: pick(gi('bankName').value, EXISTING.bank_name),
     account_holder: gi('accountHolder').value,
     account_type: gi('accountType').value,
-    account_number: gi('accountNumber').value,
-    tax_number: gi('taxNumber').value,
+    account_number: pick(gi('accountNumber').value, EXISTING.account_number),
+    tax_number: pick(gi('taxNumber').value, EXISTING.tax_number),
     submitted_at: new Date().toLocaleDateString('en-ZA'),
     accepted: 'yes',
     accepted_at: acceptedAt,
