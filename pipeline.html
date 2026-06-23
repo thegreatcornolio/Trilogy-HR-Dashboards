@@ -174,14 +174,18 @@ function load(){
   gi('stageTitle').textContent=STAGES[STAGE].title;
   gi('stageSub').textContent=STAGES[STAGE].sub;
   fetch(GET_BY_STAGE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage:STAGE})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var raw=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var raw;
+    if(!txt || !txt.trim()){ PEOPLE=[]; render(); return; }
+    try { raw = JSON.parse(txt); }
+    catch(e){ PEOPLE=[]; render(); return; }
+    if(raw && raw.body){ raw = typeof raw.body==='string' ? (raw.body.trim()?JSON.parse(raw.body):[]) : raw.body; }
     var rows=raw;
     var rs=raw&&(raw.ResultSets||raw.resultSets);
     if(rs){var t=rs.Table1||rs.table1; rows=Array.isArray(t)?t:[];}
     else if(raw&&Array.isArray(raw.Table1)) rows=raw.Table1;
-    else if(!Array.isArray(raw)) rows=(raw.value&&Array.isArray(raw.value))?raw.value:[];
+    else if(!Array.isArray(raw)) rows=(raw&&raw.value&&Array.isArray(raw.value))?raw.value:[];
     PEOPLE=rows||[];
     render();
   })
