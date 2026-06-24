@@ -239,8 +239,7 @@ function hrLogin(){
     <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
     <div class="hero-stats">
       <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
-      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees</div></div>
-      <div class="stat"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total in system</div></div>
+      <a href="pipeline.html?stage=active" class="stat" style="text-decoration:none;cursor:pointer"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees →</div></a>
     </div>
   </div>
 </div>
@@ -250,10 +249,14 @@ function hrLogin(){
   <div style="max-width:1100px;margin:0 auto">
     <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-      <div class="pipe-step"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step last"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></div>
+      <a href="pipeline.html?stage=offer_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=offer_signed" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=contract_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=contract_signed" class="pipe-step last" style="text-decoration:none"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></a>
+    </div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.08)">
+      <a href="pipeline.html?stage=onboarding_needed" class="stat" style="text-decoration:none;cursor:pointer;border-left-color:#e67e22"><div class="stat-num" id="statToOnboard" style="color:#e67e22">—</div><div class="stat-label">To be onboarded →</div></a>
+      <div class="stat" style="border-left-color:rgba(255,255,255,.3)"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total in system</div></div>
     </div>
   </div>
   </div>
@@ -729,12 +732,12 @@ window.saveToGitHub=function(type){
   var res=document.getElementById(resId);
   btn.textContent='Saving…'; btn.disabled=true; res.textContent='';
 
-  fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
+  fetch('https://api.github.com/repos/thegreatcornolio/Trilogy-HR-Dashboards/contents/'+filename,{
     headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
   })
   .then(function(r){return r.json();})
   .then(function(data){
-    return fetch('https://api.github.com/repos/thegreatcornolio/trilogy-hr/contents/'+filename,{
+    return fetch('https://api.github.com/repos/thegreatcornolio/Trilogy-HR-Dashboards/contents/'+filename,{
       method:'PUT',
       headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
       body:JSON.stringify({message:'Update '+filename+' via HR Portal',content:encoded,sha:data.sha})
@@ -767,6 +770,7 @@ function loadStats(){
       document.getElementById('statOfferSigned').textContent=typeof data.offer_signed!=='undefined'?data.offer_signed:0;
       document.getElementById('statContractSent').textContent=typeof data.contract_sent!=='undefined'?data.contract_sent:0;
       document.getElementById('statContractSigned').textContent=typeof data.contract_signed!=='undefined'?data.contract_signed:0;
+      var toOnb=document.getElementById('statToOnboard'); if(toOnb) toOnb.textContent=typeof data.to_onboard!=='undefined'?data.to_onboard:0;
     })
     .catch(function(){
       document.getElementById('statActive').textContent='0';

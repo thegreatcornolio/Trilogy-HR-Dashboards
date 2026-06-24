@@ -241,6 +241,18 @@ function hrLogin(){
       <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
       <a href="pipeline.html?stage=active" class="stat" style="text-decoration:none;cursor:pointer"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees →</div></a>
     </div>
+    <div style="margin-top:1.75rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:rgba(255,255,255,.06);border:1px solid rgba(74,253,14,.3);border-radius:12px;padding:1rem 1.25rem">
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:.2rem">📲 Send this week's #vibecheck</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5)">Every Thursday — or whenever you're ready. Goes to all active @trilogybpo.com employees.</div>
+        </div>
+        <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
+          <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
+        </button>
+      </div>
+      <div id="sendVibeResult" style="font-size:12px;margin-top:.5rem;min-height:16px;text-align:right;color:rgba(255,255,255,.6)"></div>
+    </div>
   </div>
 </div>
 
@@ -339,25 +351,12 @@ function hrLogin(){
       <div id="saveResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
     </div>
     <div class="settings-card">
-      <h3>CSV import</h3>
-      <p>Download the blank template, fill it in Excel with your managers, then upload it here. Once imported click <strong>Save to GitHub</strong> on the left.</p>
-      <button class="btn-full" onclick="downloadTemplate()">⬇ Download CSV template</button>
-      <div class="divider-label">upload completed CSV</div>
-      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
-        <div class="uz-icon">📂</div>
-        <div class="uz-text" id="uzText">Click to select your completed CSV file</div>
-        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(this)">
-      </div>
-      <div class="import-result" id="importResult"></div>
-      <div id="previewWrap" style="display:none">
-        <table class="preview-table"><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody id="previewBody"></tbody></table>
-        <button class="btn-full green" onclick="applyImport()">✓ Apply — then Save to GitHub</button>
-      </div>
-      <div class="divider-label" style="margin-top:1rem">github settings</div>
+      <h3>GitHub settings</h3>
+      <p>Your Personal Access Token is used by all <strong>Save to GitHub</strong> buttons on this page. Stored in your browser only.</p>
       <div style="margin-bottom:6px">
         <label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">GitHub Personal Access Token</label>
         <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;background:var(--offwhite);color:var(--text)">
-        <div style="font-size:10px;color:var(--text3);margin-top:3px">Stored in your browser only. Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HR+Portal" target="_blank" style="color:#515151">Generate one here →</a></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HR+Portal" target="_blank" style="color:#515151">Generate one here →</a></div>
       </div>
     </div>
   </div>
@@ -379,80 +378,8 @@ function hrLogin(){
       </div>
       <div id="saveCampResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
     </div>
-    <div class="settings-card">
-      <h3>CSV import</h3>
-      <p>Download the blank template, add your campaign names, then upload. Once imported click <strong>Save to GitHub</strong> on the left.</p>
-      <button class="btn-full" onclick="downloadCampTemplate()">⬇ Download CSV template</button>
-      <div class="divider-label">upload completed CSV</div>
-      <div class="upload-zone" onclick="document.getElementById('campCsvFile').click()">
-        <div class="uz-icon">📂</div>
-        <div class="uz-text" id="campUzText">Click to select your completed CSV file</div>
-        <input type="file" id="campCsvFile" accept=".csv" style="display:none" onchange="handleCampCSV(this)">
-      </div>
-      <div class="import-result" id="campImportResult"></div>
-      <div id="campPreviewWrap" style="display:none">
-        <table class="preview-table"><thead><tr><th>Campaign / Project</th></tr></thead><tbody id="campPreviewBody"></tbody></table>
-        <button class="btn-full green" onclick="applyCampImport()">✓ Apply — then Save to GitHub</button>
-      </div>
-      <div class="divider-label" style="margin-top:1rem">note</div>
-      <p style="font-size:11px;color:var(--text3);line-height:1.6">Uses the same GitHub token entered in the Managers section above.</p>
-    </div>
   </div>
 
-  <!-- VIBECHECK DEPARTMENTS -->
-  <div class="section-head">
-    <h2>#vibecheck</h2>
-    <div class="section-line"></div>
-    <a href="surveys/" class="vibecheck-link" target="_blank">Open survey ↗</a>
-  </div>
-  <!-- VIBECHECK SEND BUTTON -->
-  <div class="settings-card" style="margin-bottom:1rem;background:var(--navy);border-color:rgba(74,253,14,.4)">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h3 style="color:#fff;font-size:15px">📲 Send this week's #vibecheck</h3>
-        <p style="color:rgba(255,255,255,.5);margin-bottom:0">Sends an email to all active employees with a @trilogybpo.com address. Every Thursday — or whenever you're ready.</p>
-      </div>
-      <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
-        <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
-      </button>
-    </div>
-    <div id="sendVibeResult" style="font-size:12px;margin-top:.75rem;min-height:16px;text-align:right;color:rgba(255,255,255,.6)"></div>
-  </div>
-
-  <div class="settings-grid">
-    <div class="settings-card">
-      <h3>Current campaigns / departments</h3>
-      <p>Add or remove campaigns below. Click <strong>Save to GitHub</strong> to update the dropdown in the #vibecheck survey instantly.</p>
-      <div class="dept-list" id="deptList"></div>
-      <div class="add-row">
-        <input type="text" id="newDept" placeholder="Campaign or department name">
-        <button class="btn-navy" onclick="addDept()">Add</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn-full" onclick="exportDeptJSON()" style="margin-bottom:0">⬇ Download departments.json</button>
-        <button class="btn-full primary" onclick="saveToGitHub('departments')" style="margin-bottom:0" id="saveDeptBtn">☁ Save to GitHub</button>
-      </div>
-      <div id="saveDeptResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
-    </div>
-    <div class="settings-card">
-      <h3>CSV import</h3>
-      <p>Download the blank template, add your campaign names, then upload. Once imported click <strong>Save to GitHub</strong> on the left.</p>
-      <button class="btn-full" onclick="downloadDeptTemplate()">⬇ Download CSV template</button>
-      <div class="divider-label">upload completed CSV</div>
-      <div class="upload-zone" onclick="document.getElementById('deptCsvFile').click()">
-        <div class="uz-icon">📂</div>
-        <div class="uz-text" id="deptUzText">Click to select your completed CSV file</div>
-        <input type="file" id="deptCsvFile" accept=".csv" style="display:none" onchange="handleDeptCSV(this)">
-      </div>
-      <div class="import-result" id="deptImportResult"></div>
-      <div id="deptPreviewWrap" style="display:none">
-        <table class="preview-table"><thead><tr><th>Campaign / Department</th></tr></thead><tbody id="deptPreviewBody"></tbody></table>
-        <button class="btn-full green" onclick="applyDeptImport()">✓ Apply — then Save to GitHub</button>
-      </div>
-      <div class="divider-label" style="margin-top:1rem">note</div>
-      <p style="font-size:11px;color:var(--text3);line-height:1.6">Uses the same GitHub token entered in the Managers section above. Make sure it's filled in before saving.</p>
-    </div>
-  </div>
 
 </div>
 
@@ -466,7 +393,6 @@ function hrLogin(){
 <script>
 var BASE = '';
 var MANAGERS_URL = BASE + '/managers.json';
-var DEPARTMENTS_URL = BASE + '/departments.json';
 var CAMPAIGNS_URL = BASE + '/campaigns.json';
 
 /* ── EMPLOYEES ── */
@@ -508,7 +434,6 @@ window.doLookup = function(){
 
 /* ── MANAGERS ── */
 var staffData=[];
-var importBuffer=[];
 
 function loadManagers(){
   fetch(MANAGERS_URL+'?v='+Date.now())
@@ -540,111 +465,19 @@ window.addStaff=function(){
   document.getElementById('newName').value=''; document.getElementById('newEmail').value='';
   renderStaff();
 };
-window.removeStaff=function(i){staffData.splice(i,1);renderStaff();};
+window.removeStaff=function(i){
+  var name=staffData[i]?staffData[i].name:'this manager';
+  if(!confirm('Remove '+name+'?\n\nThis is permanent and will update the reporting-to dropdown for everyone immediately. Are you sure?'))return;
+  staffData.splice(i,1);renderStaff();
+};
 window.exportJSON=function(){
   var json=JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2);
   var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='managers.json'; a.click();
 };
-window.downloadTemplate=function(){
-  var csv='name,email\nTanya Phillips,tanyap@trilogybpo.com\nRudi Jacobs,rudij@trilogybpo.com\n';
-  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='managers_template.csv'; a.click();
-};
-window.handleCSV=function(input){
-  var file=input.files[0]; if(!file)return;
-  document.getElementById('uzText').textContent='📄 '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(Boolean);
-    importBuffer=[];
-    lines.forEach(function(line,i){
-      if(i===0&&line.toLowerCase().includes('name'))return;
-      var parts=line.split(',');
-      var n=(parts[0]||'').replace(/"/g,'').trim(), em=(parts[1]||'').replace(/"/g,'').trim();
-      if(n&&em) importBuffer.push({name:n,email:em});
-    });
-    if(!importBuffer.length){document.getElementById('importResult').textContent='No valid rows found.';document.getElementById('previewWrap').style.display='none';return;}
-    document.getElementById('importResult').textContent=importBuffer.length+' manager(s) found — preview below:';
-    var tbody=document.getElementById('previewBody'); tbody.innerHTML='';
-    importBuffer.forEach(function(m){var tr=document.createElement('tr');tr.innerHTML='<td>'+m.name+'</td><td>'+m.email+'</td>';tbody.appendChild(tr);});
-    document.getElementById('previewWrap').style.display='block';
-  };
-  reader.readAsText(file);
-};
-window.applyImport=function(){
-  staffData=importBuffer.slice(); importBuffer=[];
-  renderStaff();
-  document.getElementById('importResult').textContent='✓ '+staffData.length+' managers imported. Click Save to GitHub to publish.';
-  document.getElementById('previewWrap').style.display='none';
-  document.getElementById('uzText').textContent='Click to select your completed CSV file';
-  document.getElementById('csvFile').value='';
-};
 
-/* ── DEPARTMENTS ── */
-var deptData=[];
-var deptImportBuffer=[];
+/* ── DEPARTMENTS ──  (removed — departments UI removed) */
 
-function loadDepartments(){
-  fetch(DEPARTMENTS_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){deptData=d;renderDepts();})
-    .catch(function(){deptData=[{name:'NADClinic'}];renderDepts();});
-}
 
-function renderDepts(){
-  var list=document.getElementById('deptList'); list.innerHTML='';
-  deptData.forEach(function(d,i){
-    var r=document.createElement('div'); r.className='dept-row';
-    r.innerHTML='<div class="dept-icon">🏷</div>'+
-      '<div class="dept-name">'+d.name+'</div>'+
-      '<button class="dept-rm" onclick="removeDept('+i+')" title="Remove">✕</button>';
-    list.appendChild(r);
-  });
-}
-
-window.addDept=function(){
-  var n=document.getElementById('newDept').value.trim();
-  if(!n){alert('Please enter a campaign or department name.');return;}
-  deptData.push({name:n});
-  document.getElementById('newDept').value='';
-  renderDepts();
-};
-window.removeDept=function(i){deptData.splice(i,1);renderDepts();};
-window.exportDeptJSON=function(){
-  var json=JSON.stringify(deptData,null,2);
-  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='departments.json'; a.click();
-};
-window.downloadDeptTemplate=function(){
-  var csv='department\nNADClinic\n';
-  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='departments_template.csv'; a.click();
-};
-window.handleDeptCSV=function(input){
-  var file=input.files[0]; if(!file)return;
-  document.getElementById('deptUzText').textContent='📄 '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(Boolean);
-    deptImportBuffer=[];
-    lines.forEach(function(line,i){
-      if(i===0&&line.toLowerCase().includes('department'))return;
-      var n=line.replace(/"/g,'').trim();
-      if(n) deptImportBuffer.push({name:n});
-    });
-    if(!deptImportBuffer.length){document.getElementById('deptImportResult').textContent='No valid rows found.';document.getElementById('deptPreviewWrap').style.display='none';return;}
-    document.getElementById('deptImportResult').textContent=deptImportBuffer.length+' campaign(s) found — preview below:';
-    var tbody=document.getElementById('deptPreviewBody'); tbody.innerHTML='';
-    deptImportBuffer.forEach(function(d){var tr=document.createElement('tr');tr.innerHTML='<td>'+d.name+'</td>';tbody.appendChild(tr);});
-    document.getElementById('deptPreviewWrap').style.display='block';
-  };
-  reader.readAsText(file);
-};
-window.applyDeptImport=function(){
-  deptData=deptImportBuffer.slice(); deptImportBuffer=[];
-  renderDepts();
-  document.getElementById('deptImportResult').textContent='✓ '+deptData.length+' campaigns imported. Click Save to GitHub to publish.';
-  document.getElementById('deptPreviewWrap').style.display='none';
-  document.getElementById('deptUzText').textContent='Click to select your completed CSV file';
-  document.getElementById('deptCsvFile').value='';
-};
 
 /* ── CAMPAIGNS ── */
 var campData=[];
@@ -675,42 +508,14 @@ window.addCamp=function(){
   document.getElementById('newCamp').value='';
   renderCamps();
 };
-window.removeCamp=function(i){campData.splice(i,1);renderCamps();};
+window.removeCamp=function(i){
+  var name=campData[i]?campData[i].name:'this campaign';
+  if(!confirm('Remove '+name+'?\n\nThis is permanent and will update the campaign dropdown for everyone immediately. Are you sure?'))return;
+  campData.splice(i,1);renderCamps();
+};
 window.exportCampJSON=function(){
   var json=JSON.stringify(campData,null,2);
   var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='campaigns.json'; a.click();
-};
-window.downloadCampTemplate=function(){
-  var csv='campaign\nUK Telco Campaign\nNADClinic\n';
-  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='campaigns_template.csv'; a.click();
-};
-window.handleCampCSV=function(input){
-  var file=input.files[0]; if(!file)return;
-  document.getElementById('campUzText').textContent='📄 '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(Boolean);
-    campImportBuffer=[];
-    lines.forEach(function(line,i){
-      if(i===0&&line.toLowerCase().includes('campaign'))return;
-      var n=line.replace(/"/g,'').trim();
-      if(n) campImportBuffer.push({name:n});
-    });
-    if(!campImportBuffer.length){document.getElementById('campImportResult').textContent='No valid rows found.';document.getElementById('campPreviewWrap').style.display='none';return;}
-    document.getElementById('campImportResult').textContent=campImportBuffer.length+' campaign(s) found — preview below:';
-    var tbody=document.getElementById('campPreviewBody'); tbody.innerHTML='';
-    campImportBuffer.forEach(function(c){var tr=document.createElement('tr');tr.innerHTML='<td>'+c.name+'</td>';tbody.appendChild(tr);});
-    document.getElementById('campPreviewWrap').style.display='block';
-  };
-  reader.readAsText(file);
-};
-window.applyCampImport=function(){
-  campData=campImportBuffer.slice(); campImportBuffer=[];
-  renderCamps();
-  document.getElementById('campImportResult').textContent='✓ '+campData.length+' campaigns imported. Click Save to GitHub to publish.';
-  document.getElementById('campPreviewWrap').style.display='none';
-  document.getElementById('campUzText').textContent='Click to select your completed CSV file';
-  document.getElementById('campCsvFile').value='';
 };
 
 /* ── SHARED GITHUB SAVE ── */
@@ -815,7 +620,6 @@ window.sendVibecheck = function(){
 
 loadStats();
 loadManagers();
-loadDepartments();
 loadCampaigns();
 </script>
 </body>

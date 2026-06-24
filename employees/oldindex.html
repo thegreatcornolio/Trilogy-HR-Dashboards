@@ -265,9 +265,9 @@ tr.selected td{background:#edffd6}
         <div class="tab-content" id="tab-edit">
           <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit fields — saved immediately to the database.</div>
           <div class="field-group"><label>Job title</label><input type="text" class="field-input" id="edit-jt"><button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button><div class="save-result" id="save-jt"></div></div>
-          <div class="field-group"><label>Campaign</label><select class="field-input" id="edit-camp"><option value="">— select —</option></select><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
+          <div class="field-group"><label>Campaign</label><input type="text" class="field-input" id="edit-camp"><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
           <div class="field-group"><label>Work email</label><input type="email" class="field-input" id="edit-wemail"><button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button><div class="save-result" id="save-wemail"></div></div>
-          <div class="field-group"><label>Reports to</label><select class="field-input" id="edit-mgr"><option value="">— select —</option></select><button class="save-field-btn" onclick="saveManager()">Save</button><div class="save-result" id="save-mgr"></div></div>
+          <div class="field-group"><label>Reports to</label><input type="text" class="field-input" id="edit-mgr"><button class="save-field-btn" onclick="saveField('ReportsTo','edit-mgr')">Save</button><div class="save-result" id="save-mgr"></div></div>
           <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
 
           <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
@@ -352,66 +352,7 @@ tr.selected td{background:#edffd6}
 <div class="footer"><div class="footer-inner"><img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo"><div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div></div></div>
 
 <script>
-var MANAGERS_JSON_URL = '../managers.json';
-var CAMPAIGNS_JSON_URL = '../campaigns.json';
-var managersData = [];
-var campaignsData = [];
-
-function loadManagersJSON(){
-  fetch(MANAGERS_JSON_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){
-      managersData=d;
-      var sel=gi('edit-mgr');
-      sel.innerHTML='<option value="">— select —</option>';
-      d.forEach(function(m){
-        var o=document.createElement('option');
-        o.value=m.name; o.dataset.email=m.email; o.textContent=m.name;
-        sel.appendChild(o);
-      });
-      if(selectedEmp) gi('edit-mgr').value=selectedEmp.ReportsTo||'';
-}
-
-function loadCampaignsJSON(){
-  fetch(CAMPAIGNS_JSON_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){
-      campaignsData=d;
-      var sel=gi('edit-camp');
-      sel.innerHTML='<option value="">— select —</option>';
-      d.forEach(function(c){
-        var o=document.createElement('option');
-        o.value=c.name; o.textContent=c.name;
-        sel.appendChild(o);
-      });
-      if(selectedEmp) gi('edit-camp').value=selectedEmp.Campaign||'';
-}
-
-// Save both ReportsTo (name) and ReportsToEmail in one shot
-function saveManager(){
-  if(!selectedEmp)return;
-  var sel=gi('edit-mgr');
-  var name=sel.value.trim();
-  var opt=sel.options[sel.selectedIndex];
-  var email=(opt&&opt.dataset.email)||'';
-  var resultEl=gi('save-mgr');
-  if(!name){resultEl.textContent='✗ Select a manager';resultEl.style.color='var(--red)';return;}
-  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'ReportsTo',value:name})})
-  .then(function(r){if(!r.ok&&r.status!==202)throw new Error('Failed ReportsTo');
-    return fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'ReportsToEmail',value:email})});
-  })
-  .then(function(r){
-    if(r.ok||r.status===202){
-      resultEl.textContent='✓ Saved';resultEl.style.color='var(--green-dark)';
-      selectedEmp.ReportsTo=name; selectedEmp.ReportsToEmail=email;
-      gi('d-mgr').textContent=name;
-      setTimeout(function(){resultEl.textContent='';},3000);
-    } else {throw new Error('Failed ReportsToEmail');}
-  })
-  .catch(function(){resultEl.textContent='✗ Failed';resultEl.style.color='var(--red)';});
-}
-
-'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
 var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
 var FORM_SUBMIT_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca3acd1371c642deb0e3244b96a47875/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4GrSOQGwS9HY-OJAZKI6W_-m4u8ZtwpbUHwkj939AIU';
@@ -789,8 +730,6 @@ function saveDisc(){
 function closeModal(id){gi(id).classList.remove('open');}
 
 loadEmployees();
-loadManagersJSON();
-loadCampaignsJSON();
 </script>
 </body>
 </html>
