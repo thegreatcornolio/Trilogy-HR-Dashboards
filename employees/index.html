@@ -370,6 +370,8 @@ function loadManagersJSON(){
         sel.appendChild(o);
       });
       if(selectedEmp) gi('edit-mgr').value=selectedEmp.ReportsTo||'';
+    })
+    .catch(function(e){console.warn('Could not load managers.json',e);});
 }
 
 function loadCampaignsJSON(){
@@ -385,6 +387,8 @@ function loadCampaignsJSON(){
         sel.appendChild(o);
       });
       if(selectedEmp) gi('edit-camp').value=selectedEmp.Campaign||'';
+    })
+    .catch(function(e){console.warn('Could not load campaigns.json',e);});
 }
 
 // Save both ReportsTo (name) and ReportsToEmail in one shot
