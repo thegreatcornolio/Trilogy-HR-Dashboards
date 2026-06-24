@@ -86,9 +86,6 @@ tbody tr:hover td{background:#f7f6f2}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hidden{display:none}
 .foot-note{font-size:12px;color:var(--text3);margin-top:1.5rem;text-align:center;line-height:1.6}
-.row-bad td{background:#fcefe9}
-.badge-ok{color:var(--green-dark);font-weight:700;font-family:'Montserrat',sans-serif;font-size:11px}
-.badge-bad{color:var(--red);font-weight:700;font-family:'Montserrat',sans-serif;font-size:11px}
 </style>
 </head>
 <body>
@@ -155,30 +152,6 @@ tbody tr:hover td{background:#f7f6f2}
     </div>
   </div>
 
-  <!-- STEP 3: GENERATE -->
-  <div class="card" id="genCard">
-    <div class="card-head"><div class="step-num">3</div><div class="card-title">Generate the import file for new hires</div></div>
-    <div class="card-body">
-      <p style="color:var(--text2);font-size:13px">Builds a fresh payroll file containing only Active employees who aren't on payroll yet, numbered on from the highest number in the file you uploaded. Rows missing the banking details EFT needs are flagged in red — they're still written to the file, but the payroll system will reject them until completed.</p>
-      <div class="btn-row">
-        <button class="btn" id="genBtn" disabled onclick="generateFile()"><span id="genBtnText">Generate import file</span></button>
-      </div>
-      <div id="genInfo" class="panel panel-info hidden"></div>
-      <div id="genWarn" class="panel panel-warn hidden"></div>
-      <div id="genPreview" class="hidden">
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Name</th><th>ID number</th><th>Bank</th><th>Status</th></tr></thead>
-            <tbody id="genBody"></tbody>
-          </table>
-        </div>
-        <div class="btn-row">
-          <button class="btn" id="dlBtn" onclick="downloadFile()">⬇ Download .xlsx</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="foot-note">
     Reconciliation records who is already on the payroll system.<br>
     Generating the import file for people who are Active but not yet on payroll is the next step.
@@ -190,11 +163,7 @@ tbody tr:hover td{background:#f7f6f2}
 /* ── Reconcile flow endpoint ── */
 const FLOW_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cd5d44a45ee042edb727c9ab044ab39a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5TQjAH5GbyeqEFNazuCRylibhSv_MArgUozlTcDECuY";
 
-/* ── Delta flow endpoint (GET_PAYROLL_DELTA) ── */
-const DELTA_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7545ac56c292489286fc90582821f3ae/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DExtoPveKwQkqHg-PwChuFtU1Dcmh8FEBAxj_mDrcCA";
-
 let records = [];
-let genStart = null, genWidth = 4, builtRows = null;
 
 const drop = document.getElementById('drop');
 const fileInput = document.getElementById('fileInput');
@@ -220,11 +189,6 @@ function handleFile(file) {
   clearError();
   document.getElementById('summary').classList.add('hidden');
   document.getElementById('reconBtn').disabled = true;
-  document.getElementById('genBtn').disabled = true;
-  document.getElementById('genPreview').classList.add('hidden');
-  document.getElementById('genInfo').classList.add('hidden');
-  document.getElementById('genWarn').classList.add('hidden');
-  builtRows = null;
   const reader = new FileReader();
   reader.onload = e => {
     try {
@@ -286,8 +250,6 @@ function renderSummary(fileName) {
   const highest = Math.max.apply(null, nums);
   const width = Math.max.apply(null, records.map(r => r.payrollNumber.length));
   const next = String(highest + 1).padStart(width, '0');
-  genStart = highest + 1;
-  genWidth = width;
 
   document.getElementById('sCount').textContent = records.length;
   document.getElementById('sHighest').textContent = String(highest).padStart(width, '0');
@@ -335,7 +297,6 @@ async function runReconcile() {
     ok.innerHTML = '<div class="panel-title">✓ Reconciled</div>'
       + stamped + ' payroll number' + (stamped === 1 ? '' : 's') + ' recorded against employee records from a file of ' + records.length + '.';
     ok.classList.remove('hidden');
-    document.getElementById('genBtn').disabled = false;
 
     if (orphans.length) {
       const items = orphans.map(o => {
@@ -355,150 +316,6 @@ async function runReconcile() {
     btn.disabled = false;
     txt.textContent = 'Reconcile to database';
   }
-}
-
-/* ── Generate the new-hire import file ── */
-const PAYROLL_META = '{"version":"2.0.0","spec_class":"EmployeeBulkInputSpec","client_id":378652,"custom_inputs":false}';
-const FIELD_NAMES = ['number','first_name','last_name','birthdate','appointment_date','identification_type','id_number','other_number','passport_country_code','income_tax_number','job_title','email','cell_no','payment_method','bank_account.bank_id','bank_account.account_number','bank_account.branch_code','bank_account.account_type','bank_account.holder_relationship','bank_account.holder_name','physical_address.unit_number','physical_address.complex','physical_address.street_number','physical_address.street_or_farm_name','physical_address.suburb_or_district','physical_address.city_or_town','physical_address.code','postal_address.same_as_physical','postal_address.line1','postal_address.line2','postal_address.line3','postal_address.code'];
-const DISPLAY_HEADERS = ['Number','First Names','Last Name','Date of Birth','Date of Appointment','Identification Type','ID Number','Passport / Foreign ID No.','Passport Country Code','Income Tax Number','Job Title','Email','Cellphone No.','Payment method','Bank','Account Number','Branch Code','Account Type','Holder Relationship','Holder name','Unit number','Complex','Street number','Street','Suburb or district','City or town','Code','Same as Residential (mark with X)','Line 1','Line 2','Line 3','Code'];
-
-function pad(n) { return String(n).padStart(genWidth, '0'); }
-
-function dobFromID(id) {
-  if (!/^\d{6}/.test(id)) return '';
-  const yy = parseInt(id.slice(0, 2), 10), mm = id.slice(2, 4), dd = id.slice(4, 6);
-  if (+mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) return '';
-  const pivot = new Date().getFullYear() % 100;
-  const year = yy <= pivot ? 2000 + yy : 1900 + yy;
-  return year + '-' + mm + '-' + dd;
-}
-
-function localCell(m) {
-  let d = String(m || '').replace(/\D/g, '');
-  if (d.startsWith('27')) d = '0' + d.slice(2);
-  else if (d.length === 9 && d[0] !== '0') d = '0' + d;
-  return d;
-}
-
-function dateOnly(s) { return s ? String(s).slice(0, 10) : ''; }
-
-function splitAddress(addr) {
-  let parts = String(addr || '').split(',').map(s => s.trim()).filter(Boolean);
-  let code = '';
-  if (parts.length && /^\d{4}$/.test(parts[parts.length - 1])) code = parts.pop();
-  let street = '', suburb = '', city = '';
-  if (parts.length >= 3) { street = parts[0]; city = parts[parts.length - 1]; suburb = parts.slice(1, -1).join(', '); }
-  else if (parts.length === 2) { street = parts[0]; city = parts[1]; }
-  else if (parts.length === 1) { street = parts[0]; }
-  let streetNo = '';
-  const m = street.match(/^(\d+\s*[A-Za-z]?)\s+(.+)$/);
-  if (m) { streetNo = m[1].trim(); street = m[2].trim(); }
-  return { streetNo: streetNo, street: street, suburb: suburb, city: city, code: code };
-}
-
-function buildRow(r, num) {
-  const id = String(r.IDNumber || '').trim();
-  const addr = splitAddress(r.Address);
-  const acct = String(r.AccountNumber || '').trim();
-  const branch = String(r.BranchCode || '').trim();
-  const issues = [];
-  if (!r.BankName) issues.push('no bank');
-  if (!acct) issues.push('no account number');
-  if (!branch) issues.push('no branch code');
-  const email = String(r.PersonalEmail || r.WorkEmail || '').trim();
-
-  const c = new Array(32).fill('');
-  c[0] = pad(num);
-  c[1] = r.FirstName || '';
-  c[2] = r.LastName || '';
-  c[3] = dobFromID(id);
-  c[4] = dateOnly(r.StartDate);
-  c[5] = 'RSA ID';
-  c[6] = id;
-  c[9] = String(r.TaxNumber || '').trim();
-  c[10] = r.JobTitle || '';
-  c[11] = email;
-  c[12] = localCell(r.Mobile);
-  c[13] = 'EFT';
-  c[14] = r.BankName || '';
-  c[15] = acct;
-  c[16] = branch;
-  c[17] = r.AccountType || '';
-  c[18] = 'Own';
-  c[19] = r.AccountHolder || '';
-  c[22] = addr.streetNo;
-  c[23] = addr.street;
-  c[24] = addr.suburb;
-  c[25] = addr.city;
-  c[26] = addr.code;
-  c[27] = 'X';
-
-  return { num: num, name: ((r.FirstName || '') + ' ' + (r.LastName || '')).trim(), id: id, bank: r.BankName || '', issues: issues, cells: c };
-}
-
-async function generateFile() {
-  const btn = document.getElementById('genBtn'), txt = document.getElementById('genBtnText');
-  const info = document.getElementById('genInfo'), warn = document.getElementById('genWarn'), prev = document.getElementById('genPreview');
-  info.classList.add('hidden'); warn.classList.add('hidden'); prev.classList.add('hidden');
-  btn.disabled = true; txt.innerHTML = '<span class="spinner"></span> Fetching…';
-
-  try {
-    const res = await fetch(DELTA_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-    if (!res.ok) throw new Error('The delta flow returned status ' + res.status + '.');
-    let data = {};
-    try { data = await res.json(); } catch (e) { /* empty body */ }
-    const rows = Array.isArray(data.rows) ? data.rows : [];
-
-    if (!rows.length) {
-      info.innerHTML = '<div class="panel-title">Nothing to export</div>Every Active employee is already on the payroll file — no new import file is needed right now.';
-      info.classList.remove('hidden');
-      return;
-    }
-
-    builtRows = rows.map((r, i) => buildRow(r, genStart + i));
-    renderGenPreview(builtRows);
-
-    const bad = builtRows.filter(b => b.issues.length).length;
-    info.innerHTML = '<div class="panel-title">' + builtRows.length + ' new hire' + (builtRows.length === 1 ? '' : 's') + ' ready</div>Numbered ' + pad(genStart) + ' onward. Review below, then download.';
-    info.classList.remove('hidden');
-    if (bad) {
-      warn.innerHTML = '<div class="panel-title">⚠ ' + bad + ' row' + (bad === 1 ? '' : 's') + ' incomplete</div>Flagged rows are written to the file but are missing details the payroll system needs for EFT (see the Status column). Complete them before HR uploads the file.';
-      warn.classList.remove('hidden');
-    }
-    prev.classList.remove('hidden');
-  } catch (err) {
-    warn.innerHTML = '<div class="panel-title">⚠ Couldn\'t generate</div>' + escapeHtml(String(err.message || err));
-    warn.classList.remove('hidden');
-  } finally {
-    btn.disabled = false; txt.textContent = 'Generate import file';
-  }
-}
-
-function renderGenPreview(rows) {
-  const body = document.getElementById('genBody');
-  body.innerHTML = '';
-  rows.forEach(b => {
-    const tr = document.createElement('tr');
-    if (b.issues.length) tr.className = 'row-bad';
-    const status = b.issues.length
-      ? '<span class="badge-bad">⚠ ' + escapeHtml(b.issues.join(', ')) + '</span>'
-      : '<span class="badge-ok">✓ ready</span>';
-    tr.innerHTML = '<td class="pnum">' + pad(b.num) + '</td><td>' + escapeHtml(b.name || '—') + '</td><td class="mono">' + escapeHtml(b.id) + '</td><td>' + escapeHtml(b.bank || '—') + '</td><td>' + status + '</td>';
-    body.appendChild(tr);
-  });
-}
-
-function downloadFile() {
-  if (!builtRows || !builtRows.length) return;
-  const warnRow = new Array(32).fill(''); warnRow[0] = 'Please do not edit the following row';
-  const metaRow = new Array(32).fill(''); metaRow[0] = PAYROLL_META;
-  const secRow = new Array(32).fill(''); secRow[0] = 'Essentials'; secRow[13] = 'Payment Method'; secRow[20] = 'Residential Address'; secRow[27] = 'Postal Address';
-  const aoa = [warnRow, metaRow, FIELD_NAMES.slice(), secRow, DISPLAY_HEADERS.slice()];
-  builtRows.forEach(b => aoa.push(b.cells));
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Bulk Input');
-  XLSX.writeFile(wb, 'Trilogy Payroll Import - New Hires.xlsx');
 }
 
 function escapeHtml(s) {
