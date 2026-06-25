@@ -646,6 +646,8 @@ function selectEmployee(id){
     if(detail.emergency_rel)  gi('ob-ecrel').value=detail.emergency_rel;
     if(detail.emergency_phone)gi('ob-ecnum').value=detail.emergency_phone;
     if(detail.bank_name)      gi('ob-bank').value=detail.bank_name;
+    if(detail.account_holder) gi('ob-holder').value=detail.account_holder;
+    if(detail.account_type)   gi('ob-acctype').value=detail.account_type;
     if(detail.account_number) gi('ob-accnum').value=detail.account_number;
     // Re-evaluate missing info now that banking/emergency are known
     recomputeMissing(e, detail);
