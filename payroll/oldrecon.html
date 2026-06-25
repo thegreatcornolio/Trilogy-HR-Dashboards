@@ -159,7 +159,7 @@ tbody tr:hover td{background:#f7f6f2}
   <div class="card" id="genCard">
     <div class="card-head"><div class="step-num">3</div><div class="card-title">Generate the import file for new hires</div></div>
     <div class="card-body">
-      <p style="color:var(--text2);font-size:13px">Builds a fresh payroll file containing only Active employees in the system whose ID number isn't already on the file you uploaded — numbered on from the highest number in that file. This is what gets sent to the payroll company. Rows missing the banking details EFT needs are flagged in red — they're still written to the file, but the payroll system will reject them until completed.</p>
+      <p style="color:var(--text2);font-size:13px">Builds a fresh payroll file containing only Active employees who aren't on payroll yet, numbered on from the highest number in the file you uploaded. Rows missing the banking details EFT needs are flagged in red — they're still written to the file, but the payroll system will reject them until completed.</p>
       <div class="btn-row">
         <button class="btn" id="genBtn" disabled onclick="generateFile()"><span id="genBtnText">Generate import file</span></button>
       </div>
@@ -304,7 +304,6 @@ function renderSummary(fileName) {
 
   document.getElementById('summary').classList.remove('hidden');
   document.getElementById('reconBtn').disabled = false;
-  document.getElementById('genBtn').disabled = false;
   document.getElementById('resultOk').classList.add('hidden');
   document.getElementById('resultWarn').classList.add('hidden');
 }
@@ -449,17 +448,14 @@ async function generateFile() {
     let data = {};
     try { data = await res.json(); } catch (e) { /* empty body */ }
     const rows = Array.isArray(data.rows) ? data.rows : [];
-    // New hires = Active employees in the DB whose ID number is NOT in the uploaded payroll file
-    const fileIds = new Set(records.map(r => String(r.idNumber).trim()));
-    const newHires = rows.filter(r => !fileIds.has(String(r.IDNumber).trim()));
 
-    if (!newHires.length) {
-      info.innerHTML = '<div class="panel-title">Nothing to export</div>Every Active employee in the system is already on the payroll file you uploaded — no new import file is needed.';
+    if (!rows.length) {
+      info.innerHTML = '<div class="panel-title">Nothing to export</div>Every Active employee is already on the payroll file — no new import file is needed right now.';
       info.classList.remove('hidden');
       return;
     }
 
-    builtRows = newHires.map((r, i) => buildRow(r, genStart + i));
+    builtRows = rows.map((r, i) => buildRow(r, genStart + i));
     renderGenPreview(builtRows);
 
     const bad = builtRows.filter(b => b.issues.length).length;
