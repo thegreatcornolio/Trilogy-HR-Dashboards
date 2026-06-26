@@ -231,8 +231,8 @@ tr.data-row:hover td{background:#f7f6f2}
 </style>
 </head>
 <body>
-<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
-
+<script>window.HR_REQUIRED_MODULE='payroll';</script>
+<script src="/hr-guard.js"></script>
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
     <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
