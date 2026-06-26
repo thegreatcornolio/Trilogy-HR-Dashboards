@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — HR Portal Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.0.0/lib/msal-browser.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --navy:#1B2A4A;--graphite:#515151;--graphite2:#3a3a3a;
+  --bg:#e8e7e3;--surface:#fff;--surface2:#f4f3ef;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:14px;--red:#c0392b;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--graphite2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{height:26px}
+.nav-section{color:rgba(255,255,255,.65);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-left:12px}
+.nav-back{color:rgba(255,255,255,.55);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;text-decoration:none}
+.nav-back:hover{color:var(--green)}
+.shell{max-width:1000px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800}
+.page-sub{font-size:13px;color:var(--text3);margin-top:2px}
+.btn-add{background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:11px 20px;cursor:pointer}
+.btn-add:hover{background:#243659}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.user-cell{display:flex;align-items:center;gap:10px}
+.user-av{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.user-name{font-weight:600}
+.user-email{font-size:11px;color:var(--text3)}
+.role-badge{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:4px}
+.role-admin{background:#e8eefc;color:var(--navy)}
+.role-user{background:var(--green-light);color:var(--green-dark)}
+.mod-pills{display:flex;flex-wrap:wrap;gap:4px}
+.mod-pill{font-size:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:2px 7px;border-radius:4px}
+.mod-all{font-size:11px;color:var(--green-dark);font-weight:600}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%}
+.dot-on{background:var(--green)}
+.dot-off{background:var(--border2)}
+.btn-sm{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;border:1px solid var(--border2);background:#fff;color:var(--text2)}
+.btn-sm:hover{border-color:var(--navy);color:var(--navy)}
+.btn-del{color:var(--red);border-color:#f0c0bb;margin-left:6px}
+.btn-del:hover{background:#fdf0ef}
+/* modal */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.backdrop.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800}
+.modal-close{background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer}
+.modal-body{padding:22px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.fg input,.fg select{width:100%;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:inherit;color:var(--text);outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--navy)}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mod-check{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .15s}
+.mod-check:hover{border-color:var(--green)}
+.mod-check input{width:17px;height:17px;accent-color:var(--navy);cursor:pointer;flex-shrink:0}
+.mod-check span{font-size:13px}
+.mod-check.admin-mod{grid-column:1/-1;background:#f0f3fb}
+.toggle-row{display:flex;align-items:center;gap:10px}
+.toggle{position:relative;display:inline-block;width:42px;height:24px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--border2);border-radius:24px;transition:.2s;cursor:pointer}
+.slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.slider{background:var(--green-dark)}
+.toggle input:checked+.slider:before{transform:translateX(18px)}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--border)}
+.btn-cancel{background:#fff;border:1px solid var(--border2);color:var(--text2);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border-radius:var(--radius);cursor:pointer}
+.btn-save{background:var(--green);border:none;color:#111;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;padding:10px 22px;border-radius:var(--radius);cursor:pointer}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.empty{text-align:center;padding:40px;color:var(--text3)}
+#gate{position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 22px;border-radius:8px;font-size:13px;font-weight:600;display:none;z-index:200}
+.toast.show{display:block}
+</style>
+</head>
+<body>
+
+<div id="gate">Verifying access…</div>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <span class="nav-section">HR Portal · Access Control</span>
+  </div>
+  <a href="index.html" class="nav-back">← Back to Portal</a>
+</nav>
+
+<div class="shell">
+  <div class="page-head">
+    <div>
+      <div class="page-title">Manage Access</div>
+      <div class="page-sub">Add HR portal users and control which modules each person can see.</div>
+    </div>
+    <button class="btn-add" onclick="openAdd()">+ Add user</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>User</th><th>Role</th><th>Modules</th><th>Status</th><th style="text-align:right">Actions</th></tr>
+      </thead>
+      <tbody id="user-rows">
+        <tr><td colspan="5" class="empty">Loading users…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="backdrop" id="user-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Add user</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Email address (their Microsoft sign-in)</label>
+        <input type="email" id="f-email" placeholder="user@trilogybpo.com">
+      </div>
+      <div class="fg">
+        <label>Display name</label>
+        <input type="text" id="f-name" placeholder="First Last">
+      </div>
+      <div class="fg">
+        <label>Role</label>
+        <select id="f-role" onchange="onRoleChange()">
+          <option value="user">HR User — only the modules ticked below</option>
+          <option value="admin">Admin — full access + this access page</option>
+        </select>
+      </div>
+      <div class="fg" id="modules-fg">
+        <label>Module access</label>
+        <div class="mod-grid" id="mod-grid"></div>
+      </div>
+      <div class="fg">
+        <label>Status</label>
+        <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="f-active" checked><span class="slider"></span></label>
+          <span id="f-active-lbl" style="font-size:13px;color:var(--text2)">Active</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btn-save" onclick="saveUser()">Save user</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  CONFIG — fill these in
+// ════════════════════════════════════════════════════════
+var CONFIG = {
+  azureClientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
+  azureTenantId: '77cde95f-930f-495e-89c6-4d2c30f6df21',
+  redirectUri:   'https://hr.trilogybpo.com/hr-admin.html',
+};
+// ⚠️ Paste the four HR_Users flow URLs (see setup guide):
+var FLOWS = {
+  VALIDATE: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/25059a71e4e24ff59e5e618eed688f09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CbE0E5f48tBPP33QhGRKp81sctHC_mcJZgKolWqqJy8',
+  GET_USERS:'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d5fff6d2caef46c08cc95942db9654bc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=be5BSnZD23Nhaxc9ZwJXqMj65dJKw1pWoseT5R9yW_4',
+  SAVE_USER:'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eb5e74d3c9994fa394fe2facb0c6e121/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=V0I1EBlcafWlAxXHCGq53SAH4MILz2wF58_LDMDpjmE',
+  DELETE_USER:'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d1884ac9213640f296a45b31133fc68d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4kmup1KncoCJex0DHaMELpq-2vJ0ymirCmQryvtUtDE',
+};
+
+// The modules that can be granted. Keys MUST match data-module on the portal cards.
+var MODULES = [
+  {key:'onboarding',       label:'👤 Employee Onboarding'},
+  {key:'records',          label:'🗃️ Employee Records'},
+  {key:'leave',            label:'🌴 Leave Management'},
+  {key:'disciplinary',     label:'⚖️ Disciplinary'},
+  {key:'payroll',          label:'💰 Payroll'},
+  {key:'vibecheck',        label:'✌️ #vibecheck'},
+  {key:'vibecheck_reports',label:'📊 #vibecheck Reports'},
+  {key:'reset',            label:'🧹 Test Reset Tool'},
+];
+
+var SESSION_KEY='hrportal_session';
+var msalApp=null, S={users:[], editingEmail:null};
+
+function unwrap(d){ if(!d) return {}; if(typeof d==='string'){try{return unwrap(JSON.parse(d));}catch(e){return {};}} if(d.body){return typeof d.body==='string'?unwrap(JSON.parse(d.body)):unwrap(d.body);} return d; }
+async function callFlow(url, body){
+  var r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  if(!r.ok) throw new Error('Flow HTTP '+r.status);
+  var t=await r.text(); if(!t||t==='null'||t==='') return {};
+  try{return unwrap(JSON.parse(t));}catch(e){return {};}
+}
+function initials(n){return (n||'?').split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ── AUTH: only admins may open this page ──
+async function init(){
+  if(FLOWS.VALIDATE.indexOf('PASTE_')===0){ document.getElementById('gate').textContent='Setup required — flow URLs not configured.'; return; }
+  msalApp=new msal.PublicClientApplication({
+    auth:{clientId:CONFIG.azureClientId,authority:'https://login.microsoftonline.com/'+CONFIG.azureTenantId,redirectUri:CONFIG.redirectUri},
+    cache:{cacheLocation:'sessionStorage',storeAuthStateInCookie:true},
+  });
+  await msalApp.initialize();
+  try{ var resp=await msalApp.handleRedirectPromise(); if(resp){ await verify(resp.account); return; } }catch(e){}
+  var accts=msalApp.getAllAccounts();
+  if(accts.length){ await verify(accts[0]); }
+  else { msalApp.loginRedirect({scopes:['User.Read']}); }
+}
+async function verify(account){
+  try{
+    var res=await callFlow(FLOWS.VALIDATE,{email:(account.username||'').toLowerCase()});
+    var rows=Array.isArray(res)?res:(res.value||[]);
+    if(!rows.length || (rows[0].Role||'').toLowerCase()!=='admin'){
+      document.getElementById('gate').innerHTML='Access denied — administrators only.<br><br><a href="index.html" style="color:#4AFD0E">← Back to portal</a>';
+      return;
+    }
+    document.getElementById('gate').style.display='none';
+    loadUsers();
+  }catch(e){ document.getElementById('gate').textContent='Could not verify access: '+e.message; }
+}
+
+// ── LOAD USERS ──
+async function loadUsers(){
+  try{
+    var res=await callFlow(FLOWS.GET_USERS,{});
+    S.users=Array.isArray(res)?res:(res.value||[]);
+    renderUsers();
+  }catch(e){ document.getElementById('user-rows').innerHTML='<tr><td colspan="5" class="empty">Failed to load users: '+e.message+'</td></tr>'; }
+}
+function renderUsers(){
+  if(!S.users.length){ document.getElementById('user-rows').innerHTML='<tr><td colspan="5" class="empty">No users yet. Click "Add user" to grant access.</td></tr>'; return; }
+  document.getElementById('user-rows').innerHTML=S.users.map(function(u){
+    var role=(u.Role||'user').toLowerCase();
+    var roleCls=role==='admin'?'role-admin':'role-user';
+    var active=!(u.IsActive===false||u.IsActive===0||u.IsActive==='0'||u.IsActive==='false');
+    var modsHtml;
+    if(role==='admin'){ modsHtml='<span class="mod-all">All modules</span>'; }
+    else{
+      var mods=(u.Modules||'').split(',').map(function(m){return m.trim();}).filter(Boolean);
+      modsHtml=mods.length?'<div class="mod-pills">'+mods.map(function(m){
+        var lbl=(MODULES.filter(function(x){return x.key===m;})[0]||{}).label||m;
+        return '<span class="mod-pill">'+lbl+'</span>';
+      }).join('')+'</div>':'<span style="color:var(--text3);font-size:12px">None</span>';
+    }
+    var em=(u.UserEmail||'').replace(/'/g,"\\'");
+    return '<tr>'
+      +'<td><div class="user-cell"><div class="user-av">'+initials(u.DisplayName)+'</div>'
+        +'<div><div class="user-name">'+(u.DisplayName||'')+'</div><div class="user-email">'+(u.UserEmail||'')+'</div></div></div></td>'
+      +'<td><span class="role-badge '+roleCls+'">'+role+'</span></td>'
+      +'<td>'+modsHtml+'</td>'
+      +'<td><span class="status-dot"><span class="dot '+(active?'dot-on':'dot-off')+'"></span>'+(active?'Active':'Inactive')+'</span></td>'
+      +'<td style="text-align:right"><button class="btn-sm" onclick="openEdit(\''+em+'\')">Edit</button>'
+        +'<button class="btn-sm btn-del" onclick="delUser(\''+em+'\')">Delete</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ── MODAL ──
+function buildModGrid(checked){
+  checked=checked||[];
+  document.getElementById('mod-grid').innerHTML=MODULES.map(function(m){
+    var on=checked.indexOf(m.key)>=0?'checked':'';
+    return '<label class="mod-check"><input type="checkbox" value="'+m.key+'" '+on+'><span>'+m.label+'</span></label>';
+  }).join('');
+}
+function onRoleChange(){
+  var isAdmin=document.getElementById('f-role').value==='admin';
+  document.getElementById('modules-fg').style.display=isAdmin?'none':'';
+}
+function openAdd(){
+  S.editingEmail=null;
+  document.getElementById('modal-title').textContent='Add user';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-email').disabled=false;
+  document.getElementById('f-name').value='';
+  document.getElementById('f-role').value='user';
+  document.getElementById('f-active').checked=true;
+  document.getElementById('f-active-lbl').textContent='Active';
+  buildModGrid([]); onRoleChange();
+  document.getElementById('user-modal').classList.add('open');
+}
+function openEdit(email){
+  var u=S.users.filter(function(x){return x.UserEmail===email;})[0]; if(!u) return;
+  S.editingEmail=email;
+  document.getElementById('modal-title').textContent='Edit user';
+  document.getElementById('f-email').value=u.UserEmail;
+  document.getElementById('f-email').disabled=true;
+  document.getElementById('f-name').value=u.DisplayName||'';
+  document.getElementById('f-role').value=(u.Role||'user').toLowerCase();
+  var active=!(u.IsActive===false||u.IsActive===0||u.IsActive==='0'||u.IsActive==='false');
+  document.getElementById('f-active').checked=active;
+  document.getElementById('f-active-lbl').textContent=active?'Active':'Inactive';
+  buildModGrid((u.Modules||'').split(',').map(function(m){return m.trim();}).filter(Boolean));
+  onRoleChange();
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('user-modal').classList.remove('open'); }
+document.getElementById('f-active').addEventListener('change',function(){
+  document.getElementById('f-active-lbl').textContent=this.checked?'Active':'Inactive';
+});
+
+async function saveUser(){
+  var email=document.getElementById('f-email').value.trim().toLowerCase();
+  var name=document.getElementById('f-name').value.trim();
+  var role=document.getElementById('f-role').value;
+  var active=document.getElementById('f-active').checked;
+  if(!email||!name){ toast('Email and name are required'); return; }
+  var mods=role==='admin'?'':Array.prototype.slice.call(document.querySelectorAll('#mod-grid input:checked')).map(function(c){return c.value;}).join(',');
+  var btn=document.getElementById('btn-save'); btn.disabled=true; btn.textContent='Saving…';
+  try{
+    await callFlow(FLOWS.SAVE_USER,{ email:email, display_name:name, role:role, modules:mods, is_active:active?'1':'0' });
+    toast('User saved'); closeModal(); loadUsers();
+  }catch(e){ toast('Save failed: '+e.message); }
+  btn.disabled=false; btn.textContent='Save user';
+}
+async function delUser(email){
+  if(!confirm('Remove HR portal access for '+email+'?')) return;
+  try{ await callFlow(FLOWS.DELETE_USER,{email:email}); toast('User removed'); loadUsers(); }
+  catch(e){ toast('Delete failed: '+e.message); }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
