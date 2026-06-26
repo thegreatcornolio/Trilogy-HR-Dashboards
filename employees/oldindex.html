@@ -271,6 +271,28 @@ tr.selected td{background:#edffd6}
           <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
 
           <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.4rem">Personal &amp; contact details</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Correct captured information or update changed contact details. Each field saves immediately.</div>
+            <div class="field-group"><label>First name</label><input type="text" class="field-input" id="edit-fname"><button class="save-field-btn" onclick="saveField('FirstName','edit-fname')">Save</button><div class="save-result" id="save-fname"></div></div>
+            <div class="field-group"><label>Last name</label><input type="text" class="field-input" id="edit-lname"><button class="save-field-btn" onclick="saveField('LastName','edit-lname')">Save</button><div class="save-result" id="save-lname"></div></div>
+            <div class="field-group"><label>ID type</label><select class="field-input" id="edit-idtype"><option>SA ID</option><option>Passport</option><option>Asylum / Permit</option></select><button class="save-field-btn" onclick="saveField('IDType','edit-idtype')">Save</button><div class="save-result" id="save-idtype"></div></div>
+            <div class="field-group"><label>ID number</label><input type="text" class="field-input" id="edit-idnum"><button class="save-field-btn" onclick="saveField('IDNumber','edit-idnum')">Save</button><div class="save-result" id="save-idnum"></div></div>
+            <div class="field-group"><label>Passport number</label><input type="text" class="field-input" id="edit-passport"><button class="save-field-btn" onclick="saveField('PassportNumber','edit-passport')">Save</button><div class="save-result" id="save-passport"></div></div>
+            <div class="field-group"><label>Date of birth</label><input type="date" class="field-input" id="edit-dob"><button class="save-field-btn" onclick="saveField('DateOfBirth','edit-dob')">Save</button><div class="save-result" id="save-dob"></div></div>
+            <div class="field-group"><label>Mobile</label><input type="text" class="field-input" id="edit-mobile"><button class="save-field-btn" onclick="saveField('Mobile','edit-mobile')">Save</button><div class="save-result" id="save-mobile"></div></div>
+            <div class="field-group"><label>Personal email</label><input type="email" class="field-input" id="edit-pemail"><button class="save-field-btn" onclick="saveField('PersonalEmail','edit-pemail')">Save</button><div class="save-result" id="save-pemail"></div></div>
+            <div class="field-group"><label>Address</label><input type="text" class="field-input" id="edit-address"><button class="save-field-btn" onclick="saveField('Address','edit-address')">Save</button><div class="save-result" id="save-address"></div></div>
+            <div class="field-row">
+              <div class="field-group"><label>City</label><input type="text" class="field-input" id="edit-city"><button class="save-field-btn" onclick="saveField('City','edit-city')">Save</button><div class="save-result" id="save-city"></div></div>
+              <div class="field-group"><label>Postal code</label><input type="text" class="field-input" id="edit-postal"><button class="save-field-btn" onclick="saveField('PostalCode','edit-postal')">Save</button><div class="save-result" id="save-postal"></div></div>
+            </div>
+            <div class="field-group"><label>Province</label><input type="text" class="field-input" id="edit-province"><button class="save-field-btn" onclick="saveField('Province','edit-province')">Save</button><div class="save-result" id="save-province"></div></div>
+            <div class="field-group"><label>Salary</label><input type="text" class="field-input" id="edit-salary"><button class="save-field-btn" onclick="saveField('Salary','edit-salary')">Save</button><div class="save-result" id="save-salary"></div></div>
+            <div class="field-group"><label>Salary frequency</label><select class="field-input" id="edit-salfreq"><option>Monthly</option><option>Weekly</option><option>Fortnightly</option></select><button class="save-field-btn" onclick="saveField('SalaryFrequency','edit-salfreq')">Save</button><div class="save-result" id="save-salfreq"></div></div>
+            <div class="field-group"><label>Start date</label><input type="date" class="field-input" id="edit-startdate"><button class="save-field-btn" onclick="saveField('StartDate','edit-startdate')">Save</button><div class="save-result" id="save-startdate"></div></div>
+          </div>
+
+          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
             <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.4rem">Onboarding details</div>
             <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit and re-save the employee's onboarding information. Saving updates all fields below.</div>
 
@@ -599,6 +621,22 @@ function selectEmployee(id){
   gi('edit-wemail').value=e.WorkEmail||'';
   gi('edit-mgr').value=e.ReportsTo||'';
   gi('edit-status').value=e.Status||'Contract Signed';
+  // Personal & contact detail edit fields
+  gi('edit-fname').value=e.FirstName||'';
+  gi('edit-lname').value=e.LastName||'';
+  gi('edit-idtype').value=e.IDType||'SA ID';
+  gi('edit-idnum').value=e.IDNumber||'';
+  gi('edit-passport').value=e.PassportNumber||'';
+  gi('edit-dob').value=(e.DateOfBirth||'').split('T')[0];
+  gi('edit-mobile').value=e.Mobile||'';
+  gi('edit-pemail').value=e.PersonalEmail||'';
+  gi('edit-address').value=e.Address||'';
+  gi('edit-city').value=e.City||'';
+  gi('edit-postal').value=e.PostalCode||'';
+  gi('edit-province').value=e.Province||'';
+  gi('edit-salary').value=e.Salary||'';
+  gi('edit-salfreq').value=e.SalaryFrequency||'Monthly';
+  gi('edit-startdate').value=(e.StartDate||'').split('T')[0];
   // Prefill onboarding edit fields from employee record (emergency/banking filled async from detail)
   gi('ob-title').value=e.Title||'';
   gi('ob-initials').value=e.Initials||'';
@@ -646,6 +684,8 @@ function selectEmployee(id){
     if(detail.emergency_rel)  gi('ob-ecrel').value=detail.emergency_rel;
     if(detail.emergency_phone)gi('ob-ecnum').value=detail.emergency_phone;
     if(detail.bank_name)      gi('ob-bank').value=detail.bank_name;
+    if(detail.account_holder) gi('ob-holder').value=detail.account_holder;
+    if(detail.account_type)   gi('ob-acctype').value=detail.account_type;
     if(detail.account_number) gi('ob-accnum').value=detail.account_number;
     // Re-evaluate missing info now that banking/emergency are known
     recomputeMissing(e, detail);

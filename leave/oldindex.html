@@ -384,40 +384,41 @@ function leaveChip(annualAvail){
 
 // ── LOAD ──
 function loadEmployees(){
-  var empPromise=fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})}).then(function(r){return r.json();});
-  var snapPromise=fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})}).then(function(r){return r.json();}).catch(function(){return null;});
-
-  Promise.all([empPromise,snapPromise])
-  .then(function(results){
-    // Employees
-    var d=results[0];
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
     var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
     var all=Array.isArray(data)?data:(data.employees||[]);
     allEmployees=all.filter(function(e){return ELIGIBLE_STATUSES.indexOf(e.Status)>=0;});
+    renderStats();
+    filterTable();
+    // Load snapshots in background — page is already usable
+    loadSnapshots();
+  })
+  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+}
 
-    // Snapshots — build lookup map
-    snapshotMap={};
-    var sd=results[1];
-    if(sd){
-      var sbody=sd.body?(typeof sd.body==='string'?JSON.parse(sd.body):sd.body):sd;
-      var rs=sbody.ResultSets||sbody.resultSets||sbody;
-      var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
-      if(Array.isArray(rows)){
-        rows.forEach(function(row){
-          if(row.EmployeeID)snapshotMap[row.EmployeeID]={
-            annual:parseFloat(row.AnnualBalance)||0,
-            sick:parseFloat(row.SickBalance)||0,
-            family:parseFloat(row.FamilyBalance)||0,
-            period:row.Period||''
-          };
-        });
-      }
-    }
-
+function loadSnapshots(){
+  fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var sbody=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var rs=sbody.ResultSets||sbody.resultSets||sbody;
+    var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
+    if(!Array.isArray(rows))return;
+    rows.forEach(function(row){
+      if(row.EmployeeID)snapshotMap[row.EmployeeID]={
+        annual:parseFloat(row.AnnualBalance)||0,
+        sick:parseFloat(row.SickBalance)||0,
+        family:parseFloat(row.FamilyBalance)||0,
+        period:row.Period||''
+      };
+    });
+    // Refresh table and stats now snapshot data is available
     renderStats();
     filterTable();
   })
-  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+  .catch(function(){/* Snapshots unavailable — BCEA fallback stays, no error shown */});
 }
 
 function renderStats(){
@@ -452,22 +453,17 @@ function renderTable(list){
   gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
   if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
   gi('empBody').innerHTML=list.map(function(e){
+    var l=calcLeave(e,null);
     var snap=snapshotMap[e.EmployeeID];
-    var annualVal=snap?snap.annual:calcLeave(e,null).annualAvail;
-    var chipLabel=snap?annualVal.toFixed(2)+' days':calcLeave(e,null).annualAvail+' days (est.)';
+    var chipVal=snap?snap.annual:l.annualAvail;
     var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
     var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
-    var chip;
-    var n=parseFloat(annualVal);
-    if(n>10)chip='<span class="leave-chip chip-ok">'+chipLabel+'</span>';
-    else if(n>5)chip='<span class="leave-chip chip-low">'+chipLabel+'</span>';
-    else chip='<span class="leave-chip chip-none">'+chipLabel+'</span>';
-    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+\
-      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+\
-      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+\
-      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+\
-      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+\
-      '<td>'+chip+'</td>'+\
+    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
+      '<td>'+leaveChip(chipVal)+'</td>'+
       '</tr>';
   }).join('');
 }

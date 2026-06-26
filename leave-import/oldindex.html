@@ -104,10 +104,6 @@ td.num.zero{color:var(--text3)}
 .spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── SETUP NOTE ── */
-.setup-box{background:#f0f4ff;border:1px solid #c5d0e8;border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem}
-.setup-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#2c4a8c;margin-bottom:.5rem}
-.setup-box code{font-family:'Courier New',monospace;font-size:12px;background:#dde8ff;padding:1px 5px;border-radius:3px;color:#1e3a8a}
 
 /* ── MOBILE ── */
 @media(max-width:640px){
@@ -165,13 +161,7 @@ td.num.zero{color:var(--text3)}
 
 <div class="shell">
 
-  <!-- Setup note shown until flow URL is configured -->
-  <div class="setup-box" id="setupNote">
-    <div class="setup-title">⚙️ Setup required</div>
-    Before using this tool, create the <code>LeaveMonthlySnapshot</code> SQL table and a Power Automate flow,
-    then replace <code>SAVE_LEAVE_SNAPSHOT_URL</code> in this page's script with the flow URL.
-    See the technical documentation for the SQL and flow spec.
-  </div>
+
 
   <!-- ── STEP 1: UPLOAD ── -->
   <div id="step1">
@@ -338,10 +328,11 @@ function parseLeaveReport(arrayBuffer) {
   if (hdrIdx < 0) return {};
 
   var headers = all[hdrIdx].map(function(h){ return (h||'').toString().toLowerCase().trim(); });
-  var colEmp     = headers.indexOf('employee');
-  var colType    = headers.indexOf('leave type');
-  var colTaken   = headers.indexOf('taken');
-  var colBalance = headers.indexOf('balance');
+  var colEmp         = headers.indexOf('employee');
+  var colType        = headers.indexOf('leave type');
+  var colTaken       = headers.indexOf('taken');
+  var colEntitlement = headers.indexOf('entitlement');
+  var colBalance     = headers.indexOf('balance');
 
   // Group rows by employee name
   var groups = {}; // { nameStr: { annual, sick, family } }
@@ -350,12 +341,15 @@ function parseLeaveReport(arrayBuffer) {
     var name = (row[colEmp] || '').toString().trim();
     if (!name) continue;
     if (!groups[name]) groups[name] = { annual: null, sick: null, family: null };
-    var leaveType = (row[colType] || '').toString().toLowerCase();
-    var balance   = row[colBalance] !== '' ? parseFloat(row[colBalance]) || 0 : 0;
-    var taken     = row[colTaken]   !== '' ? parseFloat(row[colTaken])   || 0 : 0;
-    if      (leaveType === 'annual')                    groups[name].annual = { balance, taken };
-    else if (leaveType === 'sick')                      groups[name].sick   = { balance, taken };
-    else if (leaveType.includes('family'))              groups[name].family = { balance, taken };
+    var leaveType   = (row[colType] || '').toString().toLowerCase();
+    var balance     = row[colBalance]     !== '' ? parseFloat(row[colBalance])     || 0 : 0;
+    var entitlement = row[colEntitlement] !== '' ? parseFloat(row[colEntitlement]) || 0 : 0;
+    var taken       = row[colTaken]       !== '' ? parseFloat(row[colTaken])       || 0 : 0;
+    // Sick and family show 0 balance when nothing has been taken yet — use entitlement instead
+    var effectiveBal = (leaveType !== 'annual' && balance === 0 && entitlement > 0) ? entitlement : balance;
+    if      (leaveType === 'annual')           groups[name].annual = { balance: balance,      taken };
+    else if (leaveType === 'sick')             groups[name].sick   = { balance: effectiveBal, taken };
+    else if (leaveType.includes('family'))     groups[name].family = { balance: effectiveBal, taken };
   }
   return groups;
 }
@@ -486,7 +480,6 @@ function renderPreview() {
 
   gi('step1').style.display = 'none';
   gi('step2').style.display = 'block';
-  gi('setupNote').style.display = SAVE_LEAVE_SNAPSHOT_URL === 'REPLACE_WITH_YOUR_FLOW_URL' ? 'block' : 'none';
 }
 
 // ── RUN IMPORT ──
