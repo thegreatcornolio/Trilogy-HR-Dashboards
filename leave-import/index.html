@@ -136,7 +136,8 @@ td.num.zero{color:var(--text3)}
 </style>
 </head>
 <body>
-<script>if(sessionStorage.getItem('hrportal_auth')!=='trilogy_hr_2026_secure'){window.location.replace('https://hr.trilogybpo.com/');}</script>
+<script>window.HR_REQUIRED_MODULE='leave';</script>
+<script src="/hr-guard.js"></script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
