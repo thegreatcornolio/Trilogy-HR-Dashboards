@@ -243,8 +243,10 @@ function buildPage(records){
 }
 
 fetch(GET_REJECTED_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})})
-  .then(function(r){return r.json();})
-  .then(function(data){
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var data;
+    try{data=JSON.parse(txt);}catch(e){throw new Error('Bad JSON: '+txt.substring(0,200));}
     var body = data.body || data;
     if(typeof body === 'string') body = JSON.parse(body);
     var records = [];
