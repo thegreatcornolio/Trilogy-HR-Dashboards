@@ -61,7 +61,7 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 </style>
 </head>
 <body>
-<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("/");}})();</script>
+<script>/* HR Portal auth gate */(function(){var s=sessionStorage.getItem('hrportal_session');if(!s){window.location.replace('/');}})();</script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
