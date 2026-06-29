@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Onboarding Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243659;--green:#4AFD0E;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--bg:#e8e7e3;
+  --surface:#fff;--surface2:#f2f1ed;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --red:#c0392b;--radius:8px;--radius-lg:12px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--navy);padding:.875rem 1.75rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{height:26px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-back{font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.page-head{background:var(--navy);padding:1.25rem 1.75rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.page-title{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:2px}
+.page-sub{font-size:12px;color:rgba(255,255,255,.4)}
+.board{display:flex;gap:12px;padding:1.25rem;overflow-x:auto;min-height:calc(100vh - 140px);align-items:flex-start}
+.board::-webkit-scrollbar{height:6px}
+.board::-webkit-scrollbar-track{background:transparent}
+.board::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.column{flex:0 0 240px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.col-header{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.col-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.col-count{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;background:var(--surface2);color:var(--text3);padding:2px 7px;border-radius:20px}
+.col-body{padding:.75rem;display:flex;flex-direction:column;gap:8px;flex:1;min-height:100px}
+.person-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem}
+.person-name{font-weight:600;font-size:13px;color:var(--text);margin-bottom:1px}
+.person-role{font-size:11px;color:var(--text3);margin-bottom:.5rem}
+.person-days{font-size:10px;color:var(--text3);margin-bottom:.6rem}
+.days-badge{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;font-family:'Montserrat',sans-serif}
+.days-ok{background:#e8f5e9;color:#2e7d32}
+.days-warn{background:#fff8e1;color:#f57f17}
+.days-late{background:#fdecea;color:#c62828}
+.person-actions{display:flex;flex-direction:column;gap:5px;margin-top:.5rem}
+.btn-action{width:100%;padding:6px 10px;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;border:none;border-radius:6px;cursor:pointer;text-align:left;transition:all .15s}
+.btn-resend{background:#e8eefc;color:#1B2A4A}
+.btn-resend:hover{background:#d0daf7}
+.btn-form{background:#e8f5e9;color:#2e7d32}
+.btn-form:hover{background:#c8e6c9}
+.btn-active{background:var(--navy);color:#fff}
+.btn-active:hover{background:var(--navy2)}
+.btn-action:disabled{opacity:.5;cursor:not-allowed}
+.col-empty{font-size:12px;color:var(--text3);text-align:center;padding:1.5rem .75rem;font-style:italic}
+.col-offer-sent .col-header{border-top:3px solid #e67e22}
+.col-offer-signed .col-header{border-top:3px solid #f1c40f}
+.col-contract-sent .col-header{border-top:3px solid #3498db}
+.col-contract-signed .col-header{border-top:3px solid #9b59b6}
+.col-to-onboard .col-header{border-top:3px solid var(--green-dark)}
+.spinner-wrap{text-align:center;padding:3rem;width:100%}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<script>
+(function(){
+  var s=sessionStorage.getItem('hrportal_session');
+  if(!s){window.location.replace('/');}
+})();
+</script>
+
+<nav class="nav">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <div class="nav-right">
+    <a href="/" class="nav-back">← Portal</a>
+  </div>
+</nav>
+
+<div class="page-head">
+  <div class="page-title">Onboarding Pipeline</div>
+  <div class="page-sub">Live view — click any action to trigger immediately</div>
+</div>
+
+<div class="board" id="board">
+  <div class="spinner-wrap"><div class="spinner"></div><div style="font-size:13px;color:var(--text3)">Loading pipeline…</div></div>
+</div>
+
+<script>
+var GET_BY_STAGE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/db11b8eac0354ee7858c757a389e0df9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=O90-xwESi103DgYTRmgYo_TdiKfvLW6BqbL-Flwl-0U';
+var SEND_OFFER_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fcea2bf9fe254cebad7fb036acdf4e44/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WZK-GcDKtcigueZ_n53_96dF9qUDRQy8qYyfdIeDeEI';
+var SEND_CONTRACT_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eed90d597d004cad97570f17e610aa91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xZh2zrYasZlEQiPL81QUOtuwUzK1epgeFoBha8sGSK8';
+var SEND_FORM_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c174dcf2a6e04fab97dac9f1dbac04b7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-LE7GTa6KDsoNzgjFn23JIj6UlnOrMl6X3x7g9Q35J0';
+var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
+
+var STAGES = [
+  {key:'offer_sent',     label:'Offer Sent',       cls:'col-offer-sent'},
+  {key:'offer_signed',   label:'Offer Signed',     cls:'col-offer-signed'},
+  {key:'contract_sent',  label:'Contract Sent',    cls:'col-contract-sent'},
+  {key:'contract_signed',label:'Contract Signed',  cls:'col-contract-signed'},
+  {key:'onboarding_needed', label:'To be Onboarded', cls:'col-to-onboard'}
+];
+
+var allPeople = {};
+
+function daysSince(d){
+  if(!d) return null;
+  return Math.floor((Date.now()-new Date(d).getTime())/(1000*60*60*24));
+}
+
+function daysBadge(days){
+  if(days===null) return '';
+  var cls = days<=3?'days-ok':days<=7?'days-warn':'days-late';
+  return '<span class="days-badge '+cls+'">'+days+'d in stage</span>';
+}
+
+function actionBtn(id,label,cls,fn){
+  return '<button class="btn-action '+cls+'" id="btn-'+id+'-'+fn+'" onclick="'+fn+'(\''+id+'\')">'+label+'</button>';
+}
+
+function actionsFor(stage, p){
+  var id = p.EmployeeID;
+  var btns = '';
+  if(stage==='offer_sent')      btns += actionBtn(id,'↻ Resend offer','btn-resend','resendOffer');
+  if(stage==='contract_sent')   btns += actionBtn(id,'↻ Resend contract','btn-resend','resendContract');
+  if(stage==='contract_signed') btns += actionBtn(id,'✉ Send onboarding form','btn-form','sendForm');
+  if(stage==='onboarding_needed') btns += actionBtn(id,'✓ Mark active','btn-active','markActive');
+  return btns ? '<div class="person-actions">'+btns+'</div>' : '';
+}
+
+function renderColumn(stage, people){
+  var days = people.map(function(p){
+    var d = daysSince(p.UpdatedAt||p.StartDate);
+    return '<div class="person-card">'+
+      '<div class="person-name">'+p.FullName+'</div>'+
+      '<div class="person-role">'+p.JobTitle+(p.Campaign?' · '+p.Campaign:'')+'</div>'+
+      '<div class="person-days">'+daysBadge(d)+'</div>'+
+      actionsFor(stage.key, p)+
+    '</div>';
+  }).join('');
+
+  return '<div class="column '+stage.cls+'">'+
+    '<div class="col-header">'+
+      '<div class="col-title" style="color:var(--text2)">'+stage.label+'</div>'+
+      '<div class="col-count">'+people.length+'</div>'+
+    '</div>'+
+    '<div class="col-body">'+
+      (people.length ? days : '<div class="col-empty">No one here</div>')+
+    '</div>'+
+  '</div>';
+}
+
+function loadAll(){
+  var board = document.getElementById('board');
+  var promises = STAGES.map(function(stage){
+    return fetch(GET_BY_STAGE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage:stage.key})})
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var body = data.body||data;
+        if(typeof body==='string') body=JSON.parse(body);
+        var records = (body.ResultSets&&body.ResultSets.Table1)||[];
+        allPeople[stage.key] = records;
+      });
+  });
+
+  Promise.all(promises).then(function(){
+    board.innerHTML = STAGES.map(function(s){
+      return renderColumn(s, allPeople[s.key]||[]);
+    }).join('');
+  }).catch(function(err){
+    board.innerHTML = '<div style="padding:2rem;color:var(--red)">Failed to load pipeline. Please refresh.</div>';
+    console.error(err);
+  });
+}
+
+function findPerson(id){
+  for(var s in allPeople){
+    for(var i=0;i<allPeople[s].length;i++){
+      if(allPeople[s][i].EmployeeID===id) return allPeople[s][i];
+    }
+  }
+  return null;
+}
+
+function setBtn(id,fn,text,disabled){
+  var btn=document.getElementById('btn-'+id+'-'+fn);
+  if(btn){btn.textContent=text;btn.disabled=disabled;}
+}
+
+window.resendOffer=function(id){
+  var p=findPerson(id);
+  if(!p) return;
+  if(!confirm('Resend offer email to '+p.FullName+'?')) return;
+  setBtn(id,'resendOffer','Sending…',true);
+  fetch(SEND_OFFER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
+    candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
+    candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
+    candidate_mobile:p.Mobile, candidate_address:p.Address,
+    job_title:p.JobTitle, campaign:p.Campaign, salary:p.Salary,
+    start_date:p.StartDate, offer_date:p.OfferDate,
+    reports_to:p.ReportsTo, reports_to_email:p.ReportsToEmail,
+    annual_leave:p.AnnualLeaveEntitlement||15, rudi_email:'rudij@trilogybpo.com'
+  })})
+  .then(function(){setBtn(id,'resendOffer','✓ Sent',false);setTimeout(function(){setBtn(id,'resendOffer','↻ Resend offer',false);},3000);})
+  .catch(function(){setBtn(id,'resendOffer','✗ Failed',false);setTimeout(function(){setBtn(id,'resendOffer','↻ Resend offer',false);},3000);});
+};
+
+window.resendContract=function(id){
+  var p=findPerson(id);
+  if(!p) return;
+  if(!confirm('Resend contract email to '+p.FullName+'?')) return;
+  setBtn(id,'resendContract','Sending…',true);
+  fetch(SEND_CONTRACT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
+    candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
+    candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
+    candidate_mobile:p.Mobile, candidate_address:p.Address,
+    job_title:p.JobTitle, salary:p.Salary, start_date:p.StartDate,
+    offer_date:p.OfferDate, reports_to:p.ReportsTo, reports_to_email:p.ReportsToEmail,
+    rudi_email:'rudij@trilogybpo.com'
+  })})
+  .then(function(){setBtn(id,'resendContract','✓ Sent',false);setTimeout(function(){setBtn(id,'resendContract','↻ Resend contract',false);},3000);})
+  .catch(function(){setBtn(id,'resendContract','✗ Failed',false);setTimeout(function(){setBtn(id,'resendContract','↻ Resend contract',false);},3000);});
+};
+
+window.sendForm=function(id){
+  var p=findPerson(id);
+  if(!p) return;
+  if(!confirm('Send onboarding form to '+p.FullName+'?')) return;
+  setBtn(id,'sendForm','Sending…',true);
+  fetch(SEND_FORM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    employee_id:p.EmployeeID, ref:p.OfferReference||p.EmployeeID,
+    candidate_email:p.PersonalEmail||p.WorkEmail,
+    candidate_first:p.FirstName||p.FullName.split(' ')[0],
+    candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' ')
+  })})
+  .then(function(){setBtn(id,'sendForm','✓ Sent',false);setTimeout(function(){setBtn(id,'sendForm','✉ Send onboarding form',false);},3000);})
+  .catch(function(){setBtn(id,'sendForm','✗ Failed',false);setTimeout(function(){setBtn(id,'sendForm','✉ Send onboarding form',false);},3000);});
+};
+
+window.markActive=function(id){
+  var p=findPerson(id);
+  if(!p) return;
+  if(!confirm('Mark '+p.FullName+' as Active? Make sure banking details are captured first.')) return;
+  setBtn(id,'markActive','Saving…',true);
+  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    employee_id:id, field:'Status', value:'Active'
+  })})
+  .then(function(){
+    setBtn(id,'markActive','✓ Done',false);
+    setTimeout(function(){loadAll();},2000);
+  })
+  .catch(function(){setBtn(id,'markActive','✗ Failed',false);setTimeout(function(){setBtn(id,'markActive','✓ Mark active',false);},3000);});
+};
+
+loadAll();
+</script>
+</body>
+</html>
