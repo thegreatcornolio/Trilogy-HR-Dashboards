@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Pipeline Stage</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--blue:#2980b9}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.shell{max-width:1100px;margin:0 auto;padding:2rem 2rem 5rem}
+.stage-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.stage-tab{padding:8px 14px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;text-decoration:none;border:1px solid var(--border2);background:var(--surface);color:var(--text2);white-space:nowrap}
+.stage-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.stage-tab:hover{border-color:var(--navy)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column}
+.card-head{padding:1.1rem 1.25rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.avatar{width:42px;height:42px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.c-name{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.c-role{font-size:11px;color:var(--text3)}
+.c-ref{font-size:10px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.card-body{padding:1.1rem 1.25rem;flex:1}
+.row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--surface2)}
+.row .k{color:var(--text3)}
+.row .v{color:var(--text);font-weight:600;text-align:right}
+.card-actions{padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-green{background:var(--green);color:#111}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.action-result{font-size:11px;text-align:center;min-height:14px}
+.move-row{display:flex;gap:6px;align-items:center}
+.move-row select{flex:1;padding:7px 9px;border:1px solid var(--border2);border-radius:var(--radius);font-size:11px;font-family:inherit;color:var(--text);background:var(--surface)}
+.move-row button{padding:7px 10px;font-size:11px;font-family:'Montserrat',sans-serif;font-weight:700;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);cursor:pointer;white-space:nowrap}
+.empty{text-align:center;padding:4rem 1rem;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:.75rem}
+.loading{text-align:center;padding:4rem 1rem;color:var(--text3)}
+.spinner{width:30px;height:30px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.count-pill{display:inline-block;background:var(--green);color:#111;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;padding:2px 12px;border-radius:20px;margin-left:8px}
+.footer{background:var(--navy);padding:1.25rem 2rem;margin-top:3rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<script>/* HR Portal auth gate */(function(){var s=sessionStorage.getItem('hrportal_session');if(!s){window.location.replace('/');}})();</script>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Pipeline</div>
+  </div>
+  <a href="./" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Onboarding pipeline</div>
+    <div class="hero-title" id="stageTitle">Pipeline stage</div>
+    <div class="hero-sub" id="stageSub">People at this stage.</div>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="stage-tabs" id="stageTabs"></div>
+  <div id="content">
+    <div class="loading"><div class="spinner"></div>Loading…</div>
+  </div>
+</div>
+
+<div class="footer"><div class="footer-inner"><img src="trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo"><div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div></div></div>
+
+<script>
+// ── FLOW URLS ──
+var GET_BY_STAGE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/db11b8eac0354ee7858c757a389e0df9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=O90-xwESi103DgYTRmgYo_TdiKfvLW6BqbL-Flwl-0U';
+var SEND_OFFER_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fcea2bf9fe254cebad7fb036acdf4e44/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WZK-GcDKtcigueZ_n53_96dF9qUDRQy8qYyfdIeDeEI';
+var SEND_CONTRACT_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eed90d597d004cad97570f17e610aa91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xZh2zrYasZlEQiPL81QUOtuwUzK1epgeFoBha8sGSK8';
+var SEND_FORM_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c174dcf2a6e04fab97dac9f1dbac04b7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-LE7GTa6KDsoNzgjFn23JIj6UlnOrMl6X3x7g9Q35J0';
+var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
+var SITE_URL='https://hr.trilogybpo.com';
+
+// ── STAGE CONFIG ──
+var STAGES={
+  offer_sent:       {title:'Offers sent',        sub:'Awaiting the candidate to sign their offer.',          status:'Offer Sent'},
+  offer_signed:     {title:'Offers accepted',    sub:'Offer signed — ready to send the contract.',           status:'Offer Signed'},
+  contract_sent:    {title:'Contracts sent',     sub:'Awaiting the candidate to sign their contract.',        status:'Contract Sent'},
+  contract_signed:  {title:'Contracts signed',   sub:'Contract signed — ready to send the onboarding form.',  status:'Contract Signed'},
+  onboarding_needed:{title:'To be onboarded',    sub:'Signed but onboarding details are still incomplete.',   status:null},
+  active:           {title:'Active employees',   sub:'Currently active staff.',                               status:'Active'}
+};
+var TAB_ORDER=['offer_sent','offer_signed','contract_sent','contract_signed','onboarding_needed','active'];
+
+function gi(id){return document.getElementById(id);}
+function gp(k){return decodeURIComponent((new URLSearchParams(window.location.search)).get(k)||'');}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+function initials(f,l){return (((f||'')[0]||'')+((l||'')[0]||'')).toUpperCase();}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+var STAGE=gp('stage')||'offer_sent';
+if(!STAGES[STAGE]) STAGE='offer_sent';
+var PEOPLE=[];
+
+// ── BUILD TABS ──
+function buildTabs(){
+  gi('stageTabs').innerHTML=TAB_ORDER.map(function(s){
+    return '<a class="stage-tab'+(s===STAGE?' active':'')+'" href="pipeline.html?stage='+s+'">'+STAGES[s].title+'</a>';
+  }).join('');
+}
+
+// ── REF/TOKEN BUILDER (mirrors onboarding page) ──
+function buildRef(){
+  var t=(Date.now().toString(36)+Math.random().toString(36).slice(2,8)).toUpperCase();
+  return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6)};
+}
+
+// ── SIGNING URL BUILDERS ──
+function buildOfferUrl(p,token,ref){
+  return SITE_URL+'/onboarding/offer.html?'+[
+    'token='+encodeURIComponent(token),'ref='+encodeURIComponent(ref),
+    'fn='+encodeURIComponent(p.FirstName||''),'ln='+encodeURIComponent(p.LastName||''),
+    'id='+encodeURIComponent(p.IDNumber||''),'mob='+encodeURIComponent(p.Mobile||''),
+    'em='+encodeURIComponent(p.PersonalEmail||''),'addr='+encodeURIComponent(p.Address||''),
+    'jt='+encodeURIComponent(p.JobTitle||''),'sal='+encodeURIComponent(p.Salary||''),
+    'sd='+encodeURIComponent(p.StartDate||''),'od='+encodeURIComponent(p.OfferDate||''),
+    'mgr='+encodeURIComponent(p.ReportsTo||''),'mgrem='+encodeURIComponent(p.ReportsToEmail||''),
+    'pow='+encodeURIComponent('Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town'),
+    'al='+encodeURIComponent(p.AnnualLeaveEntitlement||'15')
+  ].join('&');
+}
+function buildContractReviewUrl(p){
+  // Send HR to the contract-review page (pre-filled) so they can confirm terms before sending
+  var t=buildRef();
+  return SITE_URL+'/onboarding/contract-review.html?'+[
+    'token='+encodeURIComponent(t.token),'ref='+encodeURIComponent(p.EmployeeID||t.ref),
+    'fn='+encodeURIComponent(p.FirstName||''),'ln='+encodeURIComponent(p.LastName||''),
+    'id='+encodeURIComponent(p.IDNumber||''),'mob='+encodeURIComponent(p.Mobile||''),
+    'em='+encodeURIComponent(p.PersonalEmail||''),'addr='+encodeURIComponent(p.Address||''),
+    'jt='+encodeURIComponent(p.JobTitle||''),'sal='+encodeURIComponent(p.Salary||''),
+    'sd='+encodeURIComponent(p.StartDate||''),'od='+encodeURIComponent(p.OfferDate||''),
+    'mgr='+encodeURIComponent(p.ReportsTo||''),'mgrem='+encodeURIComponent(p.ReportsToEmail||'')
+  ].join('&');
+}
+function buildFormUrl(p,token){
+  return SITE_URL+'/onboarding/employee-form.html?'+[
+    'token='+encodeURIComponent(token),'ref='+encodeURIComponent(p.EmployeeID||''),
+    'fn='+encodeURIComponent(p.FirstName||''),'ln='+encodeURIComponent(p.LastName||''),
+    'id='+encodeURIComponent(p.IDNumber||''),'mob='+encodeURIComponent(p.Mobile||''),
+    'em='+encodeURIComponent(p.PersonalEmail||p.WorkEmail||''),'addr='+encodeURIComponent(p.Address||'')
+  ].join('&');
+}
+
+// ── LOAD PEOPLE ──
+function load(){
+  buildTabs();
+  gi('stageTitle').textContent=STAGES[STAGE].title;
+  gi('stageSub').textContent=STAGES[STAGE].sub;
+  fetch(GET_BY_STAGE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage:STAGE})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var raw;
+    if(!txt || !txt.trim()){ PEOPLE=[]; render(); return; }
+    try { raw = JSON.parse(txt); }
+    catch(e){ PEOPLE=[]; render(); return; }
+    if(raw && raw.body){ raw = typeof raw.body==='string' ? (raw.body.trim()?JSON.parse(raw.body):[]) : raw.body; }
+    var rows=raw;
+    var rs=raw&&(raw.ResultSets||raw.resultSets);
+    if(rs){var t=rs.Table1||rs.table1; rows=Array.isArray(t)?t:[];}
+    else if(raw&&Array.isArray(raw.Table1)) rows=raw.Table1;
+    else if(!Array.isArray(raw)) rows=(raw&&raw.value&&Array.isArray(raw.value))?raw.value:[];
+    PEOPLE=rows||[];
+    render();
+  })
+  .catch(function(err){
+    gi('content').innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>Could not load this stage.<br><small>'+esc(err.message)+'</small></div>';
+  });
+}
+
+// ── RENDER ──
+function render(){
+  gi('stageTitle').innerHTML=STAGES[STAGE].title+'<span class="count-pill">'+PEOPLE.length+'</span>';
+  if(!PEOPLE.length){
+    gi('content').innerHTML='<div class="empty"><div class="empty-icon">✓</div>No one is at this stage right now.</div>';
+    return;
+  }
+  gi('content').innerHTML='<div class="cards">'+PEOPLE.map(cardHtml).join('')+'</div>';
+}
+
+function cardHtml(p,idx){
+  var rows='';
+  function add(k,v){ if(v) rows+='<div class="row"><span class="k">'+k+'</span><span class="v">'+esc(v)+'</span></div>'; }
+  add('Email', p.PersonalEmail||p.WorkEmail);
+  add('Mobile', p.Mobile);
+  add('Campaign', p.Campaign);
+  add('Start date', p.StartDate);
+  add('Reports to', p.ReportsTo);
+  if(STAGE==='onboarding_needed') add('Status', p.Status);
+
+  // Primary action per stage
+  var action='';
+  if(STAGE==='offer_sent'){
+    action='<button class="btn btn-primary" onclick="resendOffer('+idx+')" id="act'+idx+'">↻ Resend offer</button>';
+  } else if(STAGE==='offer_signed'){
+    action='<a class="btn btn-green" href="'+buildContractReviewUrl(p)+'">→ Review &amp; send contract</a>';
+  } else if(STAGE==='contract_sent'){
+    action='<a class="btn btn-primary" href="'+buildContractReviewUrl(p)+'">↻ Resend contract</a>';
+  } else if(STAGE==='contract_signed'){
+    action='<button class="btn btn-green" onclick="sendForm('+idx+')" id="act'+idx+'">📋 Send onboarding form</button>';
+  } else if(STAGE==='onboarding_needed'){
+    action='<button class="btn btn-primary" onclick="sendForm('+idx+')" id="act'+idx+'">↻ Resend onboarding form</button>';
+  } else if(STAGE==='active'){
+    action='<a class="btn btn-outline" href="employees/">View employee record →</a>';
+  }
+
+  // Move-stage control
+  var statuses=['Offer Sent','Offer Signed','Contract Sent','Contract Signed','Onboarded','Active'];
+  var opts=statuses.map(function(s){return '<option'+(s===p.Status?' selected':'')+'>'+s+'</option>';}).join('');
+  var move='<div class="move-row"><select id="mv'+idx+'">'+opts+'</select><button onclick="moveStage('+idx+')">Move</button></div>';
+
+  return '<div class="card">'+
+    '<div class="card-head"><div class="avatar">'+initials(p.FirstName,p.LastName)+'</div>'+
+      '<div><div class="c-name">'+esc((p.FirstName||'')+' '+(p.LastName||''))+'</div>'+
+      '<div class="c-role">'+esc(p.JobTitle||'—')+'</div>'+
+      '<div class="c-ref">'+esc(p.EmployeeID||'')+'</div></div></div>'+
+    '<div class="card-body">'+rows+'</div>'+
+    '<div class="card-actions">'+action+
+      '<div class="action-result" id="res'+idx+'"></div>'+move+'</div>'+
+    '</div>';
+}
+
+// ── RESEND OFFER ──
+function resendOffer(idx){
+  var p=PEOPLE[idx], btn=gi('act'+idx), res=gi('res'+idx);
+  if(!confirm('Resend the offer to '+p.FirstName+' '+p.LastName+' ('+(p.PersonalEmail||'')+')?'))return;
+  btn.disabled=true; btn.textContent='Sending…';
+  var t=buildRef();
+  var sigUrl=buildOfferUrl(p,t.token,t.ref);
+  var payload={
+    action:'send_offer', ref:p.EmployeeID||t.ref,
+    candidate_first:p.FirstName, candidate_last:p.LastName,
+    candidate_email:p.PersonalEmail, candidate_id:p.IDNumber,
+    candidate_mobile:p.Mobile, candidate_address:p.Address,
+    job_title:p.JobTitle, campaign:p.Campaign, salary:p.Salary,
+    start_date:p.StartDate, offer_date:p.OfferDate,
+    reports_to:p.ReportsTo, reports_to_email:p.ReportsToEmail,
+    place_of_work:'Old Mutual Park, Jan Smuts Drive, Pinelands, Cape Town',
+    annual_leave:p.AnnualLeaveEntitlement||'15', background_check:'Complete',
+    signing_url:sigUrl, rudi_email:'rudij@trilogybpo.com'
+  };
+  fetch(SEND_OFFER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){if(r.ok||r.status===202){res.style.color='var(--green-dark)';res.textContent='✓ Offer resent';btn.textContent='↻ Resend offer';btn.disabled=false;}else{throw new Error('Failed');}})
+  .catch(function(){res.style.color='var(--red)';res.textContent='✗ Failed — try again';btn.textContent='↻ Resend offer';btn.disabled=false;});
+}
+
+// ── SEND ONBOARDING FORM ──
+function sendForm(idx){
+  var p=PEOPLE[idx], btn=gi('act'+idx), res=gi('res'+idx);
+  if(!confirm('Send the onboarding form to '+p.FirstName+' '+p.LastName+' ('+(p.PersonalEmail||p.WorkEmail||'')+')?'))return;
+  btn.disabled=true; btn.textContent='Sending…';
+  var token='EMP-'+Date.now()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  var url=buildFormUrl(p,token);
+  fetch(SEND_FORM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    employee_id:p.EmployeeID,first_name:p.FirstName,last_name:p.LastName,
+    email:p.PersonalEmail||p.WorkEmail,mobile:p.Mobile,form_url:url
+  })})
+  .then(function(r){if(r.ok||r.status===202){res.style.color='var(--green-dark)';res.textContent='✓ Form sent';btn.textContent=STAGE==='onboarding_needed'?'↻ Resend onboarding form':'📋 Send onboarding form';btn.disabled=false;}else{throw new Error('Failed');}})
+  .catch(function(){res.style.color='var(--red)';res.textContent='✗ Failed — try again';btn.disabled=false;});
+}
+
+// ── MOVE STAGE ──
+function moveStage(idx){
+  var p=PEOPLE[idx], res=gi('res'+idx);
+  var newStatus=gi('mv'+idx).value;
+  if(newStatus===p.Status){res.style.color='var(--text3)';res.textContent='Already at that status';return;}
+  if(!confirm('Move '+p.FirstName+' '+p.LastName+' to "'+newStatus+'"?'))return;
+  res.style.color='var(--text3)';res.textContent='Moving…';
+  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:p.EmployeeID,field:'Status',value:newStatus})})
+  .then(function(r){if(r.ok||r.status===202){res.style.color='var(--green-dark)';res.textContent='✓ Moved to '+newStatus;setTimeout(load,1200);}else{throw new Error('Failed');}})
+  .catch(function(){res.style.color='var(--red)';res.textContent='✗ Move failed';});
+}
+
+load();
+</script>
+</body>
+</html>

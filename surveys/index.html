@@ -3,273 +3,752 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilogy BPO — #vibecheck</title>
+<title>Trilogy BPO — HR Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.0.0/lib/msal-browser.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy-dark:#121212;
   --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
-  --navy:#1B2A4A;--navy2:#243659;--navy-dark:#121d33;
-  --graphite:#515151;--graphite2:#3a3a3a;
-  --bg:#1e1e1e;--surface:#2a2a2a;--surface2:#333;
-  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.15);
-  --text:#fff;--text2:rgba(255,255,255,.6);--text3:rgba(255,255,255,.35);
-  --radius:10px;--radius-lg:14px;--radius-xl:20px;
+  --offwhite:#F7F6F2;--slate:#4A5568;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --red:#c0392b;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
+.nav-logo{height:30px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);font-family:'Montserrat',sans-serif}
+.hero{background:var(--navy);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem;letter-spacing:-.02em}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:500px;line-height:1.7}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.stat{border-left:2px solid var(--green);padding-left:1rem}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1}
+.stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.shell{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.section-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--border)}
+.section-tag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
 
-/* NAV */
-.nav{background:var(--graphite2);padding:0 2rem;display:flex;align-items:center;height:60px;border-bottom:1px solid var(--border)}
-.nav-logo{height:26px}
+/* LOOKUP */
+.lookup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem}
+.lookup-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.lookup-header h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.lookup-header p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.lookup-view-all{font-size:11px;font-weight:600;color:var(--green);text-decoration:none;font-family:'Montserrat',sans-serif}
+.lookup-view-all:hover{opacity:.8}
+.lookup-body{padding:1.25rem 1.5rem}
+.lookup-row{display:flex;gap:10px;margin-bottom:1rem}
+.lookup-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--offwhite)}
+.lookup-input:focus{outline:none;border-color:var(--navy);background:#fff}
+.lookup-btn{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif}
+.lookup-btn:hover{background:var(--navy2)}
+.lookup-hint{font-size:12px;color:var(--text3);text-align:center;padding:.25rem 0}
+.lookup-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;display:none}
+.lookup-result{display:none}
+.result-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;flex-wrap:wrap}
+.result-avatar{width:46px;height:46px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.result-info{flex:1;min-width:180px}
+.result-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.result-role{font-size:12px;color:var(--text2);margin-bottom:.75rem}
+.result-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+.rmi{font-size:11px;color:var(--text3)}
+.rmi strong{display:block;color:var(--text);font-weight:600;margin-bottom:1px}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;font-family:'Montserrat',sans-serif}
+.s-offer-sent{background:#fff3cd;color:#856404}
+.s-offer-signed{background:#d1ecf1;color:#0c5460}
+.s-contract-sent{background:#cce5ff;color:#004085}
+.s-contract-signed{background:#d4edda;color:#155724}
+.s-complete{background:var(--green-light);color:var(--green-dark)}
+.s-draft{background:var(--surface2);color:var(--text3)}
+.rt-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin:.75rem 0 .4rem;font-family:'Montserrat',sans-serif;width:100%}
+.rt-track{display:flex;gap:4px}
+.rt-step{flex:1;height:6px;border-radius:3px;background:var(--border)}
+.rt-step.done{background:var(--navy)}
+.rt-step.active{background:var(--green)}
 
-/* HERO */
-.hero{background:var(--graphite);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden;text-align:center}
-.hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(74,253,14,.08) 0%,transparent 65%);pointer-events:none}
-.hero-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem}
-.hero-title{font-family:'Montserrat',sans-serif;font-size:42px;font-weight:800;color:var(--green);letter-spacing:-.02em;line-height:1;margin-bottom:.75rem}
-.hero-sub{font-size:14px;color:var(--text2);max-width:420px;margin:0 auto}
+/* MODULES */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;margin-bottom:2.5rem}
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;transition:all .18s;position:relative;overflow:hidden;text-decoration:none;display:block}
+.module-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .18s}
+.module-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.08);transform:translateY(-2px)}
+.module-card:hover::after{transform:scaleX(1)}
+.module-card.live-card{border-color:#515151}
+.module-card.live-card::after{transform:scaleX(1)}
+.module-card.placeholder{opacity:.5;pointer-events:none}
+.mc-icon{width:38px;height:38px;background:var(--offwhite);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.875rem}
+.mc-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.mc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:.5rem;font-family:'Montserrat',sans-serif}
+.badge-live{background:var(--green-light);color:var(--green-dark)}
+.badge-soon{background:var(--surface2);color:var(--text3)}
 
-/* CARD */
-.shell{max-width:600px;margin:0 auto;padding:2.5rem 1.5rem 5rem;width:100%}
+/* SETTINGS CARDS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.settings-card h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text)}
+.settings-card p{font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.5}
+.staff-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
+.staff-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
+.staff-av{width:26px;height:26px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.staff-name{flex:1;font-weight:500;color:var(--text)}
+.staff-email{color:var(--text3);font-size:11px}
+.staff-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.staff-rm:hover{color:var(--red)}
+.dept-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.875rem;max-height:180px;overflow-y:auto}
+.dept-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--offwhite);border-radius:var(--radius);font-size:12px}
+.dept-icon{width:26px;height:26px;background:#515151;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.dept-name{flex:1;font-weight:500;color:var(--text)}
+.dept-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.dept-rm:hover{color:var(--red)}
+.add-row{display:flex;gap:6px;margin-bottom:.75rem}
+.add-row input{flex:1;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;color:var(--text);min-width:0;background:var(--offwhite)}
+.add-row input:focus{outline:none;border-color:#515151;background:#fff}
+.btn-navy{padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.btn-navy:hover{background:var(--navy2)}
+.btn-full{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;width:100%;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);background:var(--offwhite);margin-bottom:8px}
+.btn-full:hover{background:#dddcda}
+.btn-full.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-full.primary:hover{background:var(--navy2)}
+.btn-full.green{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+.divider-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;margin:.75rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--offwhite)}
+.upload-zone:hover{border-color:#515151;background:#e2e1dd}
+.uz-icon{font-size:22px;margin-bottom:.25rem}
+.uz-text{font-size:12px;color:var(--text3)}
+.import-result{font-size:11px;color:var(--text3);margin-top:.5rem;min-height:16px;text-align:center}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px;margin:.75rem 0;max-height:140px;display:block;overflow-y:auto}
+.preview-table th{background:var(--navy);color:#fff;padding:5px 10px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0}
+.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border);color:var(--text2)}
+.preview-table tr:last-child td{border-bottom:none}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.25rem}
-.card-header{background:var(--graphite2);padding:1.1rem 1.5rem;border-bottom:1px solid var(--border)}
-.card-header h3{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
-.card-body{padding:1.5rem}
+/* VIBECHECK SECTION HEADER LINK */
+.section-head a.vibecheck-link{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--green-dark);text-decoration:none;border:1px solid var(--green-dark);padding:3px 10px;border-radius:20px}
+.section-head a.vibecheck-link:hover{background:var(--green-light)}
 
-/* DEPARTMENT */
-.field-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.6rem}
-select{width:100%;padding:12px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:'Wix Madefor Text',sans-serif;color:var(--text);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;transition:border-color .15s}
-select:focus{outline:none;border-color:var(--green)}
-select option{background:#333;color:#fff}
 
-/* SCALE */
-.scale-ends{display:flex;justify-content:space-between;margin-bottom:.6rem}
-.scale-end{font-size:11px;color:var(--text3);font-style:italic}
-.scale-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.scale-option{display:none}
-.scale-option + label{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--surface2);border:2px solid transparent;border-radius:var(--radius-lg);cursor:pointer;transition:all .2s;text-align:center}
-.scale-option + label .emoji{font-size:28px;line-height:1;transition:transform .2s}
-.scale-option + label .word{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.05em;transition:color .2s}
-.scale-option + label:hover{border-color:rgba(74,253,14,.4);background:rgba(74,253,14,.05)}
-.scale-option + label:hover .emoji{transform:scale(1.15)}
-.scale-option:checked + label{border-color:var(--green);background:rgba(74,253,14,.1)}
-.scale-option:checked + label .word{color:var(--green)}
+.btn-send-vibe{padding:12px 24px;background:var(--green);color:#111;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-send-vibe:hover{background:#5fff1a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,253,14,.3)}
+.btn-send-vibe:disabled{opacity:.5;pointer-events:none}
 
-/* TEXT */
-textarea{width:100%;padding:14px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:'Wix Madefor Text',sans-serif;color:var(--text);resize:vertical;min-height:110px;line-height:1.6;transition:border-color .15s}
-textarea::placeholder{color:var(--text3)}
-textarea:focus{outline:none;border-color:var(--green)}
-
-/* SUBMIT */
-.submit-wrap{text-align:center;margin-top:1.5rem}
-.btn-submit{padding:15px 48px;background:var(--green);color:#111;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:.04em;cursor:pointer;transition:all .2s;opacity:.35;pointer-events:none}
-.btn-submit.ready{opacity:1;pointer-events:auto}
-.btn-submit.ready:hover{background:#5fff1a;transform:translateY(-1px);box-shadow:0 8px 24px rgba(74,253,14,.3)}
-.btn-submit.loading{opacity:.7;pointer-events:none}
-.submit-note{font-size:12px;color:var(--text3);margin-top:.75rem}
-
-/* STATES */
-.error-msg{display:none;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:#e74c3c;margin-top:1rem;text-align:center}
-.error-msg.show{display:block}
-
-/* THANK YOU */
-.thankyou{display:none;text-align:center;padding:3rem 1.5rem}
-.thankyou-icon{font-size:56px;margin-bottom:1rem}
-.thankyou-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:var(--green);margin-bottom:.75rem}
-.thankyou-msg{font-size:14px;color:var(--text2);max-width:360px;margin:0 auto}
-
+.pipe-step{display:flex;align-items:center;gap:0;position:relative}
+.pipe-step .pipe-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1;min-width:40px}
+.pipe-step .pipe-label{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px;margin-right:4px}
+.pipe-step .pipe-arrow{font-size:18px;color:var(--green);margin:0 12px;font-weight:700}
+.pipe-step.last .pipe-num{color:var(--green)}
+.pipe-block{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.75rem 1.25rem;min-width:110px;transition:background .15s;cursor:pointer}
+.pipe-block:hover{background:rgba(255,255,255,.1)}
+.pipe-block-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1}
+.pipe-block-label{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:center;white-space:nowrap}
+.pipe-block-last .pipe-block-num{color:var(--green)}
+.pipe-block-arrow{font-size:18px;color:var(--green);font-weight:700;margin:0 8px}
 /* FOOTER */
-.footer{margin-top:auto;padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--border)}
-.footer-logo{height:18px;opacity:.4}
-.footer-note{font-size:11px;color:var(--text3);margin-top:.5rem}
-
-@media(max-width:480px){
-  .hero-title{font-size:32px}
-  .scale-option+label .emoji{font-size:22px}
-  .scale-option+label .word{font-size:10px}
-  .scale-option+label{padding:10px 4px}
-}
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:20px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+@media(max-width:760px){.settings-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr 1fr}.hero-title{font-size:22px}.shell{padding:1.5rem 1rem 4rem}}
+@media(max-width:440px){.module-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<!-- ════════════════════════════════════════════════════════
+     HR PORTAL LOGIN GATE — Microsoft SSO + per-user access
+════════════════════════════════════════════════════════ -->
+<div id="hr-login-gate" style="position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 60" height="36" style="margin-bottom:24px">
+      <rect x="0"  y="0" width="14" height="60" rx="7" fill="#A2E000"/>
+      <rect x="19" y="0" width="14" height="60" rx="7" fill="#4AFD0E"/>
+      <rect x="38" y="0" width="14" height="60" rx="7" fill="#1AAA00"/>
+    </svg>
+    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">HR Portal</div>
+    <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised HR staff only</div>
+    <button onclick="hrSignIn()" id="hr-signin-btn"
+      style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:13px;background:#fff;color:#1B2A4A;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em">
+      <svg width="18" height="18" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#F35325"/><rect x="11" y="1" width="9" height="9" fill="#81BC06"/>
+        <rect x="1" y="11" width="9" height="9" fill="#05A6F0"/><rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <div id="hr-login-err" style="margin-top:14px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none;line-height:1.5"></div>
+    <div style="margin-top:28px;color:rgba(255,255,255,.15);font-size:11px">Trilogy CX (Pty) Ltd · Internal use only</div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  HR PORTAL — Microsoft SSO + per-module access control
+// ════════════════════════════════════════════════════════
+var HR_CONFIG = {
+  azureClientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
+  azureTenantId: '77cde95f-930f-495e-89c6-4d2c30f6df21',
+  redirectUri:   'https://hr.trilogybpo.com',
+};
+// ⚠️ Build this flow per the setup guide, then paste its URL here:
+var HR_VALIDATE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/25059a71e4e24ff59e5e618eed688f09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CbE0E5f48tBPP33QhGRKp81sctHC_mcJZgKolWqqJy8';
+
+var HR_SESSION_KEY = 'hrportal_session';
+var hrMsal = null;
+var HR_SESSION = null;  // {email, displayName, role, modules:[...]}
+
+function hrShowErr(msg){ var e=document.getElementById('hr-login-err'); e.textContent=msg; e.style.display='block'; }
+
+function hrUnwrap(d){ if(!d) return {}; if(typeof d==='string'){try{return hrUnwrap(JSON.parse(d));}catch(e){return {};}} if(d.body){return typeof d.body==='string'?hrUnwrap(JSON.parse(d.body)):hrUnwrap(d.body);} return d; }
+
+async function hrCallFlow(url, body){
+  var r = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  if(!r.ok) throw new Error('Flow HTTP '+r.status);
+  var t = await r.text();
+  if(!t || t==='null' || t==='') return {};
+  try { return hrUnwrap(JSON.parse(t)); } catch(e){ return {}; }
+}
+
+async function hrInitAuth(){
+  if(HR_VALIDATE_URL.indexOf('PASTE_')===0){
+    hrShowErr('Setup required: the HR validate-user flow URL has not been configured.');
+    return;
+  }
+  hrMsal = new msal.PublicClientApplication({
+    auth:{ clientId:HR_CONFIG.azureClientId, authority:'https://login.microsoftonline.com/'+HR_CONFIG.azureTenantId, redirectUri:HR_CONFIG.redirectUri },
+    cache:{ cacheLocation:'sessionStorage', storeAuthStateInCookie:true },
+  });
+  await hrMsal.initialize();
+  try {
+    var resp = await hrMsal.handleRedirectPromise();
+    if(resp){ await hrValidate(resp.account); return; }
+  } catch(e){ console.warn('Redirect:', e); }
+  var accts = hrMsal.getAllAccounts();
+  if(accts.length){ await hrValidate(accts[0]); }
+}
+
+function hrSignIn(){
+  document.getElementById('hr-login-err').style.display='none';
+  if(!hrMsal){ hrShowErr('Authentication not ready — please refresh.'); return; }
+  hrMsal.loginRedirect({ scopes:['User.Read'] }).catch(function(e){
+    if(e.errorCode!=='user_cancelled') hrShowErr(e.message||'Sign-in failed.');
+  });
+}
+
+async function hrValidate(account){
+  var btn=document.getElementById('hr-signin-btn');
+  if(btn){ btn.textContent='Verifying access…'; btn.disabled=true; }
+  try {
+    var email = (account.username||'').toLowerCase();
+    var result = await hrCallFlow(HR_VALIDATE_URL, { email: email });
+    var rows = Array.isArray(result) ? result : (result.value||[]);
+    if(!rows.length){
+      hrShowErr('Access denied. Your account ('+account.username+') is not authorised for the HR Portal. Contact the administrator.');
+      if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
+      return;
+    }
+    var u = rows[0];
+    if((u.IsActive===false)||(u.IsActive===0)||(u.IsActive==='0')||(u.IsActive==='false')){
+      hrShowErr('Your HR Portal access has been deactivated. Contact the administrator.');
+      if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
+      return;
+    }
+    HR_SESSION = {
+      email:       u.UserEmail || email,
+      displayName: u.DisplayName || account.name || email,
+      role:        (u.Role||'user').toLowerCase(),
+      modules:     (u.Modules||'').split(',').map(function(m){return m.trim().toLowerCase();}).filter(Boolean),
+    };
+    sessionStorage.setItem(HR_SESSION_KEY, JSON.stringify(HR_SESSION));
+    hrApplyAccess();
+  } catch(err){
+    console.error('HR validate:', err);
+    hrShowErr('Could not verify access: '+(err.message||'unknown error'));
+    if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
+  }
+}
+
+function hrApplyAccess(){
+  if(!HR_SESSION) return;
+  var isAdmin = HR_SESSION.role==='admin';
+  // Admin sees everything; others only the modules they're granted
+  document.querySelectorAll('[data-module]').forEach(function(card){
+    var mod = card.getAttribute('data-module').toLowerCase();
+    var allowed = isAdmin || HR_SESSION.modules.indexOf(mod)>=0;
+    if(!allowed) card.style.display='none';
+  });
+  // Show the admin "Manage Access" card only for admins
+  var adminCard = document.getElementById('hr-admin-card');
+  if(adminCard) adminCard.style.display = isAdmin ? '' : 'none';
+  // Fill nav identity if those elements exist
+  var navName = document.getElementById('hr-nav-name');
+  if(navName) navName.textContent = HR_SESSION.displayName.split(' ')[0];
+  var navRole = document.getElementById('hr-nav-role');
+  if(navRole) navRole.textContent = isAdmin ? 'Admin' : 'HR User';
+  // Hide the gate
+  var gate=document.getElementById('hr-login-gate');
+  gate.style.opacity='0'; gate.style.transition='opacity .3s';
+  setTimeout(function(){ gate.style.display='none'; }, 300);
+}
+
+function hrSignOut(){
+  sessionStorage.removeItem(HR_SESSION_KEY);
+  if(hrMsal) hrMsal.logoutRedirect(); else location.reload();
+}
+
+// On load: restore session if present, else run SSO
+(function(){
+  var saved = sessionStorage.getItem(HR_SESSION_KEY);
+  if(saved){
+    try {
+      HR_SESSION = JSON.parse(saved);
+      // apply access once DOM is ready
+      if(document.readyState!=='loading') hrApplyAccess();
+      else document.addEventListener('DOMContentLoaded', hrApplyAccess);
+    } catch(e){ sessionStorage.removeItem(HR_SESSION_KEY); }
+  }
+  // Always init MSAL (handles the redirect-back case + fresh sign-in)
+  if(document.readyState!=='loading') hrInitAuth();
+  else document.addEventListener('DOMContentLoaded', hrInitAuth);
+})();
+</script>
+
 <nav class="nav">
-  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">HR Portal</div>
+  </div>
+  <div class="nav-right">
+    <span id="hr-nav-name" style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2)"></span>
+    <span id="hr-nav-role" style="background:rgba(74,253,14,0.14);color:var(--green-dark);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:4px"></span>
+    <button onclick="hrSignOut()" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer">Sign out</button>
+  </div>
 </nav>
 
 <div class="hero">
-  <div class="hero-label">Weekly Check-in</div>
-  <div class="hero-title">#vibecheck</div>
-  <div class="hero-sub">Two quick questions. No name needed. Your honest take helps us make things better.</div>
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO</div>
+    <h1 class="hero-title">People Operations<br><span>Central.</span></h1>
+    <p class="hero-sub">Manage the full employee lifecycle — from job requisition through to probation confirmation — in one place.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="statManagers">—</div><div class="stat-label">Managers loaded</div></div>
+      <a href="pipeline.html?stage=active" class="stat" style="text-decoration:none;cursor:pointer"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active employees →</div></a>
+    </div>
+    <div style="margin-top:1.75rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:rgba(255,255,255,.06);border:1px solid rgba(74,253,14,.3);border-radius:12px;padding:1rem 1.25rem">
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:.2rem">📲 Send this week's #vibecheck</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5)">Every Thursday — or whenever you're ready. Goes to all active @trilogybpo.com employees.</div>
+        </div>
+        <button class="btn-send-vibe" id="sendVibeBtn" onclick="sendVibecheck()">
+          <span id="sendVibeBtnLabel">✌️ Send #vibecheck now</span>
+        </button>
+      </div>
+      <div id="sendVibeResult" style="font-size:12px;margin-top:.5rem;min-height:16px;text-align:right;color:rgba(255,255,255,.6)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE SECTION -->
+<div style="background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
+      <a href="pipeline.html?stage=offer_sent" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statOfferSent">—</div>
+        <div class="pipe-block-label">Offer/s sent</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=offer_signed" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statOfferSigned">—</div>
+        <div class="pipe-block-label">Offer/s accepted</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=contract_sent" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statContractSent">—</div>
+        <div class="pipe-block-label">Contract/s sent</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=contract_signed" class="pipe-block pipe-block-last" style="text-decoration:none">
+        <div class="pipe-block-num" id="statContractSigned">—</div>
+        <div class="pipe-block-label">Contract/s signed</div>
+      </a>
+    </div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08)">
+      <a href="pipeline.html?stage=onboarding_needed" class="pipe-block" style="text-decoration:none;border-color:rgba(230,126,34,.4)">
+        <div class="pipe-block-num" id="statToOnboard" style="color:#e67e22">—</div>
+        <div class="pipe-block-label">To be onboarded</div>
+      </a>
+      <div class="pipe-block-arrow" style="color:rgba(255,255,255,.2)">·</div>
+      <div class="pipe-block" style="cursor:default">
+        <div class="pipe-block-num" id="statTotal" style="color:rgba(255,255,255,.5)">—</div>
+        <div class="pipe-block-label">Total in system</div>
+      </div>
+    </div>
+  </div>
+  </div>
 </div>
 
 <div class="shell">
 
-  <!-- DEPARTMENT -->
-  <div class="card">
-    <div class="card-header"><h3>Your Campaign</h3></div>
-    <div class="card-body">
-      <div class="field-label">Select your department</div>
-      <select id="dept">
-        <option value="">— loading campaigns… —</option>
-      </select>
+  <!-- EMPLOYEE LOOKUP -->
+  <div class="section-head"><h2>Employee lookup</h2><div class="section-line"></div><div class="section-tag">Quick search</div></div>
+  <div class="lookup-card">
+    <div class="lookup-header">
+      <div><h3>Find an employee</h3><p>Search by name or reference number</p></div>
+      <a href="employees" class="lookup-view-all">View all records →</a>
     </div>
-  </div>
-
-  <!-- VIBE SCALE -->
-  <div class="card">
-    <div class="card-header"><h3>How was your week?</h3></div>
-    <div class="card-body">
-      <div class="scale-ends">
-        <span class="scale-end">send help</span>
-        <span class="scale-end">living my best life</span>
+    <div class="lookup-body">
+      <div class="lookup-row">
+        <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. John Smith or TBP-2026-AB1234" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="lookup-btn" onclick="doLookup()">Search</button>
       </div>
-      <div class="scale-grid">
-        <div>
-          <input class="scale-option" type="radio" name="vibe" id="v1" value="1">
-          <label for="v1"><span class="emoji">😮‍💨</span><span class="word">Tough</span></label>
-        </div>
-        <div>
-          <input class="scale-option" type="radio" name="vibe" id="v2" value="2">
-          <label for="v2"><span class="emoji">😶</span><span class="word">Meh</span></label>
-        </div>
-        <div>
-          <input class="scale-option" type="radio" name="vibe" id="v3" value="3">
-          <label for="v3"><span class="emoji">🙂</span><span class="word">Decent</span></label>
-        </div>
-        <div>
-          <input class="scale-option" type="radio" name="vibe" id="v4" value="4">
-          <label for="v4"><span class="emoji">😎</span><span class="word">Vibing</span></label>
-        </div>
-        <div>
-          <input class="scale-option" type="radio" name="vibe" id="v5" value="5">
-          <label for="v5"><span class="emoji">🤩</span><span class="word">Unreal</span></label>
-        </div>
+      <div class="lookup-hint" id="lookupHint">Enter a name or reference number and press Search</div>
+      <div class="lookup-empty" id="lookupEmpty">No matching record found.</div>
+      <div class="lookup-result" id="lookupResult"></div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
+  <div class="module-grid">
+    <a href="onboarding" class="module-card live-card" data-module="onboarding">
+      <div class="mc-icon">👤</div>
+      <div class="mc-title">Employee Onboarding</div>
+      <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="employees" class="module-card live-card" data-module="records">
+      <div class="mc-icon">🗃️</div>
+      <div class="mc-title">Employee Records</div>
+      <div class="mc-desc">Search, track and manage all onboarding cases</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="surveys" class="module-card live-card" data-module="vibecheck">
+      <div class="mc-icon">✌️</div>
+      <div class="mc-title">#vibecheck</div>
+      <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="surveys/report.html" class="module-card live-card" data-module="vibecheck_reports">
+      <div class="mc-icon">📊</div>
+      <div class="mc-title">Real Time #vibecheck Reports</div>
+      <div class="mc-desc">Live dashboard — weekly trends, scores by campaign, response feed</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+    <a href="oldreset.html" class="module-card" data-module="reset" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
+    <a href="leave" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="disciplinary" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="payroll" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="hr-admin.html" class="module-card live-card" id="hr-admin-card" data-module="admin" style="display:none;border-color:#1B2A4A"><div class="mc-icon">🔐</div><div class="mc-title">Manage Access</div><div class="mc-desc">Add HR portal users and control module permissions</div><div class="mc-badge" style="background:#e8eefc;color:#1B2A4A">Admin</div></a>
+    <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">🧾</div><div class="mc-title">Tax Documentation</div><div class="mc-desc">IT77, IRP5 declarations, SARS submissions</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">📚</div><div class="mc-title">Policy Documents</div><div class="mc-desc">Handbook, absence, code of conduct issuance</div><div class="mc-badge badge-soon">Coming soon</div></div>
+    <div class="module-card placeholder"><div class="mc-icon">🎓</div><div class="mc-title">Skills Development</div><div class="mc-desc">BBBEE, SETA records, training documentation</div><div class="mc-badge badge-soon">Coming soon</div></div>
+  </div>
+
+  <!-- MANAGERS SETTINGS -->
+  <div class="section-head"><h2>Reporting-to managers</h2><div class="section-line"></div><div class="section-tag">Manage list</div></div>
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Current managers</h3>
+      <p>Add or remove managers below. When done, click <strong>Save to GitHub</strong> to update the onboarding dropdown for everyone instantly.</p>
+      <div class="staff-list" id="staffList"></div>
+      <div class="add-row">
+        <input type="text" id="newName" placeholder="Full name">
+        <input type="email" id="newEmail" placeholder="email@trilogybpo.com">
+        <button class="btn-navy" onclick="addStaff()">Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-full" onclick="exportJSON()" style="margin-bottom:0">⬇ Download managers.json</button>
+        <button class="btn-full primary" onclick="saveToGitHub('managers')" style="margin-bottom:0" id="saveBtn">☁ Save to GitHub</button>
+      </div>
+      <div id="saveResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
+    </div>
+    <div class="settings-card">
+      <h3>GitHub settings</h3>
+      <p>Your Personal Access Token is used by all <strong>Save to GitHub</strong> buttons on this page. Stored in your browser only.</p>
+      <div style="margin-bottom:6px">
+        <label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">GitHub Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;background:var(--offwhite);color:var(--text)">
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HR+Portal" target="_blank" style="color:#515151">Generate one here →</a></div>
       </div>
     </div>
   </div>
 
-  <!-- WHY -->
-  <div class="card">
-    <div class="card-header"><h3>Tell us why</h3></div>
-    <div class="card-body">
-      <textarea id="reason" placeholder="What made it that kind of week? Be as real as you want — this is anonymous." rows="4"></textarea>
+  <!-- CAMPAIGNS / PROJECTS -->
+  <div class="section-head"><h2>Campaigns / Projects</h2><div class="section-line"></div><div class="section-tag">Manage list</div></div>
+  <div class="settings-grid">
+    <div class="settings-card">
+      <h3>Current campaigns / projects</h3>
+      <p>Add or remove campaigns below. Click <strong>Save to GitHub</strong> to update the dropdown in the onboarding form instantly.</p>
+      <div class="dept-list" id="campList"></div>
+      <div class="add-row">
+        <input type="text" id="newCamp" placeholder="Campaign or project name">
+        <button class="btn-navy" onclick="addCamp()">Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-full" onclick="exportCampJSON()" style="margin-bottom:0">⬇ Download campaigns.json</button>
+        <button class="btn-full primary" onclick="saveToGitHub('campaigns')" style="margin-bottom:0" id="saveCampBtn">☁ Save to GitHub</button>
+      </div>
+      <div id="saveCampResult" style="font-size:11px;margin-top:6px;text-align:center;min-height:16px"></div>
     </div>
   </div>
 
-  <div class="submit-wrap">
-    <button class="btn-submit" id="submitBtn" onclick="submitVibe()">Submit my vibe</button>
-    <div class="submit-note">Anonymous · Takes 30 seconds · Closes Sunday</div>
-    <div class="error-msg" id="errorMsg">Something went wrong — please try again. If it keeps failing, let your manager know.</div>
-  </div>
-
-  <div class="thankyou" id="thankyou">
-    <div class="thankyou-icon">🤩</div>
-    <div class="thankyou-title">Vibe received.</div>
-    <div class="thankyou-msg">Thanks for checking in. Your feedback goes straight to the team — no names, just real data. See you next week.</div>
-  </div>
 
 </div>
 
-<footer class="footer">
-  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="footer-logo">
-  <div class="footer-note">Trilogy CX (Pty) Ltd · Responses are anonymous and used for internal improvement only</div>
-</footer>
+<div class="footer">
+  <div class="footer-inner">
+    <img src="trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
 
 <script>
-// CTO: paste your Power Automate HTTP trigger URL here
-const WEBHOOK_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6f2b3f4d88f04d4c95bf41cfa90da13b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qd6OowzTcW3Zbsk3UHU8VRMlRTwu4pPLmTKLv5LcV4E';
+var BASE = '';
+var MANAGERS_URL = BASE + '/managers.json';
+var CAMPAIGNS_URL = BASE + '/campaigns.json';
 
-// Load departments from repo
-const DEPARTMENTS_URL = '/campaigns.json';
-(function loadDepartments(){
-  fetch(DEPARTMENTS_URL + '?v=' + Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var sel = document.getElementById('dept');
-      sel.innerHTML = '<option value="">— choose your campaign —</option>';
-      data.forEach(function(d){
-        var o = document.createElement('option');
-        o.value = d.name; o.textContent = d.name;
-        sel.appendChild(o);
-      });
+/* ── EMPLOYEES ── */
+var employees = [
+  {name:'John Smith',ref:'TBP-2026-AP8XUM',role:'CEO',start:'01/07/2026',manager:'Tanya Phillips',status:'Offer Sent',stage:1},
+  {name:'Graham Smith',ref:'TBP-2026-B3LF8D',role:'Chief Bottle Washer',start:'01/06/2026',manager:'Tanya Phillips',status:'Offer Signed',stage:2}
+];
+
+function statusClass(s){var m={'Offer Sent':'s-offer-sent','Offer Signed':'s-offer-signed','Contract Sent':'s-contract-sent','Contract Signed':'s-contract-signed','Complete':'s-complete'};return m[s]||'s-draft';}
+function initials(n){return n.split(' ').map(function(w){return w[0];}).slice(0,2).join('');}
+
+window.doLookup = function(){
+  var q=document.getElementById('lookupInput').value.trim().toLowerCase();
+  document.getElementById('lookupHint').style.display='none';
+  document.getElementById('lookupEmpty').style.display='none';
+  document.getElementById('lookupResult').style.display='none';
+  if(!q)return;
+  var found=employees.filter(function(e){return e.name.toLowerCase().includes(q)||e.ref.toLowerCase().includes(q);});
+  if(!found.length){document.getElementById('lookupEmpty').style.display='block';return;}
+  var html=found.map(function(e){
+    var steps=[0,1,2,3,4].map(function(i){return '<div class="rt-step'+(i<e.stage?' done':i===e.stage?' active':'')+'"></div>';}).join('');
+    return '<div class="result-card">'+
+      '<div class="result-avatar">'+initials(e.name)+'</div>'+
+      '<div class="result-info">'+
+        '<div class="result-name">'+e.name+'</div>'+
+        '<div class="result-role">'+e.role+'</div>'+
+        '<div class="result-meta">'+
+          '<div class="rmi"><strong>Reference</strong>'+e.ref+'</div>'+
+          '<div class="rmi"><strong>Start date</strong>'+e.start+'</div>'+
+          '<div class="rmi"><strong>Manager</strong>'+e.manager+'</div>'+
+        '</div>'+
+        '<div class="rt-label">Progress</div><div class="rt-track">'+steps+'</div>'+
+      '</div>'+
+      '<div><span class="status-pill '+statusClass(e.status)+'">'+e.status+'</span></div>'+
+      '</div>';
+  }).join('<div style="height:8px"></div>');
+  var r=document.getElementById('lookupResult'); r.innerHTML=html; r.style.display='block';
+};
+
+/* ── MANAGERS ── */
+var staffData=[];
+
+function loadManagers(){
+  fetch(MANAGERS_URL+'?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){staffData=d;renderStaff();})
+    .catch(function(){
+      staffData=[{name:'Tanya Phillips',email:'tanyap@trilogybpo.com'},{name:'Rudi Jacobs',email:'rudij@trilogybpo.com'},{name:'Kobus van der Westhuizen',email:'kobus@trilogybpo.com'}];
+      renderStaff();
+    });
+}
+
+function renderStaff(){
+  var list=document.getElementById('staffList'); list.innerHTML='';
+  staffData.forEach(function(s,i){
+    var ini=s.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('');
+    var r=document.createElement('div'); r.className='staff-row';
+    r.innerHTML='<div class="staff-av">'+ini+'</div>'+
+      '<div style="flex:1"><div class="staff-name">'+s.name+'</div><div class="staff-email">'+s.email+'</div></div>'+
+      '<button class="staff-rm" onclick="removeStaff('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+  document.getElementById('statManagers').textContent=staffData.length;
+}
+
+window.addStaff=function(){
+  var n=document.getElementById('newName').value.trim(), e=document.getElementById('newEmail').value.trim();
+  if(!n||!e){alert('Please enter both a name and email address.');return;}
+  staffData.push({name:n,email:e});
+  document.getElementById('newName').value=''; document.getElementById('newEmail').value='';
+  renderStaff();
+};
+window.removeStaff=function(i){
+  var name=staffData[i]?staffData[i].name:'this manager';
+  if(!confirm('Remove '+name+'?\n\nThis is permanent and will update the reporting-to dropdown for everyone immediately. Are you sure?'))return;
+  staffData.splice(i,1);renderStaff();
+};
+window.exportJSON=function(){
+  var json=JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='managers.json'; a.click();
+};
+
+/* ── DEPARTMENTS ──  (removed — departments UI removed) */
+
+
+
+/* ── CAMPAIGNS ── */
+var campData=[];
+var campImportBuffer=[];
+
+function loadCampaigns(){
+  fetch(CAMPAIGNS_URL+'?v='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){campData=d;renderCamps();})
+    .catch(function(){campData=[{name:'UK Telco Campaign'},{name:'NADClinic'}];renderCamps();});
+}
+
+function renderCamps(){
+  var list=document.getElementById('campList'); list.innerHTML='';
+  campData.forEach(function(c,i){
+    var r=document.createElement('div'); r.className='dept-row';
+    r.innerHTML='<div class="dept-icon">📁</div>'+
+      '<div class="dept-name">'+c.name+'</div>'+
+      '<button class="dept-rm" onclick="removeCamp('+i+')" title="Remove">✕</button>';
+    list.appendChild(r);
+  });
+}
+
+window.addCamp=function(){
+  var n=document.getElementById('newCamp').value.trim();
+  if(!n){alert('Please enter a campaign or project name.');return;}
+  campData.push({name:n});
+  document.getElementById('newCamp').value='';
+  renderCamps();
+};
+window.removeCamp=function(i){
+  var name=campData[i]?campData[i].name:'this campaign';
+  if(!confirm('Remove '+name+'?\n\nThis is permanent and will update the campaign dropdown for everyone immediately. Are you sure?'))return;
+  campData.splice(i,1);renderCamps();
+};
+window.exportCampJSON=function(){
+  var json=JSON.stringify(campData,null,2);
+  var a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json); a.download='campaigns.json'; a.click();
+};
+
+/* ── SHARED GITHUB SAVE ── */
+window.saveToGitHub=function(type){
+  var token=document.getElementById('ghToken').value.trim();
+  if(!token){alert('Please enter your GitHub Personal Access Token.\n\nClick the "Generate one here" link in the Managers section.');return;}
+
+  var isManagers=(type==='managers');
+  var filename = type==='managers' ? 'managers.json' : type==='campaigns' ? 'campaigns.json' : 'departments.json';
+  var payload = type==='managers'
+    ? JSON.stringify(staffData.map(function(s){return {name:s.name,email:s.email};}),null,2)
+    : type==='campaigns'
+    ? JSON.stringify(campData,null,2)
+    : JSON.stringify(deptData,null,2);
+  var encoded=btoa(unescape(encodeURIComponent(payload)));
+  var btnId = type==='managers' ? 'saveBtn' : type==='campaigns' ? 'saveCampBtn' : 'saveDeptBtn';
+  var resId = type==='managers' ? 'saveResult' : type==='campaigns' ? 'saveCampResult' : 'saveDeptResult';
+  var btn=document.getElementById(btnId);
+  var res=document.getElementById(resId);
+  btn.textContent='Saving…'; btn.disabled=true; res.textContent='';
+
+  fetch('https://api.github.com/repos/thegreatcornolio/Trilogy-HR-Dashboards/contents/'+filename,{
+    headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    return fetch('https://api.github.com/repos/thegreatcornolio/Trilogy-HR-Dashboards/contents/'+filename,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'Update '+filename+' via HR Portal',content:encoded,sha:data.sha})
+    });
+  })
+  .then(function(r){
+    if(r.ok){
+      res.innerHTML='<span style="color:var(--green-dark)">✓ Saved to GitHub. Will update within 60 seconds.</span>';
+    } else {return r.json().then(function(e){throw new Error(e.message);});}
+    btn.textContent=isManagers?'☁ Save to GitHub':'☁ Save to GitHub'; btn.disabled=false;
+  })
+  .catch(function(err){
+    res.innerHTML='<span style="color:var(--red)">✗ '+err.message+'</span>';
+    btn.textContent='☁ Save to GitHub'; btn.disabled=false;
+  });
+};
+
+/* ── STATS ── */
+var STATS_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e54b6a40ef5d4efab809ff93acf7def5/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=l87x_OZui4-AsVm1pkgO46gFtZ1NuwUwPydtn58ioWY';
+function loadStats(){
+  fetch(STATS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'get_stats'})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      console.log('Stats raw response:', JSON.stringify(d));
+      var data = d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
+      console.log('Stats parsed data:', JSON.stringify(data));
+      document.getElementById('statActive').textContent=typeof data.active!=='undefined'?data.active:0;
+      document.getElementById('statTotal').textContent=typeof data.total!=='undefined'?data.total:0;
+      document.getElementById('statOfferSent').textContent=typeof data.offer_sent!=='undefined'?data.offer_sent:0;
+      document.getElementById('statOfferSigned').textContent=typeof data.offer_signed!=='undefined'?data.offer_signed:0;
+      document.getElementById('statContractSent').textContent=typeof data.contract_sent!=='undefined'?data.contract_sent:0;
+      document.getElementById('statContractSigned').textContent=typeof data.contract_signed!=='undefined'?data.contract_signed:0;
+      var toOnb=document.getElementById('statToOnboard'); if(toOnb) toOnb.textContent=typeof data.to_onboard!=='undefined'?data.to_onboard:0;
     })
     .catch(function(){
-      var sel = document.getElementById('dept');
-      sel.innerHTML = '<option value="">— choose your campaign —</option><option value="NADClinic">NADClinic</option>';
+      document.getElementById('statActive').textContent='0';
+      document.getElementById('statTotal').textContent='0';
+      document.getElementById('statOfferSent').textContent='0';
+      document.getElementById('statOfferSigned').textContent='0';
+      document.getElementById('statContractSent').textContent='0';
+      document.getElementById('statContractSigned').textContent='0';
     });
-})();
-
-const vibeLabels = {1:'Tough',2:'Meh',3:'Decent',4:'Vibing',5:'Unreal'};
-
-function getWeekNumber(d) {
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
-function checkReady() {
-  const dept = document.getElementById('dept').value;
-  const vibe = document.querySelector('input[name="vibe"]:checked');
-  const reason = document.getElementById('reason').value.trim();
-  const btn = document.getElementById('submitBtn');
-  btn.classList.toggle('ready', !!(dept && vibe && reason.length > 0));
-}
 
-document.getElementById('dept').addEventListener('change', checkReady);
-document.querySelectorAll('input[name="vibe"]').forEach(r => r.addEventListener('change', checkReady));
-document.getElementById('reason').addEventListener('input', checkReady);
+/* ── SEND VIBECHECK ── */
+var VIBECHECK_TRIGGER_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/417488f694614043990624dcb3b111d5/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iM6fMXsu4X9BiK8bFba9pDYQhxsdWw34KHzH9x0QSqQ';
 
-async function submitVibe() {
-  const dept = document.getElementById('dept').value;
-  const vibeScore = parseInt(document.querySelector('input[name="vibe"]:checked').value);
-  const reason = document.getElementById('reason').value.trim();
-  const now = new Date();
+window.sendVibecheck = function(){
+  var btn = document.getElementById('sendVibeBtn');
+  var lbl = document.getElementById('sendVibeBtnLabel');
+  var res = document.getElementById('sendVibeResult');
+  if(!confirm('Send this week\'s #vibecheck email to all active @trilogybpo.com employees now?')) return;
+  btn.disabled = true;
+  lbl.textContent = 'Sending…';
+  res.textContent = '';
+  fetch(VIBECHECK_TRIGGER_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({triggered_by: 'hr_portal', triggered_at: new Date().toISOString()})
+  })
+  .then(function(r){
+    if(r.ok || r.status === 202){
+      lbl.textContent = '✌️ Send #vibecheck now';
+      res.innerHTML = '<span style="color:var(--green)">✓ #vibecheck sent! Emails are on their way to all @trilogybpo.com staff.</span>';
+    } else { throw new Error('Status '+r.status); }
+    btn.disabled = false;
+  })
+  .catch(function(err){
+    lbl.textContent = '✌️ Send #vibecheck now';
+    res.innerHTML = '<span style="color:var(--red)">✗ Something went wrong — '+err.message+'</span>';
+    btn.disabled = false;
+  });
+};
 
-  const payload = {
-    SubmittedAt: now.toISOString(),
-    WeekNumber: getWeekNumber(now),
-    WeekOf: now.toLocaleDateString('en-ZA', {day:'2-digit', month:'short', year:'numeric'}),
-    Department: dept,
-    VibeScore: vibeScore,
-    VibeLabel: vibeLabels[vibeScore],
-    Response: reason
-  };
-
-  const btn = document.getElementById('submitBtn');
-  const errMsg = document.getElementById('errorMsg');
-  btn.textContent = 'Sending…';
-  btn.classList.add('loading');
-  btn.classList.remove('ready');
-  errMsg.classList.remove('show');
-
-  try {
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) throw new Error('Non-200 response');
-
-    // Show thank you
-    document.querySelector('.card:nth-child(1)').style.display = 'none';
-    document.querySelector('.card:nth-child(2)').style.display = 'none';
-    document.querySelector('.card:nth-child(3)').style.display = 'none';
-    document.querySelector('.submit-wrap').style.display = 'none';
-    document.getElementById('thankyou').style.display = 'block';
-
-  } catch (err) {
-    btn.textContent = 'Submit my vibe';
-    btn.classList.remove('loading');
-    btn.classList.add('ready');
-    errMsg.classList.add('show');
-    console.error('Vibe submission error:', err);
-  }
-}
+loadStats();
+loadManagers();
+loadCampaigns();
 </script>
 </body>
 </html>
