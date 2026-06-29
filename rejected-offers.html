@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Rejected Offers</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243659;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c4c3bf;--bg:#e8e7e3;
+  --surface:#fff;--surface2:#f2f1ed;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --red:#c0392b;--red-light:#fdf0ef;--radius:8px;--radius-lg:12px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:.875rem 1.75rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{height:26px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-back{font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.nav-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(192,57,43,.25);color:#e74c3c;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#2d1a1a 100%);padding:2.5rem 2rem 2rem;border-bottom:3px solid rgba(192,57,43,.4)}
+.hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.5rem}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:.25rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.hero-stat{text-align:right}
+.hero-stat-num{font-family:'Montserrat',sans-serif;font-size:42px;font-weight:900;color:#e74c3c;line-height:1}
+.hero-stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.shell{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem}
+.card-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:1.25rem}
+.chart-wrap{position:relative;height:240px;display:flex;align-items:center;justify-content:center}
+.chart-center{position:absolute;text-align:center;pointer-events:none}
+.chart-center-num{font-family:'Montserrat',sans-serif;font-size:32px;font-weight:900;color:var(--text)}
+.chart-center-label{font-size:11px;color:var(--text3)}
+.legend{display:flex;flex-direction:column;gap:8px;margin-top:1rem}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-label{flex:1;color:var(--text2)}
+.legend-count{font-weight:700;color:var(--text);font-family:'Montserrat',sans-serif;font-size:12px}
+.legend-pct{color:var(--text3);font-size:11px;margin-left:2px}
+.bar-wrap{display:flex;flex-direction:column;gap:12px;margin-top:.5rem}
+.bar-row{display:flex;flex-direction:column;gap:4px}
+.bar-top{display:flex;justify-content:space-between;align-items:baseline}
+.bar-label{font-size:12px;color:var(--text2)}
+.bar-val{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text)}
+.bar-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#e74c3c,#c0392b);transition:width .6s ease}
+.feed-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.25rem}
+.feed-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.feed-header-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.feed-count{font-size:11px;color:var(--text3)}
+.feed-scroll{max-height:480px;overflow-y:auto}
+.feed-scroll::-webkit-scrollbar{width:4px}
+.feed-scroll::-webkit-scrollbar-track{background:transparent}
+.feed-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.feed-item{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;gap:.75rem;align-items:start}
+.feed-item:last-child{border-bottom:none}
+.feed-reason-badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.04em;white-space:nowrap}
+.feed-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.feed-note{font-size:13px;color:var(--text2);line-height:1.5;margin-top:4px;font-style:italic}
+.feed-name{font-size:12px;color:var(--text3);text-align:right;white-space:nowrap}
+.feed-date{font-size:11px;color:var(--text3);text-align:right}
+.loading{text-align:center;padding:3rem;color:var(--text3);font-size:13px}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.grid-2{grid-template-columns:1fr}.hero-stat{display:none}}
+</style>
+</head>
+<body>
+
+<script>
+(function(){
+  var s=sessionStorage.getItem('hrportal_session');
+  if(!s){window.location.replace('/');}
+})();
+</script>
+
+<nav class="nav">
+  <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+  <div class="nav-right">
+    <a href="/" class="nav-back">← Portal</a>
+    <div class="nav-badge">Offer Intelligence</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-label">Recruitment insights</div>
+      <div class="hero-title">Rejected Offers</div>
+      <div class="hero-sub">Why candidates are declining — and what they're saying about it.</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="heroTotal">—</div>
+      <div class="hero-stat-label">total rejections</div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div id="loadingState" class="loading">
+    <div class="spinner"></div>
+    Loading rejection data…
+  </div>
+
+  <div id="mainContent" style="display:none">
+
+    <div class="grid-2">
+      <!-- DOUGHNUT -->
+      <div class="card">
+        <div class="card-title">Reasons for declining</div>
+        <div class="chart-wrap">
+          <canvas id="reasonChart"></canvas>
+          <div class="chart-center">
+            <div class="chart-center-num" id="chartTotal">0</div>
+            <div class="chart-center-label">rejections</div>
+          </div>
+        </div>
+        <div class="legend" id="reasonLegend"></div>
+      </div>
+
+      <!-- BAR CHART BY CAMPAIGN -->
+      <div class="card">
+        <div class="card-title">Rejections by campaign</div>
+        <div class="bar-wrap" id="campaignBars"></div>
+      </div>
+    </div>
+
+    <!-- COMMENT FEED -->
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-header-title">What candidates are saying</div>
+        <div class="feed-count" id="feedCount"></div>
+      </div>
+      <div class="feed-scroll" id="feedScroll"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var GET_REJECTED_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cd6b89ab8a8343dcb8cfad88f7b30622/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tyn_5GTC1Hr3k1atcnrAxNApdWYYm88r_lb2hQMVLuk';
+
+var REASON_COLORS = {
+  'Salary not competitive': '#e74c3c',
+  'Accepted another offer': '#e67e22',
+  'Location not suitable':  '#f39c12',
+  'Personal reasons':       '#9b59b6',
+  'Role not as described':  '#3498db',
+  'Other':                  '#7a8499'
+};
+
+function reasonColor(r){
+  return REASON_COLORS[r] || REASON_COLORS['Other'];
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  var dt = new Date(d);
+  return dt.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function buildPage(records){
+  var total = records.length;
+  document.getElementById('heroTotal').textContent = total;
+  document.getElementById('chartTotal').textContent = total;
+  document.getElementById('feedCount').textContent = total + ' comment' + (total===1?'':'s');
+
+  // Count reasons
+  var reasonCounts = {};
+  records.forEach(function(r){
+    var reason = r.DeclineReason || 'Other';
+    reasonCounts[reason] = (reasonCounts[reason]||0) + 1;
+  });
+
+  var reasonLabels = Object.keys(reasonCounts).sort(function(a,b){return reasonCounts[b]-reasonCounts[a];});
+  var reasonVals = reasonLabels.map(function(l){return reasonCounts[l];});
+  var reasonColors = reasonLabels.map(function(l){return reasonColor(l);});
+
+  // Doughnut chart
+  var ctx = document.getElementById('reasonChart').getContext('2d');
+  new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:reasonLabels,datasets:[{data:reasonVals,backgroundColor:reasonColors,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' ('+Math.round(c.raw/total*100)+'%)';}}}}},
+  });
+
+  // Legend
+  var legend = document.getElementById('reasonLegend');
+  reasonLabels.forEach(function(label,i){
+    var pct = Math.round(reasonVals[i]/total*100);
+    legend.innerHTML += '<div class="legend-item">'+
+      '<div class="legend-dot" style="background:'+reasonColors[i]+'"></div>'+
+      '<div class="legend-label">'+label+'</div>'+
+      '<div class="legend-count">'+reasonVals[i]+'<span class="legend-pct">'+pct+'%</span></div>'+
+      '</div>';
+  });
+
+  // Campaign bars
+  var campCounts = {};
+  records.forEach(function(r){
+    var c = r.Campaign || 'Unknown';
+    campCounts[c] = (campCounts[c]||0)+1;
+  });
+  var campKeys = Object.keys(campCounts).sort(function(a,b){return campCounts[b]-campCounts[a];});
+  var maxCamp = Math.max.apply(null, campKeys.map(function(k){return campCounts[k];}));
+  var barsEl = document.getElementById('campaignBars');
+  campKeys.forEach(function(k){
+    var pct = Math.round(campCounts[k]/maxCamp*100);
+    barsEl.innerHTML += '<div class="bar-row">'+
+      '<div class="bar-top"><span class="bar-label">'+k+'</span><span class="bar-val">'+campCounts[k]+'</span></div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
+      '</div>';
+  });
+
+  // Comment feed
+  var feed = document.getElementById('feedScroll');
+  records.forEach(function(r){
+    var reason = r.DeclineReason || 'Other';
+    var color = reasonColor(reason);
+    feed.innerHTML += '<div class="feed-item">'+
+      '<div>'+
+        '<div class="feed-reason-badge" style="background:'+color+'22;color:'+color+'">'+reason+'</div>'+
+        '<div class="feed-meta">'+r.JobTitle+(r.Campaign?' · '+r.Campaign:'')+'</div>'+
+        (r.DeclineNote?'<div class="feed-note">"'+r.DeclineNote+'"</div>':'')+ 
+      '</div>'+
+      '<div></div>'+
+      '<div>'+
+        '<div class="feed-name">'+r.FullName+'</div>'+
+        '<div class="feed-date">'+formatDate(r.UpdatedAt)+'</div>'+
+      '</div>'+
+      '</div>';
+  });
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+fetch(GET_REJECTED_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var body = data.body ? (typeof data.body==='string'?JSON.parse(data.body):data.body) : data;
+    var records = (body.ResultSets && body.ResultSets.Table1) ? body.ResultSets.Table1 : [];
+    buildPage(records);
+  })
+  .catch(function(err){
+    document.getElementById('loadingState').innerHTML = '<div style="color:var(--red)">Failed to load data. Please try again.</div>';
+    console.error(err);
+  });
+</script>
+</body>
+</html>
