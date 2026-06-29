@@ -472,6 +472,31 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
     var now = new Date();
     var declinedAt = now.toLocaleDateString('en-ZA') + ' ' + now.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
 
+    // Build declined offer document HTML for storage
+    var declineHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+      '<title>Declined Letter of Offer — '+cap(D.fn)+' '+cap(D.ln)+'</title>'+
+      '<style>body{overflow-x:hidden;font-family:Arial,sans-serif;max-width:750px;margin:40px auto;padding:0 20px;color:#1B2A4A;font-size:13px;line-height:1.8}'+
+      '.hd{border-bottom:3px solid #1B2A4A;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}'+
+      '.hd-name{font-size:22px;font-weight:800;color:#1B2A4A}.hd-ref{font-size:11px;color:#888;text-align:right}'+
+      '.section{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin:20px 0 6px;border-bottom:1px solid #ddd;padding-bottom:4px}'+
+      'p{margin-bottom:10px}.stamp{background:#fdecea;border:1px solid #f5c6cb;border-radius:6px;padding:10px 16px;font-size:12px;color:#721c24;margin-top:20px}'+
+      '</style></head><body>'+
+      '<div class="hd"><div><div class="hd-name">Trilogy BPO</div>'+
+      '<div style="font-size:11px;color:#888">Trilogy CX (Pty) Ltd t/a Trilogy BPO</div></div>'+
+      '<div class="hd-ref">Ref: <strong>'+D.ref+'</strong><br>Date: '+D.od+'</div></div>'+
+      '<div class="section">Candidate Details</div>'+
+      '<p><strong>Name:</strong> '+cap(D.fn)+' '+cap(D.ln)+'</p>'+
+      '<p><strong>ID Number:</strong> '+D.id+'</p>'+
+      '<p><strong>Job Title:</strong> '+D.jt+'</p>'+
+      '<p><strong>Start Date:</strong> '+D.sd+'</p>'+
+      '<p><strong>Salary:</strong> R '+D.sal+'</p>'+
+      '<div class="section">Decline Details</div>'+
+      '<p><strong>Declined on:</strong> '+declinedAt+'</p>'+
+      '<p><strong>Reason:</strong> '+reason+'</p>'+
+      '<p><strong>Note:</strong> '+(note||'None provided')+'</p>'+
+      '<div class="stamp">✗ This offer was declined on '+declinedAt+' — Reference: '+D.ref+'</div>'+
+      '</body></html>';
+
     var payload = {
       action: 'offer_declined',
       ref: D.ref,
@@ -490,7 +515,9 @@ canvas{display:block;border:1px solid var(--border2);border-radius:var(--radius)
       offer_date: D.od,
       reports_to: D.mgr,
       reports_to_email: D.mgrem,
-      rudi_email: 'rudij@trilogybpo.com'
+      rudi_email: 'rudij@trilogybpo.com',
+      signed_document_html: btoa(unescape(encodeURIComponent(declineHtml))),
+      document_filename: D.ref+'_'+cap(D.fn)+'_'+cap(D.ln)+'_OfferDeclined.html'
     };
 
     var body = Object.keys(payload).map(function(k){
