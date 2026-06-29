@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trilogy BPO — HR Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.0.0/lib/msal-browser.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -161,7 +162,7 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 <body>
 
 <!-- ════════════════════════════════════════════════════════
-     HR PORTAL LOGIN GATE
+     HR PORTAL LOGIN GATE — Microsoft SSO + per-user access
 ════════════════════════════════════════════════════════ -->
 <div id="hr-login-gate" style="position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
   <div style="background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center">
@@ -172,52 +173,148 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
     </svg>
     <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">HR Portal</div>
     <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised HR staff only</div>
-    <div style="margin-bottom:14px;text-align:left">
-      <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px">Username</label>
-      <input id="hr-usr" type="text" autocomplete="username" placeholder="Username"
-        style="width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none"
-        onkeydown="if(event.key==='Enter')document.getElementById('hr-pwd').focus()">
-    </div>
-    <div style="margin-bottom:22px;text-align:left">
-      <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px">Password</label>
-      <input id="hr-pwd" type="password" autocomplete="current-password" placeholder="Password"
-        style="width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none"
-        onkeydown="if(event.key==='Enter')hrLogin()">
-    </div>
-    <button onclick="hrLogin()"
-      style="width:100%;padding:13px;background:#4AFD0E;color:#111;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.02em">
-      Sign in
+    <button onclick="hrSignIn()" id="hr-signin-btn"
+      style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:13px;background:#fff;color:#1B2A4A;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em">
+      <svg width="18" height="18" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#F35325"/><rect x="11" y="1" width="9" height="9" fill="#81BC06"/>
+        <rect x="1" y="11" width="9" height="9" fill="#05A6F0"/><rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
+      </svg>
+      Sign in with Microsoft
     </button>
-    <div id="hr-login-err" style="margin-top:12px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none">
-      Incorrect username or password.
-    </div>
+    <div id="hr-login-err" style="margin-top:14px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none;line-height:1.5"></div>
     <div style="margin-top:28px;color:rgba(255,255,255,.15);font-size:11px">Trilogy CX (Pty) Ltd · Internal use only</div>
   </div>
 </div>
 
 <script>
-// ── AUTH ──
-var HR_AUTH_KEY='hrportal_auth';
-var HR_AUTH_TOK='trilogy_hr_2026_secure';
-function hrLogin(){
-  var u=document.getElementById('hr-usr').value.trim();
-  var p=document.getElementById('hr-pwd').value;
-  if(u==='hradmin'&&p==='YouAreNotWelcome'){
-    sessionStorage.setItem(HR_AUTH_KEY,HR_AUTH_TOK);
-    var gate=document.getElementById('hr-login-gate');
-    gate.style.opacity='0';gate.style.transition='opacity .3s';
-    setTimeout(function(){gate.style.display='none';},300);
-  } else {
-    document.getElementById('hr-login-err').style.display='block';
-    document.getElementById('hr-pwd').value='';
-    document.getElementById('hr-pwd').focus();
+// ════════════════════════════════════════════════════════
+//  HR PORTAL — Microsoft SSO + per-module access control
+// ════════════════════════════════════════════════════════
+var HR_CONFIG = {
+  azureClientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
+  azureTenantId: '77cde95f-930f-495e-89c6-4d2c30f6df21',
+  redirectUri:   'https://hr.trilogybpo.com',
+};
+// ⚠️ Build this flow per the setup guide, then paste its URL here:
+var HR_VALIDATE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/25059a71e4e24ff59e5e618eed688f09/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CbE0E5f48tBPP33QhGRKp81sctHC_mcJZgKolWqqJy8';
+
+var HR_SESSION_KEY = 'hrportal_session';
+var hrMsal = null;
+var HR_SESSION = null;  // {email, displayName, role, modules:[...]}
+
+function hrShowErr(msg){ var e=document.getElementById('hr-login-err'); e.textContent=msg; e.style.display='block'; }
+
+function hrUnwrap(d){ if(!d) return {}; if(typeof d==='string'){try{return hrUnwrap(JSON.parse(d));}catch(e){return {};}} if(d.body){return typeof d.body==='string'?hrUnwrap(JSON.parse(d.body)):hrUnwrap(d.body);} return d; }
+
+async function hrCallFlow(url, body){
+  var r = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  if(!r.ok) throw new Error('Flow HTTP '+r.status);
+  var t = await r.text();
+  if(!t || t==='null' || t==='') return {};
+  try { return hrUnwrap(JSON.parse(t)); } catch(e){ return {}; }
+}
+
+async function hrInitAuth(){
+  if(HR_VALIDATE_URL.indexOf('PASTE_')===0){
+    hrShowErr('Setup required: the HR validate-user flow URL has not been configured.');
+    return;
+  }
+  hrMsal = new msal.PublicClientApplication({
+    auth:{ clientId:HR_CONFIG.azureClientId, authority:'https://login.microsoftonline.com/'+HR_CONFIG.azureTenantId, redirectUri:HR_CONFIG.redirectUri },
+    cache:{ cacheLocation:'sessionStorage', storeAuthStateInCookie:true },
+  });
+  await hrMsal.initialize();
+  try {
+    var resp = await hrMsal.handleRedirectPromise();
+    if(resp){ await hrValidate(resp.account); return; }
+  } catch(e){ console.warn('Redirect:', e); }
+  var accts = hrMsal.getAllAccounts();
+  if(accts.length){ await hrValidate(accts[0]); }
+}
+
+function hrSignIn(){
+  document.getElementById('hr-login-err').style.display='none';
+  if(!hrMsal){ hrShowErr('Authentication not ready — please refresh.'); return; }
+  hrMsal.loginRedirect({ scopes:['User.Read'] }).catch(function(e){
+    if(e.errorCode!=='user_cancelled') hrShowErr(e.message||'Sign-in failed.');
+  });
+}
+
+async function hrValidate(account){
+  var btn=document.getElementById('hr-signin-btn');
+  if(btn){ btn.textContent='Verifying access…'; btn.disabled=true; }
+  try {
+    var email = (account.username||'').toLowerCase();
+    var result = await hrCallFlow(HR_VALIDATE_URL, { email: email });
+    var rows = Array.isArray(result) ? result : (result.value||[]);
+    if(!rows.length){
+      hrShowErr('Access denied. Your account ('+account.username+') is not authorised for the HR Portal. Contact the administrator.');
+      if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
+      return;
+    }
+    var u = rows[0];
+    if((u.IsActive===false)||(u.IsActive===0)||(u.IsActive==='0')||(u.IsActive==='false')){
+      hrShowErr('Your HR Portal access has been deactivated. Contact the administrator.');
+      if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
+      return;
+    }
+    HR_SESSION = {
+      email:       u.UserEmail || email,
+      displayName: u.DisplayName || account.name || email,
+      role:        (u.Role||'user').toLowerCase(),
+      modules:     (u.Modules||'').split(',').map(function(m){return m.trim().toLowerCase();}).filter(Boolean),
+    };
+    sessionStorage.setItem(HR_SESSION_KEY, JSON.stringify(HR_SESSION));
+    hrApplyAccess();
+  } catch(err){
+    console.error('HR validate:', err);
+    hrShowErr('Could not verify access: '+(err.message||'unknown error'));
+    if(btn){ btn.textContent='Sign in with Microsoft'; btn.disabled=false; }
   }
 }
-// Check on load — if already authenticated this session, hide gate immediately
+
+function hrApplyAccess(){
+  if(!HR_SESSION) return;
+  var isAdmin = HR_SESSION.role==='admin';
+  // Admin sees everything; others only the modules they're granted
+  document.querySelectorAll('[data-module]').forEach(function(card){
+    var mod = card.getAttribute('data-module').toLowerCase();
+    var allowed = isAdmin || HR_SESSION.modules.indexOf(mod)>=0;
+    if(!allowed) card.style.display='none';
+  });
+  // Show the admin "Manage Access" card only for admins
+  var adminCard = document.getElementById('hr-admin-card');
+  if(adminCard) adminCard.style.display = isAdmin ? '' : 'none';
+  // Fill nav identity if those elements exist
+  var navName = document.getElementById('hr-nav-name');
+  if(navName) navName.textContent = HR_SESSION.displayName.split(' ')[0];
+  var navRole = document.getElementById('hr-nav-role');
+  if(navRole) navRole.textContent = isAdmin ? 'Admin' : 'HR User';
+  // Hide the gate
+  var gate=document.getElementById('hr-login-gate');
+  gate.style.opacity='0'; gate.style.transition='opacity .3s';
+  setTimeout(function(){ gate.style.display='none'; }, 300);
+}
+
+function hrSignOut(){
+  sessionStorage.removeItem(HR_SESSION_KEY);
+  if(hrMsal) hrMsal.logoutRedirect(); else location.reload();
+}
+
+// On load: restore session if present, else run SSO
 (function(){
-  if(sessionStorage.getItem(HR_AUTH_KEY)===HR_AUTH_TOK){
-    document.getElementById('hr-login-gate').style.display='none';
+  var saved = sessionStorage.getItem(HR_SESSION_KEY);
+  if(saved){
+    try {
+      HR_SESSION = JSON.parse(saved);
+      // apply access once DOM is ready
+      if(document.readyState!=='loading') hrApplyAccess();
+      else document.addEventListener('DOMContentLoaded', hrApplyAccess);
+    } catch(e){ sessionStorage.removeItem(HR_SESSION_KEY); }
   }
+  // Always init MSAL (handles the redirect-back case + fresh sign-in)
+  if(document.readyState!=='loading') hrInitAuth();
+  else document.addEventListener('DOMContentLoaded', hrInitAuth);
 })();
 </script>
 
@@ -228,7 +325,9 @@ function hrLogin(){
     <div class="nav-section">HR Portal</div>
   </div>
   <div class="nav-right">
-    <div class="nav-avatar">HP</div>
+    <span id="hr-nav-name" style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2)"></span>
+    <span id="hr-nav-role" style="background:rgba(74,253,14,0.14);color:var(--green-dark);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:4px"></span>
+    <button onclick="hrSignOut()" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer">Sign out</button>
   </div>
 </nav>
 
@@ -297,34 +396,35 @@ function hrLogin(){
   <!-- MODULES -->
   <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
   <div class="module-grid">
-    <a href="onboarding" class="module-card live-card">
+    <a href="onboarding" class="module-card live-card" data-module="onboarding">
       <div class="mc-icon">👤</div>
       <div class="mc-title">Employee Onboarding</div>
       <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="employees" class="module-card live-card">
+    <a href="employees" class="module-card live-card" data-module="records">
       <div class="mc-icon">🗃️</div>
       <div class="mc-title">Employee Records</div>
       <div class="mc-desc">Search, track and manage all onboarding cases</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="surveys" class="module-card live-card">
+    <a href="surveys" class="module-card live-card" data-module="vibecheck">
       <div class="mc-icon">✌️</div>
       <div class="mc-title">#vibecheck</div>
       <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="surveys/report.html" class="module-card live-card">
+    <a href="surveys/report.html" class="module-card live-card" data-module="vibecheck_reports">
       <div class="mc-icon">📊</div>
       <div class="mc-title">Real Time #vibecheck Reports</div>
       <div class="mc-desc">Live dashboard — weekly trends, scores by campaign, response feed</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="oldreset.html" class="module-card" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
-    <a href="leave" class="module-card live-card"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="disciplinary" class="module-card live-card"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="payroll" class="module-card live-card"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="oldreset.html" class="module-card" data-module="reset" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
+    <a href="leave" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="disciplinary" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="payroll" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="hr-admin.html" class="module-card live-card" id="hr-admin-card" data-module="admin" style="display:none;border-color:#1B2A4A"><div class="mc-icon">🔐</div><div class="mc-title">Manage Access</div><div class="mc-desc">Add HR portal users and control module permissions</div><div class="mc-badge" style="background:#e8eefc;color:#1B2A4A">Admin</div></a>
     <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
     <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
     <div class="module-card placeholder"><div class="mc-icon">🧾</div><div class="mc-title">Tax Documentation</div><div class="mc-desc">IT77, IRP5 declarations, SARS submissions</div><div class="mc-badge badge-soon">Coming soon</div></div>

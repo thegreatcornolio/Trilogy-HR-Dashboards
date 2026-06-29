@@ -150,6 +150,12 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 .pipe-step .pipe-label{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px;margin-right:4px}
 .pipe-step .pipe-arrow{font-size:18px;color:var(--green);margin:0 12px;font-weight:700}
 .pipe-step.last .pipe-num{color:var(--green)}
+.pipe-block{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.75rem 1.25rem;min-width:110px;transition:background .15s;cursor:pointer}
+.pipe-block:hover{background:rgba(255,255,255,.1)}
+.pipe-block-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1}
+.pipe-block-label{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:center;white-space:nowrap}
+.pipe-block-last .pipe-block-num{color:var(--green)}
+.pipe-block-arrow{font-size:18px;color:var(--green);font-weight:700;margin:0 8px}
 /* FOOTER */
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -359,11 +365,26 @@ function hrSignOut(){
 <div style="background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem">
   <div style="max-width:1100px;margin:0 auto">
     <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
-    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-      <a href="pipeline.html?stage=offer_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></a>
-      <a href="pipeline.html?stage=offer_signed" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></a>
-      <a href="pipeline.html?stage=contract_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></a>
-      <a href="pipeline.html?stage=contract_signed" class="pipe-step last" style="text-decoration:none"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></a>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
+      <a href="pipeline.html?stage=offer_sent" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statOfferSent">—</div>
+        <div class="pipe-block-label">Offer/s sent</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=offer_signed" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statOfferSigned">—</div>
+        <div class="pipe-block-label">Offer/s accepted</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=contract_sent" class="pipe-block" style="text-decoration:none">
+        <div class="pipe-block-num" id="statContractSent">—</div>
+        <div class="pipe-block-label">Contract/s sent</div>
+      </a>
+      <div class="pipe-block-arrow">→</div>
+      <a href="pipeline.html?stage=contract_signed" class="pipe-block pipe-block-last" style="text-decoration:none">
+        <div class="pipe-block-num" id="statContractSigned">—</div>
+        <div class="pipe-block-label">Contract/s signed</div>
+      </a>
     </div>
     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.08)">
       <a href="pipeline.html?stage=onboarding_needed" class="stat" style="text-decoration:none;cursor:pointer;border-left-color:#e67e22"><div class="stat-num" id="statToOnboard" style="color:#e67e22">—</div><div class="stat-label">To be onboarded →</div></a>
