@@ -245,8 +245,11 @@ function buildPage(records){
 fetch(GET_REJECTED_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})})
   .then(function(r){return r.json();})
   .then(function(data){
-    var body = data.body ? (typeof data.body==='string'?JSON.parse(data.body):data.body) : data;
-    var records = (body.ResultSets && body.ResultSets.Table1) ? body.ResultSets.Table1 : [];
+    var body = data.body || data;
+    if(typeof body === 'string') body = JSON.parse(body);
+    var records = [];
+    if(body.ResultSets && body.ResultSets.Table1) records = body.ResultSets.Table1;
+    else if(Array.isArray(body)) records = body;
     buildPage(records);
   })
   .catch(function(err){
