@@ -474,18 +474,19 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
       return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
     }).join('');
     modal.style.display = 'flex';
-    var CHECK_ID_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
+    var CHECK_ID_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b9951897db1b437c97addcbc5d80b65e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=pGzGfWtGvN_gm79wEfYOPAJGJWS06AdYNpCtlJqQozw';
 
     gi('verifyConfirmBtn').onclick = function(){
       // Check if IDNumber already exists in system
       gi('verifyConfirmBtn').disabled = true;
       gi('verifyConfirmBtn').textContent = 'Checking…';
-      fetch(CHECK_ID_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:d.idno})})
+      fetch(CHECK_ID_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id_number:d.idno})})
         .then(function(r){return r.json();})
         .then(function(data){
           var body = data.body||data;
           if(typeof body==='string') body=JSON.parse(body);
-          var existing = body.ResultSets&&body.ResultSets.Table1&&body.ResultSets.Table1[0];
+          var resultSet = body.ResultSets ? body.ResultSets : (body.body && body.body.ResultSets ? body.body.ResultSets : null);
+          var existing = resultSet && resultSet.Table1 && resultSet.Table1[0];
           gi('verifyConfirmBtn').disabled = false;
           gi('verifyConfirmBtn').textContent = '✅ Confirm & send offer';
           if(existing && existing.FullName){
