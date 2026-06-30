@@ -47,8 +47,6 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 .btn-form:hover{background:#c8e6c9}
 .btn-active{background:var(--navy);color:#fff}
 .btn-active:hover{background:var(--navy2)}
-.btn-revoke{background:#fdecea;color:#c0392b}
-.btn-revoke:hover{background:#f9d6d2}
 .btn-action:disabled{opacity:.5;cursor:not-allowed}
 .col-empty{font-size:12px;color:var(--text3);text-align:center;padding:1.5rem .75rem;font-style:italic}
 .col-offer-sent .col-header{border-top:3px solid #e67e22}
@@ -125,9 +123,6 @@ function actionsFor(stage, p){
   if(stage==='contract_sent')   btns += actionBtn(id,'↻ Resend contract','btn-resend','resendContract');
   if(stage==='contract_signed') btns += actionBtn(id,'✉ Send onboarding form','btn-form','sendForm');
   if(stage==='onboarding_needed') btns += actionBtn(id,'✓ Mark active','btn-active','markActive');
-  if(['offer_sent','offer_signed','contract_sent','contract_signed'].indexOf(stage)>-1){
-    btns += actionBtn(id,'✕ Revoke offer','btn-revoke','revokeOffer');
-  }
   return btns ? '<div class="person-actions">'+btns+'</div>' : '';
 }
 
@@ -255,31 +250,6 @@ window.markActive=function(id){
     setTimeout(function(){loadAll();},2000);
   })
   .catch(function(){setBtn(id,'markActive','✗ Failed',false);setTimeout(function(){setBtn(id,'markActive','✓ Mark active',false);},3000);});
-};
-
-window.revokeOffer=function(id){
-  var p=findPerson(id);
-  if(!p) return;
-  if(!confirm('Revoke offer for '+p.FullName+'?\n\nThis will mark the offer as revoked and block all signing links. This cannot be undone from here.')) return;
-  setBtn(id,'revokeOffer','Revoking…',true);
-  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    employee_id:id, field:'Status', value:'Revoked'
-  })})
-  .then(function(){
-    return fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      employee_id:id, field:'OfferTokenUsed', value:'used'
-    })});
-  })
-  .then(function(){
-    return fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      employee_id:id, field:'ContractTokenUsed', value:'used'
-    })});
-  })
-  .then(function(){
-    setBtn(id,'revokeOffer','✓ Revoked',false);
-    setTimeout(function(){loadAll();},2000);
-  })
-  .catch(function(){setBtn(id,'revokeOffer','✗ Failed',false);setTimeout(function(){setBtn(id,'revokeOffer','✕ Revoke offer',false);},3000);});
 };
 
 loadAll();
