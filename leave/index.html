@@ -496,6 +496,8 @@ function loadSnapshots(){
       if(row.FullName) simplepayMap['name:'+row.FullName.trim().toLowerCase()]=rec;
     });
     renderDiscrepancyStat();
+    renderStats();
+    filterTable(); // refresh table chips with SimplePay values
     if(selectedEmp) selectEmployee(selectedEmp.EmployeeID); // refresh open detail
   })
   .catch(function(){/* SimplePay unavailable — discrepancy view just won't show */});
@@ -564,7 +566,8 @@ function renderStats(){
     if(e.Status==='Onboarded')onboarded++;
     if(e.Status==='Active'){
       var snap=snapshotMap[e.EmployeeID];
-      var bal=snap?snap.annual:calcLeave(e,null).annualAvail;
+      var sprS=getSimplePay(e);
+      var bal=(sprS&&sprS.annual!==null)?sprS.annual:(snap?snap.annual:calcLeave(e,null).annualAvail);
       if(parseFloat(bal)<=5)lowLeave++;
     }
   });
@@ -590,8 +593,9 @@ function renderTable(list){
   if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
   gi('empBody').innerHTML=list.map(function(e){
     var l=calcLeave(e,null);
+    var spr=getSimplePay(e);
     var snap=snapshotMap[e.EmployeeID];
-    var chipVal=snap?snap.annual:l.annualAvail;
+    var chipVal=(spr&&spr.annual!==null)?spr.annual:(snap?snap.annual:l.annualAvail);
     var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
     var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
     return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
@@ -637,19 +641,30 @@ function selectEmployee(id){
 }
 
 function renderLeave(e,detail){
+  var spr=getSimplePay(e);
   var snap=snapshotMap[e.EmployeeID];
-  if(snap){
-    // ── External tracker data ──
-    var annNum=snap.annual;
+  if(spr&&spr.annual!==null){
+    // ── SimplePay (payroll actuals) — primary source ──
+    var annNum=spr.annual;
     var annEl=gi('lv-annual');
     annEl.textContent=annNum.toFixed(2);
     annEl.className='leave-balance'+(annNum<=3?' critical':annNum<=7?' low':'');
-    gi('lv-annual-detail').textContent='From external tracker · '+snap.period+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
+    gi('lv-annual-detail').textContent='SimplePay payroll actual'+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
+    gi('lv-sick').textContent=(spr.sick===null?'—':spr.sick.toFixed(2));
+    gi('lv-family').textContent=(spr.family===null||spr.family===undefined?'—':spr.family.toFixed(2));
+    var srcBadge=gi('leave-source-badge');
+    if(srcBadge)srcBadge.textContent='💰 SimplePay';
+  } else if(snap){
+    // ── Internal tracker snapshot (no SimplePay record) ──
+    var annNumS=snap.annual;
+    var annElS=gi('lv-annual');
+    annElS.textContent=annNumS.toFixed(2);
+    annElS.className='leave-balance'+(annNumS<=3?' critical':annNumS<=7?' low':'');
+    gi('lv-annual-detail').textContent='Internal tracker · '+snap.period+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
     gi('lv-sick').textContent=snap.sick.toFixed(2);
     gi('lv-family').textContent=snap.family.toFixed(2);
-    // Source badge — update the section label
-    var srcBadge=gi('leave-source-badge');
-    if(srcBadge)srcBadge.textContent='📊 '+snap.period;
+    var srcBadgeS=gi('leave-source-badge');
+    if(srcBadgeS)srcBadgeS.textContent='📊 '+snap.period;
   } else {
     // ── BCEA estimate ──
     var l=calcLeave(e,detail);
@@ -695,23 +710,23 @@ function renderDiscrepancy(e){
   box.className='discrepancy-box'+(anyMismatch?' mismatch':' match');
   var rows='';
   rows+='<div class="disc-row"><span class="disc-lbl">Annual</span>'+
-        '<span class="disc-val">Ours: <b>'+sqlA.toFixed(2)+'</b></span>'+
         '<span class="disc-val">SimplePay: <b>'+spA.toFixed(2)+'</b></span>'+
-        (mismatchA?'<span class="disc-flag">⚠ '+(diffA>0?'we show +'+diffA.toFixed(2):spA-sqlA>0?'SimplePay +'+(spA-sqlA).toFixed(2):'')+' </span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+        '<span class="disc-val">Our system: <b>'+sqlA.toFixed(2)+'</b></span>'+
+        (mismatchA?'<span class="disc-flag">⚠ '+(diffA>0?'system +'+diffA.toFixed(2):'system −'+Math.abs(diffA).toFixed(2))+'</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
   if(spS!==null){
     rows+='<div class="disc-row"><span class="disc-lbl">Sick</span>'+
-          '<span class="disc-val">Ours: <b>'+sqlS.toFixed(2)+'</b></span>'+
           '<span class="disc-val">SimplePay: <b>'+spS.toFixed(2)+'</b></span>'+
+          '<span class="disc-val">Our system: <b>'+sqlS.toFixed(2)+'</b></span>'+
           (mismatchS?'<span class="disc-flag">⚠ differs</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
   }
   if(spF!==null){
     rows+='<div class="disc-row"><span class="disc-lbl">Family</span>'+
-          '<span class="disc-val">Ours: <b>'+sqlF.toFixed(2)+'</b></span>'+
           '<span class="disc-val">SimplePay: <b>'+spF.toFixed(2)+'</b></span>'+
+          '<span class="disc-val">Our system: <b>'+sqlF.toFixed(2)+'</b></span>'+
           (mismatchF?'<span class="disc-flag">⚠ differs</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
   }
-  box.innerHTML='<div class="disc-title">'+(anyMismatch?'⚠ Leave discrepancy — SimplePay vs our records':'✓ Leave matches SimplePay')+'</div>'+rows+
-    (anyMismatch?'<div class="disc-note">Flag this with the payroll company to reconcile.</div>':'');
+  box.innerHTML='<div class="disc-title">'+(anyMismatch?'⚠ Our system doesn\'t match SimplePay':'✓ Our system matches SimplePay')+'</div>'+rows+
+    (anyMismatch?'<div class="disc-note">SimplePay is the payroll source of truth — reconcile our internal records (or flag with the payroll company if SimplePay is wrong).</div>':'');
 }
 
 // ── LEAVE MODAL ──
