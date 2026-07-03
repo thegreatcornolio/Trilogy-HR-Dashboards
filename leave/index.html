@@ -650,8 +650,23 @@ function renderLeave(e,detail){
     annEl.textContent=annNum.toFixed(2);
     annEl.className='leave-balance'+(annNum<=3?' critical':annNum<=7?' low':'');
     gi('lv-annual-detail').textContent='SimplePay payroll actual'+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
-    gi('lv-sick').textContent=(spr.sick===null?'—':spr.sick.toFixed(2));
-    gi('lv-family').textContent=(spr.family===null||spr.family===undefined?'—':spr.family.toFixed(2));
+
+    // Sick & Family: SimplePay reports 0/null for staff past the BCEA vesting point —
+    // fall back to the statutory entitlement (less taken) once tenure crosses it.
+    // BCEA s22: full 30-day sick entitlement after 6 months. s27: 3 days FR after 4 months.
+    var bc=calcLeave(e,detail);
+    var months=monthsSince(e.StartDate);
+    var spSick=(spr.sick===null||spr.sick===undefined)?0:spr.sick;
+    var spFam=(spr.family===null||spr.family===undefined)?0:spr.family;
+    var sickVal, famVal;
+    if(spSick>0){ sickVal=spSick.toFixed(2); }
+    else if(months>=6){ sickVal=Math.max(0,30-(bc.sickTaken||0)).toFixed(2); }
+    else { sickVal=spSick.toFixed(2); }
+    if(spFam>0){ famVal=spFam.toFixed(2); }
+    else if(months>=4){ famVal=Math.max(0,3-(bc.famTaken||0)).toFixed(2); }
+    else { famVal=spFam.toFixed(2); }
+    gi('lv-sick').textContent=sickVal;
+    gi('lv-family').textContent=famVal;
     var srcBadge=gi('leave-source-badge');
     if(srcBadge)srcBadge.textContent='💰 SimplePay';
   } else if(snap){
