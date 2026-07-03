@@ -62,6 +62,19 @@ tr.selected td{background:var(--green-light)}
 .chip-none{background:#fde;color:var(--red)}
 /* Detail panel */
 .detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
+.discrepancy-box{border-radius:var(--radius-lg);padding:14px 16px;margin:16px 0}
+.discrepancy-box.match{background:#edffd6;border:1px solid #b6e88a}
+.discrepancy-box.mismatch{background:#fcefe9;border:1px solid #e8a999}
+.disc-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;margin-bottom:10px}
+.discrepancy-box.match .disc-title{color:var(--green-dark)}
+.discrepancy-box.mismatch .disc-title{color:var(--red)}
+.disc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;padding:5px 0;border-top:1px solid rgba(0,0,0,.05)}
+.disc-row:first-of-type{border-top:none}
+.disc-lbl{font-family:'Montserrat',sans-serif;font-weight:700;min-width:48px}
+.disc-val{color:var(--text2)}
+.disc-flag{margin-left:auto;color:var(--red);font-weight:700;font-family:'Montserrat',sans-serif;font-size:11px}
+.disc-ok{margin-left:auto;color:var(--green-dark);font-weight:700;font-size:11px}
+.disc-note{font-size:11px;color:var(--red);margin-top:8px;font-style:italic}
 .detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
 .detail-empty-icon{font-size:40px;margin-bottom:.75rem}
 .detail-empty p{font-size:13px}
@@ -124,8 +137,6 @@ tr.selected td{background:var(--green-light)}
 </style>
 </head>
 <body>
-<script>window.HR_REQUIRED_MODULE='leave';</script>
-<script src="/hr-guard.js"></script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
@@ -145,6 +156,7 @@ tr.selected td{background:var(--green-light)}
       <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active employees</div></div>
       <div class="hstat"><div class="hstat-num" id="statOnboarded">—</div><div class="hstat-label">Onboarded</div></div>
       <div class="hstat"><div class="hstat-num" id="statLowLeave">—</div><div class="hstat-label">Low annual leave (≤5 days)</div></div>
+      <div class="hstat" id="discrepancyCard"><div class="hstat-num" id="statDiscrepancy" style="color:#fc8181">—</div><div class="hstat-label">SimplePay mismatches</div></div>
     </div>
   </div>
 </div>
@@ -249,6 +261,9 @@ tr.selected td{background:var(--green-light)}
           </div>
         </div>
 
+        <!-- SimplePay vs our records discrepancy -->
+        <div class="discrepancy-box" id="discrepancyBox" style="display:none"></div>
+
         <!-- Action buttons -->
         <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
         <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees/" style="text-decoration:none">↗ Open full employee record</a>
@@ -325,10 +340,13 @@ var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environm
 var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 var SAVE_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f9acaa0f0254a72a662cbf4541f4da3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6K_5uXvdvOz7pFfDeQtwhdqfRSxmxz1Ib_sfZHHSD4k';
 var GET_SNAPSHOTS_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/767c17ab296443f3a7af81f4f91c88c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=FZFGAv95SRSp7SfURLYeimSyoD03FlxTN_30X_9qBzI';
+// SimplePay live pay & leave (same flow the Payroll page uses)
+var SIMPLEPAY_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/816c0774c0214f63a21a4662d86ddfed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3fHxMihj8JztXCxFdROj-Q3EMOEM2sCs1FW9RyOGQ9k';
 
 var ELIGIBLE_STATUSES=['Active','Onboarded','Resigned','Dismissed','Retrenched','AWOL','Deceased'];
 var allEmployees=[], filteredEmployees=[], selectedEmp=null;
 var snapshotMap={}; // { EmployeeID: {AnnualBalance, SickBalance, FamilyBalance, Period} }
+var simplepayMap={}; // { EmployeeID: {annual, sick} } from SimplePay live feed
 
 function gi(id){return document.getElementById(id);}
 function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
@@ -422,6 +440,52 @@ function loadSnapshots(){
     filterTable();
   })
   .catch(function(){/* Snapshots unavailable — BCEA fallback stays, no error shown */});
+
+  // ── SimplePay live leave (for discrepancy checking) ──
+  fetch(SIMPLEPAY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var sp=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var rows=Array.isArray(sp.rows)?sp.rows:(Array.isArray(sp)?sp:[]);
+    rows.forEach(function(row){
+      var rec={
+        annual: (row.AnnualLeaveBalance===null||row.AnnualLeaveBalance===undefined||row.AnnualLeaveBalance==='')?null:parseFloat(row.AnnualLeaveBalance),
+        sick:   (row.SickLeaveBalance===null||row.SickLeaveBalance===undefined||row.SickLeaveBalance==='')?null:parseFloat(row.SickLeaveBalance),
+        name:   row.FullName||''
+      };
+      if(row.EmployeeID) simplepayMap[row.EmployeeID]=rec;
+      // also key by full name as a fallback match (SimplePay IDs may differ from ours)
+      if(row.FullName) simplepayMap['name:'+row.FullName.trim().toLowerCase()]=rec;
+    });
+    renderDiscrepancyStat();
+    if(selectedEmp) selectEmployee(selectedEmp.EmployeeID); // refresh open detail
+  })
+  .catch(function(){/* SimplePay unavailable — discrepancy view just won't show */});
+}
+
+// Match an employee to their SimplePay record by ID, then by full name
+function getSimplePay(e){
+  if(simplepayMap[e.EmployeeID]) return simplepayMap[e.EmployeeID];
+  var key='name:'+((e.FullName||(e.FirstName+' '+e.LastName))||'').trim().toLowerCase();
+  return simplepayMap[key]||null;
+}
+
+// Count employees where SQL snapshot and SimplePay annual leave disagree by >0.5 day
+function renderDiscrepancyStat(){
+  var count=0, list=[];
+  allEmployees.forEach(function(e){
+    if(e.Status!=='Active')return;
+    var snap=snapshotMap[e.EmployeeID];
+    var spr=getSimplePay(e);
+    if(snap&&spr&&spr.annual!==null){
+      if(Math.abs((snap.annual||0)-(spr.annual||0))>0.5){ count++; list.push(e); }
+    }
+  });
+  var el=gi('statDiscrepancy');
+  if(el) el.textContent=count;
+  var card=gi('discrepancyCard');
+  if(card) card.style.display=count>0?'':'';
+  window._discrepancyList=list;
 }
 
 function renderStats(){
@@ -535,6 +599,42 @@ function renderLeave(e,detail){
   gi('lv-mat').textContent=lm.matDays;
   gi('lv-mat-label').textContent=lm.matLabel;
   gi('lv-mat-detail').textContent=lm.matDetail;
+
+  // ── SimplePay vs SQL discrepancy check ──
+  renderDiscrepancy(e);
+}
+
+function renderDiscrepancy(e){
+  var box=gi('discrepancyBox');
+  if(!box) return;
+  var snap=snapshotMap[e.EmployeeID];
+  var spr=getSimplePay(e);
+  if(!snap||!spr||spr.annual===null){
+    box.style.display='none';
+    return;
+  }
+  var sqlA=snap.annual||0, spA=spr.annual;
+  var sqlS=snap.sick||0, spS=(spr.sick===null?null:spr.sick);
+  var diffA=sqlA-spA;
+  var mismatchA=Math.abs(diffA)>0.5;
+  var mismatchS=(spS!==null)&&Math.abs(sqlS-spS)>0.5;
+  var anyMismatch=mismatchA||mismatchS;
+
+  box.style.display='block';
+  box.className='discrepancy-box'+(anyMismatch?' mismatch':' match');
+  var rows='';
+  rows+='<div class="disc-row"><span class="disc-lbl">Annual</span>'+
+        '<span class="disc-val">Ours: <b>'+sqlA.toFixed(2)+'</b></span>'+
+        '<span class="disc-val">SimplePay: <b>'+spA.toFixed(2)+'</b></span>'+
+        (mismatchA?'<span class="disc-flag">⚠ '+(diffA>0?'we show +'+diffA.toFixed(2):spA-sqlA>0?'SimplePay +'+(spA-sqlA).toFixed(2):'')+' </span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+  if(spS!==null){
+    rows+='<div class="disc-row"><span class="disc-lbl">Sick</span>'+
+          '<span class="disc-val">Ours: <b>'+sqlS.toFixed(2)+'</b></span>'+
+          '<span class="disc-val">SimplePay: <b>'+spS.toFixed(2)+'</b></span>'+
+          (mismatchS?'<span class="disc-flag">⚠ differs</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+  }
+  box.innerHTML='<div class="disc-title">'+(anyMismatch?'⚠ Leave discrepancy — SimplePay vs our records':'✓ Leave matches SimplePay')+'</div>'+rows+
+    (anyMismatch?'<div class="disc-note">Flag this with the payroll company to reconcile.</div>':'');
 }
 
 // ── LEAVE MODAL ──
