@@ -113,7 +113,10 @@ tbody tr:hover td{background:#f7f6f2}
 
   <div class="bar">
     <div class="asat" id="asat">Loading…</div>
-    <button class="btn" id="refreshBtn" onclick="refresh()"><span id="refreshTxt">↻ Refresh</span></button>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="refreshBtn" onclick="refresh()"><span id="refreshTxt">↻ Refresh</span></button>
+      <button class="btn" id="pullBtn" onclick="pullFromSimplePay()" style="background:transparent;border:1px solid var(--border2);color:var(--text)"><span id="pullTxt">⇣ Pull from SimplePay</span></button>
+    </div>
   </div>
 
   <div id="loadErr" class="panel panel-warn hidden"></div>
@@ -132,7 +135,7 @@ tbody tr:hover td{background:#f7f6f2}
             <th class="num">CTC vs contract</th>
             <th class="num">Monthly SARS</th>
             <th class="num">Nett pay</th>
-            <th class="num">Leave (A / S)</th>
+            <th class="num">Leave (A / S / F)</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -151,9 +154,8 @@ tbody tr:hover td{background:#f7f6f2}
 <script>
 /* ── Flow endpoints ── */
 const READ_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/816c0774c0214f63a21a4662d86ddfed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3fHxMihj8JztXCxFdROj-Q3EMOEM2sCs1FW9RyOGQ9k";
-// To make Refresh re-pull live from SimplePay, give the pull flow an HTTP trigger and paste its URL here.
-// While empty, Refresh just re-reads the latest snapshot from SQL.
-const PULL_URL = "";
+// "Pull Payroll Snapshot" — SLOW: calls SimplePay per employee (~3s each). Fired by Refresh after a confirmation.
+const PULL_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/63206e6ac0f54687971c58d176e4303e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rqmXyK_Sp8LBqg7z0ogVBrFC8fp1rxAgFS-wsFRtwwQ";
 
 const zar0 = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const num = v => (v === null || v === undefined || v === '') ? null : Number(v);
@@ -231,8 +233,9 @@ function render(rows) {
     const basicDiff = num(r.BasicDifference);
     const ctcDiff = num(r.CTCDifference);
     const flagged = (basicDiff !== null && Math.abs(basicDiff) > 0.5) || (ctcDiff !== null && Math.abs(ctcDiff) > 0.5);
-    const al = num(r.AnnualLeaveBalance), sl = num(r.SickLeaveBalance);
-    const leave = (al === null && sl === null) ? '—' : (al === null ? '—' : al) + ' / ' + (sl === null ? '—' : sl);
+    const al = num(r.AnnualLeaveBalance), sl = num(r.SickLeaveBalance), fl = num(r.FamilyLeaveBalance);
+    const leave = (al === null && sl === null && fl === null) ? '—'
+      : (al === null ? '—' : al) + ' / ' + (sl === null ? '—' : sl) + ' / ' + (fl === null ? '—' : fl);
     const tr = document.createElement('tr');
     if (flagged) tr.className = 'row-flag';
     tr.innerHTML =
@@ -253,19 +256,38 @@ function render(rows) {
 }
 
 async function refresh() {
+  // Quick: just re-reads the latest snapshot from SQL — no SimplePay calls
   const btn = document.getElementById('refreshBtn'), txt = document.getElementById('refreshTxt');
   btn.disabled = true;
-  if (PULL_URL) {
-    txt.innerHTML = '<span class="spinner"></span> Pulling from SimplePay…';
-    try {
-      await fetch(PULL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-    } catch (e) { /* fall through to re-read regardless */ }
-  } else {
-    txt.innerHTML = '<span class="spinner"></span> Refreshing…';
-  }
+  txt.innerHTML = '<span class="spinner"></span> Refreshing…';
   await load();
   btn.disabled = false;
   txt.textContent = '↻ Refresh';
+}
+
+async function pullFromSimplePay() {
+  // Slow: triggers the Pull Payroll Snapshot flow (SimplePay API per employee)
+  const ok = confirm(
+    'Pull live data from SimplePay?\n\n' +
+    'This calls SimplePay for EVERY employee on payroll (roughly 3 seconds each). ' +
+    'With a large payroll this can take several minutes.\n\n' +
+    'Continue?'
+  );
+  if (!ok) return;
+  const btn = document.getElementById('pullBtn'), txt = document.getElementById('pullTxt');
+  const rbtn = document.getElementById('refreshBtn');
+  btn.disabled = true; rbtn.disabled = true;
+  txt.innerHTML = '<span class="spinner" style="border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Pulling from SimplePay… this may take several minutes';
+  try {
+    const r = await fetch(PULL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    txt.textContent = '✓ Pull complete — reloading…';
+    await load();
+  } catch (e) {
+    alert('Pull failed or timed out: ' + e.message + '\n\nNote: very long runs can exceed the browser timeout — the flow may still be running in the background. Wait a few minutes, then click Refresh.');
+  }
+  btn.disabled = false; rbtn.disabled = false;
+  txt.textContent = '⇣ Pull from SimplePay';
 }
 
 function escapeHtml(s) {
