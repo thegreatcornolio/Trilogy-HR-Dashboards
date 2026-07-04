@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>window.HR_REQUIRED_MODULE='leave';</script>
+<script src="/hr-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Leave Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--amber:#f39c12}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.hstat{border-left:2px solid var(--green);padding-left:1rem}
+.hstat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.hstat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.sp-refresh-btn{align-self:center;margin-left:auto;padding:9px 16px;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:8px;color:rgba(255,255,255,.75);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sp-refresh-btn:hover{border-color:#4AFD0E;color:#4AFD0E}
+.sp-refresh-btn:disabled{opacity:.4;cursor:not-allowed}
+.sp-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.sp-modal{background:#fff;border-radius:16px;max-width:480px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.sp-modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#1B2A4A;margin-bottom:12px}
+.sp-modal-body{font-size:13px;color:#4A5568;line-height:1.7}
+.sp-modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.sp-btn-cancel{padding:10px 18px;border:1px solid #c8c7c3;border-radius:8px;background:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#4A5568;cursor:pointer}
+.sp-btn-go{padding:10px 18px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.sp-btn-go:hover{background:#4AFD0E;color:#111}
+.sp-btn-go:disabled{opacity:.5;cursor:not-allowed}
+.sp-modal-status{font-size:12px;margin-top:12px;color:#2a8a00;display:none}
+.sp-modal-status.show{display:block}
+.sp-modal-status.err{color:#c0392b}
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 440px;gap:1.5rem;align-items:start}
+.upcoming-wrap{grid-column:1/-1;background:var(--surface);border:1px solid var(--border);border-left:3px solid #b9770e;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);overflow:hidden}
+.upcoming-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:12px 16px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--text);border-bottom:1px solid var(--border);background:#fffaf2}
+.upcoming-note{font-family:'Wix Madefor Text',sans-serif;font-weight:400;font-size:11px;color:var(--text3)}
+.up-row{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;flex-wrap:wrap}
+.up-row:last-child{border-bottom:none}
+.up-name{font-family:'Montserrat',sans-serif;font-weight:700;min-width:170px}
+.up-type{background:#eef2f7;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.up-dates{color:var(--text2)}
+.up-days{font-family:'Montserrat',sans-serif;font-weight:700}
+.up-cancel{margin-left:auto;padding:6px 14px;border:1px solid var(--red);background:transparent;color:var(--red);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.up-cancel:hover:not(:disabled){background:var(--red);color:#fff}
+.up-cancel:disabled{opacity:.5;cursor:not-allowed}
+.up-empty{padding:14px 16px;font-size:12px;color:var(--text3)}
+@media(max-width:980px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.search-wrap input:focus{outline:none;border-color:var(--navy)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
+.count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.clickable{cursor:pointer;transition:background .12s}
+tr.clickable:hover td{background:#f7f6f2}
+tr.selected td{background:var(--green-light)}
+.emp-name{font-weight:700;color:var(--text)}
+.emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.s-active{background:var(--green-light);color:var(--green-dark)}
+.s-onboarded{background:#d1ecf1;color:#0c5460}
+.s-exited{background:#f0f0f0;color:#888}
+.emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.loading-row td{text-align:center;padding:3rem;color:var(--text3)}
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Leave balance chip in table */
+.leave-chip{display:inline-block;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.chip-ok{background:var(--green-light);color:var(--green-dark)}
+.chip-low{background:#fff3cd;color:#856404}
+.chip-none{background:#fde;color:var(--red)}
+/* Detail panel */
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
+.discrepancy-box{border-radius:var(--radius-lg);padding:14px 16px;margin:16px 0}
+.discrepancy-box.match{background:#edffd6;border:1px solid #b6e88a}
+.discrepancy-box.mismatch{background:#fcefe9;border:1px solid #e8a999}
+.disc-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;margin-bottom:10px}
+.discrepancy-box.match .disc-title{color:var(--green-dark)}
+.discrepancy-box.mismatch .disc-title{color:var(--red)}
+.disc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;padding:5px 0;border-top:1px solid rgba(0,0,0,.05)}
+.disc-row:first-of-type{border-top:none}
+.disc-lbl{font-family:'Montserrat',sans-serif;font-weight:700;min-width:48px}
+.disc-val{color:var(--text2)}
+.disc-flag{margin-left:auto;color:var(--red);font-weight:700;font-family:'Montserrat',sans-serif;font-size:11px}
+.disc-ok{margin-left:auto;color:var(--green-dark);font-weight:700;font-size:11px}
+.disc-note{font-size:11px;color:var(--red);margin-top:8px;font-style:italic}
+.detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.detail-empty-icon{font-size:40px;margin-bottom:.75rem}
+.detail-empty p{font-size:13px}
+.panel-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:12px}
+.panel-avatar{width:44px;height:44px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#111;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.panel-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.panel-ref{font-size:11px;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif}
+.panel-body{padding:1.25rem;max-height:calc(100vh - 160px);overflow-y:auto}
+/* Leave balance cards */
+.leave-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.leave-card{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;transition:border-color .15s}
+.leave-card.loading{opacity:.5}
+.leave-type{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.leave-balance{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;color:var(--navy);line-height:1}
+.leave-balance.low{color:var(--amber)}
+.leave-balance.critical{color:var(--red)}
+.leave-unit{font-size:11px;color:var(--text3);margin-top:2px}
+.leave-detail{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none;transition:all .15s}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy2)}
+.btn-green{background:var(--green);color:#111}
+.btn-green:hover{background:#5fff1a}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
+.btn-outline:hover{background:var(--offwhite)}
+.btn-block{width:100%;margin-bottom:8px}
+/* BCEA reference card */
+.bcea-card{background:#f0f4ff;border:1px solid #c5d0e8;border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem}
+.bcea-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#2c4a8c;margin-bottom:.6rem}
+.bcea-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.bcea-row:last-child{border-bottom:none}
+.bcea-val{font-weight:600;color:var(--text)}
+/* Detail section label */
+.detail-section{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin:.75rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.detail-section::before,.detail-section::after{content:'';flex:1;height:1px;background:var(--border)}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;margin-bottom:.25rem}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
+.field-group{margin-bottom:1rem}
+.field-group label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.field-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.field-input:focus{outline:none;border-color:var(--navy)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* Footer */
+.footer{background:var(--navy);padding:1.25rem 2rem;margin-top:auto}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+/* Export btn */
+.export-btn{padding:8px 14px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px}
+.export-btn:hover{background:var(--offwhite)}
+/* Loading state for detail */
+.detail-loading{text-align:center;padding:1rem;color:var(--text3);font-size:12px}
+.mini-spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Leave Management</div>
+  </div>
+  <a href="../" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · People</div>
+    <div class="hero-title">Leave Management</div>
+    <div class="hero-sub">BCEA-compliant leave balances for all employees. Log leave and track entitlements across Annual, Sick and Family Responsibility leave.</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active employees</div></div>
+      <div class="hstat"><div class="hstat-num" id="statOnboarded">—</div><div class="hstat-label">Onboarded</div></div>
+      <div class="hstat"><div class="hstat-num" id="statLowLeave">—</div><div class="hstat-label">Low annual leave (≤5 days)</div></div>
+      <div class="hstat" id="discrepancyCard"><div class="hstat-num" id="statDiscrepancy" style="color:#fc8181">—</div><div class="hstat-label">SimplePay mismatches</div></div>
+      <button class="sp-refresh-btn" id="spRefreshBtn" onclick="confirmSimplePayRefresh()">↻ Refresh from SimplePay</button>
+    </div>
+  </div>
+</div>
+
+<!-- SimplePay refresh confirmation modal -->
+<div class="sp-modal-overlay" id="spModal" style="display:none">
+  <div class="sp-modal">
+    <div class="sp-modal-title">⚠️ Refresh from SimplePay?</div>
+    <div class="sp-modal-body">
+      This pulls live pay &amp; leave data from SimplePay for <b>every employee on payroll</b>.
+      It takes roughly <b>3 seconds per employee</b> — with a large payroll this can take
+      <b>several minutes</b>. The page will keep working while it runs, but SimplePay figures
+      won't update until the pull finishes and you reload.
+      <br><br>Run it now?
+    </div>
+    <div class="sp-modal-actions">
+      <button class="sp-btn-cancel" onclick="closeSpModal()">Cancel</button>
+      <button class="sp-btn-go" id="spGoBtn" onclick="runSimplePayRefresh()">Yes, refresh now</button>
+    </div>
+    <div class="sp-modal-status" id="spStatus"></div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- ── UPCOMING APPROVED LEAVE + HR OVERRIDE ── -->
+  <div class="upcoming-wrap" id="upcomingWrap" style="display:none">
+    <div class="upcoming-head">
+      <span>🗓 Upcoming approved leave</span>
+      <span class="upcoming-note">HR override: cancelling removes the leave from SimplePay and marks the record Cancelled — the employee can resubmit.</span>
+    </div>
+    <div id="upcomingBody"></div>
+  </div>
+
+  <!-- ── LEFT PANEL: EMPLOYEE LIST ── -->
+  <div class="shell-left">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, ID or job title…" oninput="filterTable()">
+      </div>
+      <select class="filter-sel" id="statusFilter" onchange="filterTable()">
+        <option value="">All eligible</option>
+        <option value="Active">Active only</option>
+        <option value="Onboarded">Onboarded only</option>
+      </select>
+      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      <a href="../leave-import/" class="export-btn" style="text-decoration:none">📥 Monthly import</a>
+      <span class="count-badge" id="countBadge">Loading…</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px"></th>
+            <th>Employee</th>
+            <th>Campaign</th>
+            <th>Status</th>
+            <th>Annual leave accrued</th>
+          </tr>
+        </thead>
+        <tbody id="empBody">
+          <tr class="loading-row"><td colspan="5"><div class="spinner"></div>Loading employees…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL: LEAVE DETAIL ── -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty" id="detailEmpty">
+      <div class="detail-empty-icon">📅</div>
+      <p style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:.25rem">Select an employee</p>
+      <p style="font-size:12px;color:var(--text3)">Click any row to view BCEA leave balances and log leave</p>
+    </div>
+
+    <div id="detailContent" style="display:none">
+      <div class="panel-header">
+        <div class="panel-avatar" id="panelAvatar">—</div>
+        <div>
+          <div class="panel-name" id="panelName">—</div>
+          <div class="panel-ref" id="panelRef">—</div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Employee quick info -->
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Job title</div>
+            <div style="font-size:12px;color:var(--text)" id="d-jt">—</div>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Start date</div>
+            <div style="font-size:12px;color:var(--text)" id="d-sd">—</div>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Entitlement</div>
+            <div style="font-size:12px;color:var(--text)" id="d-ent">—</div>
+          </div>
+        </div>
+
+        <!-- Leave balance cards -->
+        <div class="detail-section">Leave balances <span id="leave-source-badge" style="font-family:'Wix Madefor Text',sans-serif;font-weight:400;font-size:10px;color:var(--text3);text-transform:none;letter-spacing:0;margin-left:4px"></span></div>
+        <div id="detailLoadingMsg" class="detail-loading" style="display:none"><span class="mini-spinner"></span>Loading actual taken amounts…</div>
+        <div class="leave-grid" id="leaveGrid">
+          <div class="leave-card" id="card-annual">
+            <div class="leave-type">Annual leave</div>
+            <div class="leave-balance" id="lv-annual">—</div>
+            <div class="leave-unit">days available</div>
+            <div class="leave-detail" id="lv-annual-detail"></div>
+          </div>
+          <div class="leave-card">
+            <div class="leave-type">Sick leave</div>
+            <div class="leave-balance" id="lv-sick">—</div>
+            <div class="leave-unit">days available</div>
+            <div class="leave-detail">30 days / 36-month cycle</div>
+          </div>
+          <div class="leave-card">
+            <div class="leave-type">Family responsibility</div>
+            <div class="leave-balance" id="lv-family">—</div>
+            <div class="leave-unit">days available</div>
+            <div class="leave-detail">3 days / annual cycle</div>
+          </div>
+          <div class="leave-card">
+            <div class="leave-type" id="lv-mat-label">Maternity / Parental</div>
+            <div class="leave-balance" id="lv-mat">—</div>
+            <div class="leave-unit">days entitlement</div>
+            <div class="leave-detail" id="lv-mat-detail"></div>
+          </div>
+        </div>
+
+        <!-- SimplePay vs our records discrepancy -->
+        <div class="discrepancy-box" id="discrepancyBox" style="display:none"></div>
+
+        <!-- Action buttons -->
+        <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
+        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees/" style="text-decoration:none">↗ Open full employee record</a>
+
+        <!-- BCEA reference -->
+        <div class="detail-section">BCEA reference</div>
+        <div class="bcea-card">
+          <div class="bcea-title">Leave entitlements (BCEA 2002)</div>
+          <div class="bcea-row"><span>Annual leave</span><span class="bcea-val" id="bcea-annual">—</span></div>
+          <div class="bcea-row"><span>Sick leave</span><span class="bcea-val">30 days / 36 months</span></div>
+          <div class="bcea-row"><span>Family responsibility</span><span class="bcea-val">3 days / year</span></div>
+          <div class="bcea-row"><span>Maternity (female)</span><span class="bcea-val">~120 days (4 months)</span></div>
+          <div class="bcea-row"><span>Parental</span><span class="bcea-val">10 days</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LEAVE MODAL ── -->
+<div class="modal-overlay" id="leaveModal">
+  <div class="modal">
+    <div class="modal-title">Log leave</div>
+    <div class="modal-sub">Record leave for <strong id="leaveEmpName"></strong></div>
+    <div class="field-group">
+      <label>Leave type</label>
+      <select class="field-input" id="leaveType">
+        <option>Annual</option>
+        <option>Sick</option>
+        <option>Family Responsibility</option>
+        <option>Maternity</option>
+        <option>Parental</option>
+        <option>Unpaid</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>From</label><input type="date" class="field-input" id="leaveFrom"></div>
+      <div class="field-group"><label>To</label><input type="date" class="field-input" id="leaveTo"></div>
+    </div>
+    <div class="field-group">
+      <label>Days</label>
+      <input type="number" class="field-input" id="leaveDays" step="0.5" min="0.5" placeholder="e.g. 1, 2.5">
+    </div>
+    <div class="field-group">
+      <label>Reason (optional)</label>
+      <input type="text" class="field-input" id="leaveReason" placeholder="e.g. Annual holiday, medical certificate">
+    </div>
+    <div class="field-group">
+      <label>Status</label>
+      <select class="field-input" id="leaveStatus">
+        <option value="Approved">Approved</option>
+        <option value="Requested">Requested</option>
+        <option value="Declined">Declined</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('leaveModal')" style="flex:1">Cancel</button>
+      <button class="btn btn-green" onclick="saveLeave()" style="flex:2">Save leave</button>
+    </div>
+    <div id="leaveResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
+var SAVE_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f9acaa0f0254a72a662cbf4541f4da3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6K_5uXvdvOz7pFfDeQtwhdqfRSxmxz1Ib_sfZHHSD4k';
+var GET_SNAPSHOTS_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/767c17ab296443f3a7af81f4f91c88c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=FZFGAv95SRSp7SfURLYeimSyoD03FlxTN_30X_9qBzI';
+// SimplePay live pay & leave (same flow the Payroll page uses) — reads SQL PayrollSnapshot only, fast
+var SIMPLEPAY_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/816c0774c0214f63a21a4662d86ddfed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3fHxMihj8JztXCxFdROj-Q3EMOEM2sCs1FW9RyOGQ9k';
+// "Pull Payroll Snapshot" — SLOW: calls SimplePay per employee (~3s each). Only fired by the Refresh button.
+var SIMPLEPAY_PULL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/63206e6ac0f54687971c58d176e4303e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rqmXyK_Sp8LBqg7z0ogVBrFC8fp1rxAgFS-wsFRtwwQ';
+// Per-employee leave records (same flow Manage My Team uses)
+var GET_LEAVE_RECORDS_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3998c9c42b8f473995fabf9c9f9c7102/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=E2JBILmdXEcO33-MirhSylDi6S5TAi96ghbGknVSzA0';
+// HR override: CANCEL_LEAVE flow — deletes the days from SimplePay and marks the record Cancelled.
+var CANCEL_LEAVE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/40975702f832426ab3b4bade04a8544e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=KKXv3CM9zKOnyMRSZCi8xJL0QoqEEJDG6-ZBJQ3-PbY';
+// Simple HR override password (visible in page source by design, same convention as hradmin). CHANGE ME:
+var HR_OVERRIDE_PASSWORD='trilogy-override-2026';
+
+var ELIGIBLE_STATUSES=['Active','Onboarded','Resigned','Dismissed','Retrenched','AWOL','Deceased'];
+var allEmployees=[], filteredEmployees=[], selectedEmp=null;
+var snapshotMap={}; // { EmployeeID: {AnnualBalance, SickBalance, FamilyBalance, Period} }
+var simplepayMap={}; // { EmployeeID: {annual, sick} } from SimplePay live feed
+
+function gi(id){return document.getElementById(id);}
+function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
+
+// ── LEAVE CALCULATIONS (BCEA) ──
+function monthsSince(dateStr){
+  if(!dateStr)return 0;
+  var start=new Date(dateStr.split('T')[0]);
+  var now=new Date();
+  if(start>now)return 0;
+  return (now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth())+(now.getDate()>=start.getDate()?0:-1);
+}
+
+function annualCycleSince(dateStr){
+  // Months into the current annual cycle (resets on anniversary)
+  if(!dateStr)return 0;
+  var start=new Date(dateStr.split('T')[0]);
+  var now=new Date();
+  if(start>now)return 0;
+  // Find anniversary year
+  var anniv=new Date(start);
+  while(anniv<=now)anniv.setFullYear(anniv.getFullYear()+1);
+  anniv.setFullYear(anniv.getFullYear()-1); // last anniversary
+  return (now.getFullYear()-anniv.getFullYear())*12+(now.getMonth()-anniv.getMonth())+(now.getDate()>=anniv.getDate()?0:-1);
+}
+
+function calcLeave(e,detail){
+  var entitlement=parseFloat(e.AnnualLeaveEntitlement||15);
+  var months=monthsSince(e.StartDate);
+  var accrued=Math.max(0,(entitlement/12)*months);
+  var annualTaken=parseFloat((detail&&detail.annual_taken)||0);
+  var annualAvail=parseFloat((accrued-annualTaken).toFixed(2));
+
+  // Sick: 30 days per 36-month cycle
+  var sickTaken=parseFloat((detail&&detail.sick_taken)||0);
+  var sickAvail=Math.max(0,30-sickTaken);
+
+  // Family responsibility: 3 days per annual cycle
+  var famTaken=parseFloat((detail&&detail.family_taken)||0);
+  var famAvail=Math.max(0,3-famTaken);
+
+  var isFemale=(e.Gender||'').toLowerCase()==='female';
+  var matDays=isFemale?'~120':'10';
+  var matLabel=isFemale?'Maternity leave':'Parental leave';
+  var matDetail=isFemale?'4 consecutive months (BCEA)':'10 days (BCEA parental)';
+
+  return{annualAvail:annualAvail,accrued:accrued.toFixed(2),entitlement:entitlement,months:months,sickAvail:sickAvail.toFixed(0),famAvail:famAvail.toFixed(0),matDays:matDays,matLabel:matLabel,matDetail:matDetail,annualTaken:annualTaken,sickTaken:sickTaken,famTaken:famTaken};
+}
+
+function leaveChip(annualAvail){
+  if(annualAvail>10)return '<span class="leave-chip chip-ok">'+annualAvail+' days</span>';
+  if(annualAvail>5)return '<span class="leave-chip chip-low">'+annualAvail+' days</span>';
+  if(annualAvail>0)return '<span class="leave-chip chip-none">'+annualAvail+' days</span>';
+  return '<span class="leave-chip chip-none">0 days</span>';
+}
+
+// ── LOAD ──
+function loadEmployees(){
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var all=Array.isArray(data)?data:(data.employees||[]);
+    allEmployees=all.filter(function(e){return ELIGIBLE_STATUSES.indexOf(e.Status)>=0;});
+    loadUpcomingLeave();
+    renderStats();
+    filterTable();
+    // Load snapshots in background — page is already usable
+    loadSnapshots();
+  })
+  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+}
+
+function loadSnapshots(){
+  fetch(GET_SNAPSHOTS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var sbody=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var rs=sbody.ResultSets||sbody.resultSets||sbody;
+    var rows=rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
+    if(!Array.isArray(rows))return;
+    rows.forEach(function(row){
+      if(row.EmployeeID)snapshotMap[row.EmployeeID]={
+        annual:parseFloat(row.AnnualBalance)||0,
+        sick:parseFloat(row.SickBalance)||0,
+        family:parseFloat(row.FamilyBalance)||0,
+        period:row.Period||''
+      };
+    });
+    // Refresh table and stats now snapshot data is available
+    renderStats();
+    filterTable();
+  })
+  .catch(function(){/* Snapshots unavailable — BCEA fallback stays, no error shown */});
+
+  // ── SimplePay live leave (for discrepancy checking) ──
+  fetch(SIMPLEPAY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var sp=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var rows=Array.isArray(sp.rows)?sp.rows:(Array.isArray(sp)?sp:[]);
+    rows.forEach(function(row){
+      var rec={
+        annual: (row.AnnualLeaveBalance===null||row.AnnualLeaveBalance===undefined||row.AnnualLeaveBalance==='')?null:parseFloat(row.AnnualLeaveBalance),
+        sick:   (row.SickLeaveBalance===null||row.SickLeaveBalance===undefined||row.SickLeaveBalance==='')?null:parseFloat(row.SickLeaveBalance),
+        family: (row.FamilyLeaveBalance===null||row.FamilyLeaveBalance===undefined||row.FamilyLeaveBalance==='')?null:parseFloat(row.FamilyLeaveBalance),
+        name:   row.FullName||''
+      };
+      if(row.EmployeeID) simplepayMap[row.EmployeeID]=rec;
+      // also key by full name as a fallback match (SimplePay IDs may differ from ours)
+      if(row.FullName) simplepayMap['name:'+row.FullName.trim().toLowerCase()]=rec;
+    });
+    renderDiscrepancyStat();
+    renderStats();
+    filterTable(); // refresh table chips with SimplePay values
+    if(selectedEmp) selectEmployee(selectedEmp.EmployeeID); // refresh open detail
+  })
+  .catch(function(){/* SimplePay unavailable — discrepancy view just won't show */});
+}
+
+// Match an employee to their SimplePay record by ID, then by full name
+function getSimplePay(e){
+  if(simplepayMap[e.EmployeeID]) return simplepayMap[e.EmployeeID];
+  var key='name:'+((e.FullName||(e.FirstName+' '+e.LastName))||'').trim().toLowerCase();
+  return simplepayMap[key]||null;
+}
+
+// ── UPCOMING APPROVED LEAVE + HR OVERRIDE (cancel) ──
+var upcomingLeave=[];
+function lvRecsOf(res){
+  if(Array.isArray(res))return res;
+  return (res&&(res.records||res.value||(res.ResultSets&&res.ResultSets.Table1)||(res.resultsets&&res.resultsets.Table1)))||[];
+}
+function loadUpcomingLeave(){
+  var active=allEmployees.filter(function(e){return e.Status==='Active';});
+  if(!active.length)return;
+  var today=new Date(); today.setHours(0,0,0,0);
+  Promise.allSettled(active.map(function(e){
+    return fetch(GET_LEAVE_RECORDS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:String(e.EmployeeID)})})
+      .then(function(r){return r.json();})
+      .then(function(d){var b=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;return {emp:e,recs:lvRecsOf(b)};});
+  })).then(function(results){
+    upcomingLeave=[];
+    results.forEach(function(res){
+      if(res.status!=='fulfilled')return;
+      res.value.recs.forEach(function(lr){
+        if((lr.Status||'').toLowerCase()!=='approved')return;
+        var ed=new Date(lr.EndDate||lr.end_date);
+        if(isNaN(ed)||ed<today)return;
+        upcomingLeave.push({emp:res.value.emp,rec:lr});
+      });
+    });
+    upcomingLeave.sort(function(a,b){return new Date(a.rec.StartDate)-new Date(b.rec.StartDate);});
+    renderUpcoming();
+  });
+}
+function fmtD(s){if(!s)return'—';var d=new Date(s);return isNaN(d)?String(s).slice(0,10):d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+function renderUpcoming(){
+  var wrap=gi('upcomingWrap'), body=gi('upcomingBody');
+  wrap.style.display='block';
+  if(!upcomingLeave.length){body.innerHTML='<div class="up-empty">No upcoming approved leave.</div>';return;}
+  body.innerHTML=upcomingLeave.map(function(u,i){
+    var lr=u.rec, e=u.emp;
+    return '<div class="up-row">'+
+      '<span class="up-name">'+(e.FullName||(e.FirstName+' '+e.LastName))+'</span>'+
+      '<span class="up-type">'+(lr.LeaveType||'Leave')+'</span>'+
+      '<span class="up-dates">'+fmtD(lr.StartDate)+' → '+fmtD(lr.EndDate)+'</span>'+
+      '<span class="up-days">'+(lr.Days||'')+' day'+((lr.Days||0)!=1?'s':'')+'</span>'+
+      '<button class="up-cancel" data-up="'+i+'" onclick="cancelUpcoming('+i+')">🚫 Cancel leave</button>'+
+    '</div>';
+  }).join('');
+}
+function cancelUpcoming(i){
+  var u=upcomingLeave[i]; if(!u)return;
+  if(!CANCEL_LEAVE_URL){alert('The CANCEL_LEAVE flow is not connected yet.\n\nBuild the flow and paste its URL into CANCEL_LEAVE_URL in this page.');return;}
+  var lr=u.rec, e=u.emp;
+  var name=e.FullName||(e.FirstName+' '+e.LastName);
+  if(!confirm('Cancel this leave?\n\n'+name+' — '+(lr.LeaveType||'')+'\n'+fmtD(lr.StartDate)+' → '+fmtD(lr.EndDate)+' ('+(lr.Days||'')+' days)\n\nThis removes the days from SimplePay and marks the record Cancelled. The employee can resubmit.'))return;
+  var pw=prompt('HR override password:');
+  if(pw===null)return;
+  if(pw!==HR_OVERRIDE_PASSWORD){alert('Incorrect override password.');return;}
+  var btn=document.querySelector('[data-up="'+i+'"]');
+  if(btn){btn.disabled=true;btn.textContent='Cancelling…';}
+  fetch(CANCEL_LEAVE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    leave_id:String(lr.LeaveID||lr.leave_id||''),
+    employee_id:String(e.EmployeeID),
+    leave_type:String(lr.LeaveType||''),
+    start_date:String(lr.StartDate||'').slice(0,10),
+    end_date:String(lr.EndDate||'').slice(0,10),
+    cancelled_by:'HR Portal override'
+  })}).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    upcomingLeave.splice(i,1);
+    renderUpcoming();
+    alert('Leave cancelled and removed from SimplePay.\n'+name+' can resubmit if needed.');
+  }).catch(function(err){
+    alert('Cancel failed: '+err.message+'\nThe record was NOT changed — check the CANCEL_LEAVE flow run history.');
+    if(btn){btn.disabled=false;btn.textContent='🚫 Cancel leave';}
+  });
+}
+
+// ── SimplePay on-demand refresh (slow pull flow) ──
+function confirmSimplePayRefresh(){
+  if(!SIMPLEPAY_PULL_URL){
+    alert('The SimplePay pull flow is not connected yet.\n\nGive the "Pull Payroll Snapshot" flow a HTTP trigger and paste its URL into SIMPLEPAY_PULL_URL in this page.');
+    return;
+  }
+  gi('spStatus').className='sp-modal-status';
+  gi('spStatus').textContent='';
+  gi('spGoBtn').disabled=false;
+  gi('spModal').style.display='flex';
+}
+function closeSpModal(){ gi('spModal').style.display='none'; }
+function runSimplePayRefresh(){
+  var go=gi('spGoBtn'), st=gi('spStatus'), btn=gi('spRefreshBtn');
+  go.disabled=true; btn.disabled=true;
+  st.className='sp-modal-status show';
+  st.textContent='Pull started… this runs in the background and may take several minutes.';
+  fetch(SIMPLEPAY_PULL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      st.textContent='✓ Pull completed. Reloading SimplePay figures…';
+      // re-fetch the (fast) snapshot read and refresh the page data
+      setTimeout(function(){ location.reload(); }, 1500);
+    })
+    .catch(function(err){
+      st.className='sp-modal-status show err';
+      st.textContent='Pull failed or timed out: '+err.message+'. Note: very long runs can exceed the browser timeout — the flow may still be running; check back in a few minutes and reload.';
+      go.disabled=false; btn.disabled=false;
+    });
+}
+
+// Count employees where SQL snapshot and SimplePay annual leave disagree by >0.5 day
+function renderDiscrepancyStat(){
+  var count=0, list=[];
+  allEmployees.forEach(function(e){
+    if(e.Status!=='Active')return;
+    var snap=snapshotMap[e.EmployeeID];
+    var spr=getSimplePay(e);
+    if(snap&&spr&&spr.annual!==null){
+      if(Math.abs((snap.annual||0)-(spr.annual||0))>0.5){ count++; list.push(e); }
+    }
+  });
+  var el=gi('statDiscrepancy');
+  if(el) el.textContent=count;
+  var card=gi('discrepancyCard');
+  if(card) card.style.display=count>0?'':'';
+  window._discrepancyList=list;
+}
+
+function renderStats(){
+  var active=0,onboarded=0,lowLeave=0;
+  allEmployees.forEach(function(e){
+    if(e.Status==='Active')active++;
+    if(e.Status==='Onboarded')onboarded++;
+    if(e.Status==='Active'){
+      var snap=snapshotMap[e.EmployeeID];
+      var sprS=getSimplePay(e);
+      var bal=(sprS&&sprS.annual!==null)?sprS.annual:(snap?snap.annual:calcLeave(e,null).annualAvail);
+      if(parseFloat(bal)<=5)lowLeave++;
+    }
+  });
+  gi('statActive').textContent=active;
+  gi('statOnboarded').textContent=onboarded;
+  gi('statLowLeave').textContent=lowLeave;
+}
+
+function filterTable(){
+  var q=gi('searchInput').value.toLowerCase();
+  var f=gi('statusFilter').value;
+  filteredEmployees=allEmployees.filter(function(e){
+    var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
+    var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.Campaign||'').toLowerCase().includes(q);
+    var mf=!f||e.Status===f;
+    return mq&&mf;
+  });
+  renderTable(filteredEmployees);
+}
+
+function renderTable(list){
+  gi('countBadge').textContent=list.length+' employee'+(list.length!==1?'s':'');
+  if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
+  gi('empBody').innerHTML=list.map(function(e){
+    var l=calcLeave(e,null);
+    var spr=getSimplePay(e);
+    var snap=snapshotMap[e.EmployeeID];
+    var chipVal=(spr&&spr.annual!==null)?spr.annual:(snap?snap.annual:l.annualAvail);
+    var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
+    var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
+    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
+      '<td>'+leaveChip(chipVal)+'</td>'+
+      '</tr>';
+  }).join('');
+}
+
+// ── SELECT ──
+function selectEmployee(id){
+  var e=allEmployees.find(function(x){return x.EmployeeID===id;});
+  if(!e)return;
+  selectedEmp=e;
+  gi('detailEmpty').style.display='none';
+  gi('detailContent').style.display='block';
+  gi('panelAvatar').textContent=initials(e.FirstName,e.LastName);
+  gi('panelName').textContent=(e.FirstName||'')+' '+(e.LastName||'');
+  gi('panelRef').textContent=e.EmployeeID+(e.JobTitle?' · '+e.JobTitle:'');
+  gi('d-jt').textContent=e.JobTitle||'—';
+  gi('d-sd').textContent=e.StartDate?e.StartDate.split('T')[0]:'—';
+  gi('d-ent').textContent=(e.AnnualLeaveEntitlement||15)+' days/yr';
+  gi('bcea-annual').textContent=(e.AnnualLeaveEntitlement||15)+' days/year';
+  gi('empRecordLink').href='../employees/?ref='+encodeURIComponent(e.EmployeeID);
+
+  // Render with accrued only first (no taken data yet)
+  renderLeave(e,null);
+  filterTable();
+
+  // Fetch actual taken amounts
+  gi('detailLoadingMsg').style.display='block';
+  fetch(GET_DETAIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:e.EmployeeID})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var detail=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    gi('detailLoadingMsg').style.display='none';
+    renderLeave(e,detail);
+  })
+  .catch(function(err){gi('detailLoadingMsg').style.display='none';console.warn('Detail error:',err);});
+}
+
+function renderLeave(e,detail){
+  var spr=getSimplePay(e);
+  var snap=snapshotMap[e.EmployeeID];
+  if(spr&&spr.annual!==null){
+    // ── SimplePay (payroll actuals) — primary source ──
+    var annNum=spr.annual;
+    var annEl=gi('lv-annual');
+    annEl.textContent=annNum.toFixed(2);
+    annEl.className='leave-balance'+(annNum<=3?' critical':annNum<=7?' low':'');
+    gi('lv-annual-detail').textContent='SimplePay payroll actual'+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
+
+    // Sick & Family: SimplePay reports 0/null for staff past the BCEA vesting point —
+    // fall back to the statutory entitlement (less taken) once tenure crosses it.
+    // BCEA s22: full 30-day sick entitlement after 6 months. s27: 3 days FR after 4 months.
+    var bc=calcLeave(e,detail);
+    var months=monthsSince(e.StartDate);
+    var spSick=(spr.sick===null||spr.sick===undefined)?0:spr.sick;
+    var spFam=(spr.family===null||spr.family===undefined)?0:spr.family;
+    var sickVal, famVal;
+    if(spSick>0){ sickVal=spSick.toFixed(2); }
+    else if(months>=6){ sickVal=Math.max(0,30-(bc.sickTaken||0)).toFixed(2); }
+    else { sickVal=spSick.toFixed(2); }
+    if(spFam>0){ famVal=spFam.toFixed(2); }
+    else if(months>=4){ famVal=Math.max(0,3-(bc.famTaken||0)).toFixed(2); }
+    else { famVal=spFam.toFixed(2); }
+    gi('lv-sick').textContent=sickVal;
+    gi('lv-family').textContent=famVal;
+    var srcBadge=gi('leave-source-badge');
+    if(srcBadge)srcBadge.textContent='💰 SimplePay';
+  } else if(snap){
+    // ── Internal tracker snapshot (no SimplePay record) ──
+    var annNumS=snap.annual;
+    var annElS=gi('lv-annual');
+    annElS.textContent=annNumS.toFixed(2);
+    annElS.className='leave-balance'+(annNumS<=3?' critical':annNumS<=7?' low':'');
+    gi('lv-annual-detail').textContent='Internal tracker · '+snap.period+(detail&&detail.annual_taken?' · '+detail.annual_taken+' taken':'');
+    gi('lv-sick').textContent=snap.sick.toFixed(2);
+    gi('lv-family').textContent=snap.family.toFixed(2);
+    var srcBadgeS=gi('leave-source-badge');
+    if(srcBadgeS)srcBadgeS.textContent='📊 '+snap.period;
+  } else {
+    // ── BCEA estimate ──
+    var l=calcLeave(e,detail);
+    var annNum2=parseFloat(l.annualAvail);
+    var annEl2=gi('lv-annual');
+    annEl2.textContent=l.annualAvail;
+    annEl2.className='leave-balance'+(annNum2<=3?' critical':annNum2<=7?' low':'');
+    gi('lv-annual-detail').textContent=l.entitlement+' days/yr · '+l.months+' months accrued'+(detail?' · '+l.annualTaken+' taken':'');
+    gi('lv-sick').textContent=l.sickAvail+(detail?'':'+');
+    gi('lv-family').textContent=l.famAvail+(detail?'':'+');
+    var srcBadge2=gi('leave-source-badge');
+    if(srcBadge2)srcBadge2.textContent='BCEA estimate';
+  }
+  // Mat/Parental always from BCEA
+  var lm=calcLeave(e,detail);
+  gi('lv-mat').textContent=lm.matDays;
+  gi('lv-mat-label').textContent=lm.matLabel;
+  gi('lv-mat-detail').textContent=lm.matDetail;
+
+  // ── SimplePay vs SQL discrepancy check ──
+  renderDiscrepancy(e);
+}
+
+function renderDiscrepancy(e){
+  var box=gi('discrepancyBox');
+  if(!box) return;
+  var snap=snapshotMap[e.EmployeeID];
+  var spr=getSimplePay(e);
+  if(!snap||!spr||spr.annual===null){
+    box.style.display='none';
+    return;
+  }
+  var sqlA=snap.annual||0, spA=spr.annual;
+  var sqlS=snap.sick||0, spS=(spr.sick===null?null:spr.sick);
+  var sqlF=snap.family||0, spF=(spr.family===null||spr.family===undefined?null:spr.family);
+  var diffA=sqlA-spA;
+  var mismatchA=Math.abs(diffA)>0.5;
+  var mismatchS=(spS!==null)&&Math.abs(sqlS-spS)>0.5;
+  var mismatchF=(spF!==null)&&Math.abs(sqlF-spF)>0.5;
+  var anyMismatch=mismatchA||mismatchS||mismatchF;
+
+  box.style.display='block';
+  box.className='discrepancy-box'+(anyMismatch?' mismatch':' match');
+  var rows='';
+  rows+='<div class="disc-row"><span class="disc-lbl">Annual</span>'+
+        '<span class="disc-val">SimplePay: <b>'+spA.toFixed(2)+'</b></span>'+
+        '<span class="disc-val">Our system: <b>'+sqlA.toFixed(2)+'</b></span>'+
+        (mismatchA?'<span class="disc-flag">⚠ '+(diffA>0?'system +'+diffA.toFixed(2):'system −'+Math.abs(diffA).toFixed(2))+'</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+  if(spS!==null){
+    rows+='<div class="disc-row"><span class="disc-lbl">Sick</span>'+
+          '<span class="disc-val">SimplePay: <b>'+spS.toFixed(2)+'</b></span>'+
+          '<span class="disc-val">Our system: <b>'+sqlS.toFixed(2)+'</b></span>'+
+          (mismatchS?'<span class="disc-flag">⚠ differs</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+  }
+  if(spF!==null){
+    rows+='<div class="disc-row"><span class="disc-lbl">Family</span>'+
+          '<span class="disc-val">SimplePay: <b>'+spF.toFixed(2)+'</b></span>'+
+          '<span class="disc-val">Our system: <b>'+sqlF.toFixed(2)+'</b></span>'+
+          (mismatchF?'<span class="disc-flag">⚠ differs</span>':'<span class="disc-ok">✓ match</span>')+'</div>';
+  }
+  box.innerHTML='<div class="disc-title">'+(anyMismatch?'⚠ Our system doesn\'t match SimplePay':'✓ Our system matches SimplePay')+'</div>'+rows+
+    (anyMismatch?'<div class="disc-note">SimplePay is the payroll source of truth — reconcile our internal records (or flag with the payroll company if SimplePay is wrong).</div>':'');
+}
+
+// ── LEAVE MODAL ──
+function openLeaveModal(){
+  if(!selectedEmp)return;
+  gi('leaveEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;
+  gi('leaveFrom').value='';
+  gi('leaveTo').value='';
+  gi('leaveDays').value='';
+  gi('leaveReason').value='';
+  gi('leaveStatus').value='Approved';
+  gi('leaveResult').innerHTML='';
+  gi('leaveModal').classList.add('open');
+}
+
+function saveLeave(){
+  var payload={
+    employee_id:selectedEmp.EmployeeID,
+    leave_type:gi('leaveType').value,
+    start_date:gi('leaveFrom').value,
+    end_date:gi('leaveTo').value,
+    days:gi('leaveDays').value,
+    reason:gi('leaveReason').value,
+    status:gi('leaveStatus').value
+  };
+  if(!payload.days||!payload.start_date){
+    gi('leaveResult').innerHTML='<span style="color:var(--red)">Please enter dates and number of days</span>';
+    return;
+  }
+  gi('leaveResult').innerHTML='<span class="mini-spinner"></span> Saving…';
+  fetch(SAVE_LEAVE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(){
+    gi('leaveResult').innerHTML='<span style="color:var(--green-dark)">✓ Leave saved successfully</span>';
+    setTimeout(function(){closeModal('leaveModal');selectEmployee(selectedEmp.EmployeeID);},1400);
+  })
+  .catch(function(){gi('leaveResult').innerHTML='<span style="color:var(--red)">✗ Failed to save</span>';});
+}
+
+function closeModal(id){gi(id).classList.remove('open');}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  if(!filteredEmployees.length)return;
+  var rows=[['Employee ID','First Name','Last Name','Job Title','Campaign','Status','Start Date','Entitlement (days/yr)','Months Accrued','Annual Accrued (est)']];
+  filteredEmployees.forEach(function(e){
+    var l=calcLeave(e,null);
+    rows.push([e.EmployeeID,e.FirstName,e.LastName,e.JobTitle,e.Campaign,e.Status,e.StartDate?e.StartDate.split('T')[0]:'',l.entitlement,l.months,l.accrued]);
+  });
+  var csv=rows.map(function(r){return r.map(function(v){return '"'+(v||'').toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='trilogy-leave-export-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
+loadEmployees();
+</script>
+</body>
+</html>
