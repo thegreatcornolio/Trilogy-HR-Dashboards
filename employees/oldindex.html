@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>window.HR_REQUIRED_MODULE='records';</script>
+<script src="/hr-guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trilogy BPO — Employee Records</title>
@@ -111,8 +113,8 @@ tr.selected td{background:#edffd6}
 </style>
 </head>
 <body>
-<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
-
+<script>window.HR_REQUIRED_MODULE='records';</script>
+<script src="/hr-guard.js"></script>
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
     <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">

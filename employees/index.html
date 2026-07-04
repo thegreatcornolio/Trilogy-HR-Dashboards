@@ -113,8 +113,8 @@ tr.selected td{background:#edffd6}
 </style>
 </head>
 <body>
-<script>window.HR_REQUIRED_MODULE='records';</script>
-<script src="/hr-guard.js"></script>
+<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
+
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
     <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
@@ -149,8 +149,14 @@ tr.selected td{background:#edffd6}
         <option value="tobe">To be onboarded</option>
         <option value="onboarded">Onboarded</option>
         <option value="active">Active</option>
+        <option value="nosp">⚠ Not in SimplePay</option>
       </select>
       <span class="count-badge" id="countBadge">Loading…</span>
+    </div>
+    <div id="bulkBar" style="display:none;align-items:center;gap:12px;background:#fffaf2;border:1px solid var(--border);border-left:3px solid #b9770e;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px">
+      <b style="font-family:'Montserrat',sans-serif" id="bulkCount">0 selected</b>
+      <span style="color:var(--text3);font-size:12px">Selected employees will be created in SimplePay (payment method "cash" — banking captured in SimplePay afterwards).</span>
+      <button id="bulkGo" onclick="openBulkModal()" style="margin-left:auto;padding:8px 16px;background:#1e1e1e;color:#fff;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer">⇡ Load onto SimplePay</button>
     </div>
     <div class="tbl-wrap">
       <table id="empTable">
@@ -468,7 +474,12 @@ function loadEmployees(){
   .then(function(d){
     var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
     allEmployees=Array.isArray(data)?data:(data.employees||[]);
-    renderStats(); renderTable(allEmployees);
+    allEmployees.sort(function(a,b){
+      var an=((a.LastName||'')+' '+(a.FirstName||'')).toLowerCase();
+      var bn=((b.LastName||'')+' '+(b.FirstName||'')).toLowerCase();
+      return an<bn?-1:an>bn?1:0;
+    });
+    renderStats(); filterTable();
   })
   .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
 }
@@ -485,12 +496,14 @@ function renderTable(list){
   gi('empBody').innerHTML=list.map(function(e){
     var st=onboardState(e);
     var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
+    var spBadge=spMissing(e)?' <span style="display:inline-block;margin-top:3px;background:#fcefe9;color:#c0392b;border:1px solid #e8b8ae;border-radius:20px;padding:1px 8px;font-size:10px;font-weight:700;font-family:Montserrat,sans-serif;white-space:nowrap">⚠ Not in SimplePay</span>':'';
+    var cb=spMissing(e)?'<input type="checkbox" '+(spSelected[e.EmployeeID]?'checked ':'')+'onclick="toggleSp(\''+e.EmployeeID+'\',event)" style="width:15px;height:15px;cursor:pointer;accent-color:#b9770e" title="Select to load onto SimplePay">':'';
     return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
-      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
+      '<td style="white-space:nowrap">'+cb+' <div class="emp-avatar" style="display:inline-flex;vertical-align:middle">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
       '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
       '<td>'+(e.JobTitle||'—')+'</td>'+
       '<td>'+(e.StartDate?e.StartDate.split('T')[0]:'—')+'</td>'+
-      '<td>'+pill+'</td></tr>';
+      '<td>'+pill+spBadge+'</td></tr>';
   }).join('');
 }
 
@@ -500,7 +513,7 @@ function filterTable(){
   var filtered=allEmployees.filter(function(e){
     var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
     var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.IDNumber||'').includes(q);
-    var mf=!f||onboardState(e)===f;
+    var mf=!f||(f==='nosp'?spMissing(e):onboardState(e)===f);
     return mq&&mf;
   });
   renderTable(filtered);
@@ -837,6 +850,83 @@ function closeModal(id){gi(id).classList.remove('open');}
 loadEmployees();
 loadManagersJSON();
 loadCampaignsJSON();
+</script>
+<!-- ── Bulk load onto SimplePay modal ── -->
+<div id="spModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:1.5rem">
+  <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#1B2A4A;margin-bottom:10px">⇡ Load onto SimplePay</div>
+    <div style="font-size:13px;color:#4A5568;line-height:1.6;margin-bottom:10px">The following employees will be <b>created in SimplePay</b> (payment method "cash"; capture banking and payroll inputs in SimplePay afterwards):</div>
+    <div id="spModalList" style="font-size:13px;background:#f7f6f2;border-radius:8px;padding:10px 14px;margin-bottom:14px;max-height:180px;overflow:auto"></div>
+    <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7a8499;margin-bottom:4px">HR override password</label>
+    <input id="spModalPw" type="password" placeholder="Password" style="width:100%;padding:10px 14px;border:1px solid #c8c7c3;border-radius:8px;font-size:13px;box-sizing:border-box;margin-bottom:14px" onkeydown="if(event.key==='Enter')runBulkSync()">
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeBulkModal()" style="padding:10px 18px;border:1px solid #c8c7c3;border-radius:8px;background:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#4A5568;cursor:pointer">Cancel</button>
+      <button id="spModalGo" onclick="runBulkSync()" style="padding:10px 18px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Confirm &amp; load</button>
+    </div>
+    <div id="spModalStatus" style="font-size:12px;margin-top:12px;display:none"></div>
+  </div>
+</div>
+<script>
+/* ── SimplePay bulk sync ── */
+// SYNC_EMPLOYEE flow — paste its URL (with sig) when built:
+var SYNC_EMPLOYEE_URL='';
+// Simple HR override password (visible in page source by design, same convention as hradmin). CHANGE ME:
+var HR_OVERRIDE_PASSWORD='trilogy-override-2026';
+
+var spSelected={}; // EmployeeID -> true
+
+function spKnown(e){ return e.InSimplePay!==undefined && e.InSimplePay!==null; }
+function spMissing(e){
+  var st=onboardState(e);
+  return spKnown(e) && !(e.InSimplePay===1||e.InSimplePay==='1'||e.InSimplePay===true) && (st==='active'||st==='onboarded');
+}
+function toggleSp(id,ev){
+  ev.stopPropagation();
+  if(spSelected[id])delete spSelected[id]; else spSelected[id]=true;
+  updateBulkBar();
+}
+function updateBulkBar(){
+  var n=Object.keys(spSelected).length;
+  gi('bulkBar').style.display=n?'flex':'none';
+  gi('bulkCount').textContent=n+' selected';
+}
+function openBulkModal(){
+  if(!SYNC_EMPLOYEE_URL){alert('The SYNC_EMPLOYEE flow is not connected yet.\n\nBuild the flow and paste its URL into SYNC_EMPLOYEE_URL in this page.');return;}
+  var ids=Object.keys(spSelected); if(!ids.length)return;
+  gi('spModalList').innerHTML=ids.map(function(id){
+    var e=allEmployees.find(function(x){return x.EmployeeID===id;});
+    return '<div style="padding:2px 0">• <b>'+((e&&(e.FirstName+' '+e.LastName))||id)+'</b> <span style="color:#7a8499;font-size:11px">'+(e&&e.StartDate?('started '+e.StartDate.split('T')[0]):'')+'</span></div>';
+  }).join('');
+  gi('spModalPw').value=''; gi('spModalStatus').style.display='none'; gi('spModalGo').disabled=false;
+  gi('spModal').style.display='flex';
+  gi('spModalPw').focus();
+}
+function closeBulkModal(){ gi('spModal').style.display='none'; }
+async function runBulkSync(){
+  var pw=gi('spModalPw').value;
+  if(pw!==HR_OVERRIDE_PASSWORD){ var st=gi('spModalStatus'); st.style.display='block'; st.style.color='#c0392b'; st.textContent='Incorrect override password.'; return; }
+  var ids=Object.keys(spSelected), st=gi('spModalStatus'), go=gi('spModalGo');
+  go.disabled=true; st.style.display='block'; st.style.color='#4A5568';
+  var ok=0, fail=[];
+  for(var i=0;i<ids.length;i++){
+    var e=allEmployees.find(function(x){return x.EmployeeID===ids[i];});
+    st.textContent='Creating '+((e&&(e.FirstName+' '+e.LastName))||ids[i])+'… ('+(i+1)+' of '+ids.length+')';
+    try{
+      var r=await fetch(SYNC_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync',employee_id:String(ids[i])})});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      ok++;
+      if(e)e.InSimplePay=1;
+      delete spSelected[ids[i]];
+    }catch(err){ fail.push(((e&&(e.FirstName+' '+e.LastName))||ids[i])+' ('+err.message+')'); }
+  }
+  updateBulkBar(); filterTable();
+  if(fail.length){ st.style.color='#c0392b'; st.textContent='✓ '+ok+' created · ✗ failed: '+fail.join(', ')+' — check the SYNC_EMPLOYEE flow run history.'; go.disabled=false; }
+  else{ st.style.color='#2a8a00'; st.textContent='✓ All '+ok+' created in SimplePay. Capture banking and payroll inputs in SimplePay next.'; setTimeout(closeBulkModal,2500); }
+}
+// Preset filter from HR-home banner link (?sp=missing)
+(function(){
+  try{ if(new URLSearchParams(location.search).get('sp')==='missing'){ var f=gi('onboardFilter'); if(f){ f.value='nosp'; } } }catch(e){}
+})();
 </script>
 </body>
 </html>
