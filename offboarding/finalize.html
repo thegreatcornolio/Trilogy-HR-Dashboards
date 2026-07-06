@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Trilogy · Finalize Offboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --bg:#e8e7e3;--surface:#fff;--surface2:#f4f3ef;--border:#e2e1dd;--border2:#c8c7c3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--red:#c0392b;--orange:#e67e22;--blue:#2980b9;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--navy);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-logo{height:26px}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-sec{color:rgba(255,255,255,.6);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase}
+.nav-back{color:rgba(255,255,255,.55);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;text-decoration:none}
+.nav-back:hover{color:var(--green)}
+.shell{max-width:1000px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.page-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;margin-bottom:2px}
+.page-sub{font-size:13px;color:var(--text3);margin-bottom:1.75rem}
+
+.emp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:16px;overflow:hidden}
+.emp-head{display:flex;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.emp-av{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.emp-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700}
+.emp-meta{font-size:12px;color:var(--text3)}
+.exit-pill{margin-left:auto;background:#fdf0ef;color:var(--red);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 12px;border-radius:20px;white-space:nowrap}
+
+.emp-body{padding:20px}
+.check-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;background:var(--surface2)}
+.check-row.readonly{opacity:.85}
+.check-ico{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.check-ico.done{background:var(--green-light);color:var(--green-dark)}
+.check-ico.pending{background:#fdf0ef;color:var(--red)}
+.check-label{flex:1}
+.check-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700}
+.check-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.check-input{flex-shrink:0}
+.check-input input[type=checkbox]{width:20px;height:20px;cursor:pointer}
+
+.fg{margin-top:16px}
+.fg label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.fg select{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:inherit;color:var(--text);outline:none;background:#fff}
+.fg select:focus{border-color:var(--navy)}
+.fg select:disabled{background:var(--surface2);color:var(--text3)}
+
+.detail-strip{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--text3);margin-bottom:16px}
+.detail-strip b{color:var(--text)}
+
+.finalize-btn{width:100%;margin-top:18px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:13px 20px;cursor:pointer;letter-spacing:.02em}
+.finalize-btn:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed}
+.gate-note{font-size:11px;color:var(--text3);text-align:center;margin-top:8px}
+
+.result{padding:10px 14px;border-radius:var(--radius);font-size:13px;margin-top:12px;display:none}
+.result.show{display:block}
+.result.ok{background:#d4edda;color:#155724}
+.result.err{background:#fdf0ef;color:var(--red)}
+
+.empty{text-align:center;padding:56px 20px;color:var(--text3)}
+.empty-ico{font-size:34px;margin-bottom:10px}
+.skel{background:linear-gradient(90deg,var(--bg) 25%,var(--border) 50%,var(--bg) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:var(--radius-xl);height:130px;margin-bottom:16px}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#gate{position:fixed;inset:0;background:var(--navy);z-index:9999;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;text-align:center;padding:1.5rem}
+</style>
+</head>
+<body>
+
+<div id="gate">Loading offboarding queue…</div>
+
+<nav class="nav">
+  <div class="nav-left">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 60" height="26"><rect x="0" y="0" width="14" height="60" rx="7" fill="#A2E000"/><rect x="19" y="0" width="14" height="60" rx="7" fill="#4AFD0E"/><rect x="38" y="0" width="14" height="60" rx="7" fill="#1AAA00"/></svg>
+    <span class="nav-sec">Finalize Offboarding</span>
+  </div>
+  <a href="../" class="nav-back">← Back to HR Portal</a>
+</nav>
+
+<div class="shell">
+  <div class="page-title">Offboarding Queue</div>
+  <div class="page-sub">Employees whose exit is in progress. Confirm the facilities tag, pick the UIF code, and finalize once IT's checks are complete.</div>
+  <div id="queue-list">
+    <div class="skel"></div><div class="skel"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+var FLOWS = {
+  GET_DETAIL: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3e8ec30507b1437e9b16e08d492af12f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XogNNWvq0rNc876X2512jbLxg4i_kYW2vEFkq_8TYho',
+  // FINALIZE_OFFBOARDING — build once SimplePay auth + PayrollSnapshot join are confirmed:
+  FINALIZE:   'PASTE_FINALIZE_OFFBOARDING_FLOW_URL_HERE',
+};
+
+var UIF_CODES = [
+  {code:2,  label:'2 · Deceased'},
+  {code:4,  label:'4 · Dismissed'},
+  {code:5,  label:'5 · Contract Expired'},
+  {code:6,  label:'6 · Resigned'},
+  {code:11, label:'11 · Retrenched / Staff Reduction'},
+];
+var EXIT_TYPE_TO_UIF = { Resigned:6, Dismissed:4, ContractEnded:5, ProbationFailed:4, Retrenched:11, Deceased:2 };
+
+var S = { rows: [] };
+
+function unwrap(d){ if(!d) return {}; if(typeof d==='string'){try{return unwrap(JSON.parse(d));}catch(e){return {};}} if(d.body){return typeof d.body==='string'?unwrap(JSON.parse(d.body)):unwrap(d.body);} return d; }
+async function flow(url, body){
+  var r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  var t=await r.text();
+  if(!r.ok){
+    var msg='Flow HTTP '+r.status;
+    try{ var parsed=unwrap(JSON.parse(t)); if(parsed && parsed.error) msg=parsed.error; }catch(e){}
+    throw new Error(msg);
+  }
+  if(!t||t==='null'||t==='') return {};
+  try{return unwrap(JSON.parse(t));}catch(e){return {};}
+}
+function initials(f,l){return ((f||'?')[0]+(l||'?')[0]).toUpperCase();}
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function fmtDate(d){ return !d?'—':new Date(d).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}); }
+function exitLabel(t){ return {Resigned:'Resigned',Dismissed:'Dismissed',ContractEnded:'Contract Ended',ProbationFailed:'Probation Failed',Retrenched:'Retrenched',Deceased:'Deceased'}[t]||t; }
+
+function checkRow(done, title, sub){
+  return '<div class="check-row readonly">'+
+    '<div class="check-ico '+(done?'done':'pending')+'">'+(done?'✓':'✕')+'</div>'+
+    '<div class="check-label"><div class="check-title">'+title+'</div><div class="check-sub">'+sub+'</div></div>'+
+  '</div>';
+}
+
+function renderQueue(){
+  document.getElementById('gate').style.display='none';
+  var wrap=document.getElementById('queue-list');
+  if(!S.rows.length){
+    wrap.innerHTML='<div class="empty"><div class="empty-ico">✅</div>No offboarding currently in progress.</div>';
+    return;
+  }
+  wrap.innerHTML=S.rows.map(function(r,i){
+    var equipDone=r.EquipmentReturned===true||r.EquipmentReturned===1||r.EquipmentReturned==='1';
+    var accessDone=r.SystemAccessRevoked===true||r.SystemAccessRevoked===1||r.SystemAccessRevoked==='1';
+    var uifOpts=UIF_CODES.map(function(u){
+      var sel=(EXIT_TYPE_TO_UIF[r.ExitType]===u.code)?' selected':'';
+      return '<option value="'+u.code+'"'+sel+'>'+u.label+'</option>';
+    }).join('<option value="">— Select UIF code —</option>'.length?'':'');
+    return '<div class="emp-card" data-idx="'+i+'">'+
+      '<div class="emp-head">'+
+        '<div class="emp-av">'+initials(r.FirstName,r.LastName)+'</div>'+
+        '<div><div class="emp-name">'+esc(r.FirstName+' '+r.LastName)+'</div>'+
+        '<div class="emp-meta">'+esc(r.EmployeeID)+' · Last day '+fmtDate(r.LastWorkingDay)+'</div></div>'+
+        '<div class="exit-pill">'+exitLabel(r.ExitType)+'</div>'+
+      '</div>'+
+      '<div class="emp-body">'+
+        (r.ExitType==='Resigned'?'<div class="detail-strip"><span>Reason: <b>'+esc(r.ResignationReason||'—')+'</b></span>'+(r.ExitComments?'<span>Note: <b>'+esc(r.ExitComments)+'</b></span>':'')+'</div>':'')+
+        '<div class="detail-strip"><span>Rehire eligible: <b>'+(r.RehireEligible?'Yes':'No')+'</b></span></div>'+
+        checkRow(equipDone,'Equipment reclaimed',equipDone?('Confirmed by '+esc(r.EquipmentReturnedBy||'IT')+' · '+fmtDate(r.EquipmentReturnDate)):'Awaiting IT confirmation')+
+        checkRow(accessDone,'System access revoked',accessDone?('Confirmed by '+esc(r.SystemAccessRevokedBy||'IT')+' · '+fmtDate(r.SystemAccessDate)):'Awaiting IT confirmation')+
+        '<div class="check-row">'+
+          '<div class="check-ico pending" id="cardico-'+i+'">✕</div>'+
+          '<div class="check-label"><div class="check-title">Facilities tag / access card returned</div><div class="check-sub">Confirm in person before finalizing</div></div>'+
+          '<div class="check-input"><input type="checkbox" id="card-'+i+'" onchange="onGateChange('+i+')"></div>'+
+        '</div>'+
+        '<div class="fg"><label>UIF status code</label><select id="uif-'+i+'" onchange="onGateChange('+i+')">'+
+          '<option value="">— Select UIF code —</option>'+
+          UIF_CODES.map(function(u){var sel=(EXIT_TYPE_TO_UIF[r.ExitType]===u.code)?' selected':'';return '<option value="'+u.code+'"'+sel+'>'+u.label+'</option>';}).join('')+
+        '</select></div>'+
+        '<button class="finalize-btn" id="finbtn-'+i+'" disabled onclick="finalizeOffboarding('+i+')">Finalize offboarding</button>'+
+        '<div class="gate-note" id="gatenote-'+i+'">Waiting on IT before this can be finalized.</div>'+
+        '<div class="result" id="finres-'+i+'"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  S.rows.forEach(function(r,i){ onGateChange(i); });
+}
+
+function onGateChange(i){
+  var r=S.rows[i];
+  var equipDone=r.EquipmentReturned===true||r.EquipmentReturned===1||r.EquipmentReturned==='1';
+  var accessDone=r.SystemAccessRevoked===true||r.SystemAccessRevoked===1||r.SystemAccessRevoked==='1';
+  var cardDone=document.getElementById('card-'+i).checked;
+  var uifPicked=document.getElementById('uif-'+i).value!=='';
+  var allGood=equipDone&&accessDone&&cardDone&&uifPicked;
+  document.getElementById('cardico-'+i).className='check-ico '+(cardDone?'done':'pending');
+  document.getElementById('cardico-'+i).textContent=cardDone?'✓':'✕';
+  document.getElementById('finbtn-'+i).disabled=!allGood;
+  var note=document.getElementById('gatenote-'+i);
+  if(allGood){ note.textContent='All checks complete — ready to finalize.'; }
+  else if(!equipDone||!accessDone){ note.textContent='Waiting on IT before this can be finalized.'; }
+  else if(!cardDone){ note.textContent='Confirm the facilities tag has been returned.'; }
+  else { note.textContent='Select a UIF status code.'; }
+}
+
+async function finalizeOffboarding(i){
+  var r=S.rows[i];
+  var uif=document.getElementById('uif-'+i).value;
+  var cardReturned=document.getElementById('card-'+i).checked;
+  var res=document.getElementById('finres-'+i);
+  if(FLOWS.FINALIZE.indexOf('PASTE_')===0){ res.className='result err show'; res.textContent='Finalize flow not configured yet.'; return; }
+  if(!confirm('Finalize offboarding for '+r.FirstName+' '+r.LastName+'? This updates their status and ends their SimplePay service period. This cannot be undone from this screen.')) return;
+  var btn=document.getElementById('finbtn-'+i); btn.disabled=true; btn.textContent='Finalizing…';
+  try{
+    await flow(FLOWS.FINALIZE,{
+      checklist_id: r.ChecklistID,
+      employee_id: r.EmployeeID,
+      exit_type: r.ExitType,
+      last_working_day: r.LastWorkingDay,
+      access_card_returned: cardReturned,
+      uif_code: parseInt(uif,10),
+      completed_by: (JSON.parse(sessionStorage.getItem('hrportal_session')||'{}').displayName)||'HR',
+    });
+    res.className='result ok show'; res.textContent='Offboarding finalized for '+r.FirstName+'.';
+    setTimeout(function(){ loadQueue(); }, 1200);
+  }catch(e){
+    res.className='result err show'; res.textContent='Failed: '+e.message;
+    btn.disabled=false; btn.textContent='Finalize offboarding';
+  }
+}
+
+async function loadQueue(){
+  try{
+    var d=await flow(FLOWS.GET_DETAIL,{});
+    S.rows=Array.isArray(d)?d:(d.value||[]);
+  }catch(e){ S.rows=[]; }
+  renderQueue();
+}
+
+loadQueue();
+</script>
+</body>
+</html>
 
