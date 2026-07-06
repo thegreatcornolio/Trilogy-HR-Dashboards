@@ -150,12 +150,6 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 .pipe-step .pipe-label{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px;margin-right:4px}
 .pipe-step .pipe-arrow{font-size:18px;color:var(--green);margin:0 12px;font-weight:700}
 .pipe-step.last .pipe-num{color:var(--green)}
-.pipe-block{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.75rem 1.25rem;min-width:110px;transition:background .15s;cursor:pointer}
-.pipe-block:hover{background:rgba(255,255,255,.1)}
-.pipe-block-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;line-height:1}
-.pipe-block-label{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:center;white-space:nowrap}
-.pipe-block-last .pipe-block-num{color:var(--green)}
-.pipe-block-arrow{font-size:18px;color:var(--green);font-weight:700;margin:0 8px}
 /* FOOTER */
 .footer{background:var(--navy);padding:1.25rem 2rem}
 .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -172,7 +166,7 @@ body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(
 ════════════════════════════════════════════════════════ -->
 <div id="hr-login-gate" style="position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
   <div style="background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center">
-    <img src="trilogy-logo.png" alt="Trilogy BPO" height="36" style="margin-bottom:24px">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" style="height:36px;margin-bottom:24px">
     <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">HR Portal</div>
     <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised HR staff only</div>
     <button onclick="hrSignIn()" id="hr-signin-btn"
@@ -361,37 +355,15 @@ function hrSignOut(){
 <div style="background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem">
   <div style="max-width:1100px;margin:0 auto">
     <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem">Onboarding pipeline — live</div>
-    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
-      <a href="pipeline.html?stage=offer_sent" class="pipe-block" style="text-decoration:none">
-        <div class="pipe-block-num" id="statOfferSent">—</div>
-        <div class="pipe-block-label">Offer/s sent</div>
-      </a>
-      <div class="pipe-block-arrow">→</div>
-      <a href="pipeline.html?stage=offer_signed" class="pipe-block" style="text-decoration:none">
-        <div class="pipe-block-num" id="statOfferSigned">—</div>
-        <div class="pipe-block-label">Offer/s accepted</div>
-      </a>
-      <div class="pipe-block-arrow">→</div>
-      <a href="pipeline.html?stage=contract_sent" class="pipe-block" style="text-decoration:none">
-        <div class="pipe-block-num" id="statContractSent">—</div>
-        <div class="pipe-block-label">Contract/s sent</div>
-      </a>
-      <div class="pipe-block-arrow">→</div>
-      <a href="pipeline.html?stage=contract_signed" class="pipe-block pipe-block-last" style="text-decoration:none">
-        <div class="pipe-block-num" id="statContractSigned">—</div>
-        <div class="pipe-block-label">Contract/s signed</div>
-      </a>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+      <a href="pipeline.html?stage=offer_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSent">—</div><div class="pipe-label">Offer/s sent</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=offer_signed" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statOfferSigned">—</div><div class="pipe-label">Offer/s accepted</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=contract_sent" class="pipe-step" style="text-decoration:none"><div class="pipe-num" id="statContractSent">—</div><div class="pipe-label">Contract/s sent</div><div class="pipe-arrow">→</div></a>
+      <a href="pipeline.html?stage=contract_signed" class="pipe-step last" style="text-decoration:none"><div class="pipe-num" id="statContractSigned">—</div><div class="pipe-label">Contract/s signed</div></a>
     </div>
-    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08)">
-      <a href="pipeline.html?stage=onboarding_needed" class="pipe-block" style="text-decoration:none;border-color:rgba(230,126,34,.4)">
-        <div class="pipe-block-num" id="statToOnboard" style="color:#e67e22">—</div>
-        <div class="pipe-block-label">To be onboarded</div>
-      </a>
-      <div class="pipe-block-arrow" style="color:rgba(255,255,255,.2)">·</div>
-      <div class="pipe-block" style="cursor:default">
-        <div class="pipe-block-num" id="statTotal" style="color:rgba(255,255,255,.5)">—</div>
-        <div class="pipe-block-label">Total in system</div>
-      </div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.08)">
+      <a href="pipeline.html?stage=onboarding_needed" class="stat" style="text-decoration:none;cursor:pointer;border-left-color:#e67e22"><div class="stat-num" id="statToOnboard" style="color:#e67e22">—</div><div class="stat-label">To be onboarded →</div></a>
+      <div class="stat" style="border-left-color:rgba(255,255,255,.3)"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total in system</div></div>
     </div>
   </div>
   </div>
@@ -404,7 +376,7 @@ function hrSignOut(){
   <div class="lookup-card">
     <div class="lookup-header">
       <div><h3>Find an employee</h3><p>Search by name or reference number</p></div>
-      <a href="employees" class="lookup-view-all">View all records →</a>
+      <a href="employees/" class="lookup-view-all">View all records →</a>
     </div>
     <div class="lookup-body">
       <div class="lookup-row">
@@ -417,22 +389,29 @@ function hrSignOut(){
     </div>
   </div>
 
+  <!-- SimplePay reconcile flag -->
+  <a href="employees/?sp=missing" id="spFlag" style="display:none;align-items:center;gap:12px;background:#fcefe9;border:1px solid #e8b8ae;border-left:4px solid #c0392b;border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;text-decoration:none;color:#1B2A4A">
+    <span style="font-size:20px">⚠️</span>
+    <span style="flex:1;font-size:13px;line-height:1.5"><b style="font-family:'Montserrat',sans-serif" id="spFlagCount">0 employees</b> are on the HR system but <b>not loaded in SimplePay</b>. They won't receive pay or accrue leave until loaded.</span>
+    <span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#c0392b;white-space:nowrap">Load them now →</span>
+  </a>
+
   <!-- MODULES -->
   <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
   <div class="module-grid">
-    <a href="onboarding" class="module-card live-card" data-module="onboarding">
+    <a href="onboarding/" class="module-card live-card" data-module="onboarding">
       <div class="mc-icon">👤</div>
       <div class="mc-title">Employee Onboarding</div>
       <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="employees" class="module-card live-card" data-module="records">
+    <a href="employees/" class="module-card live-card" data-module="records">
       <div class="mc-icon">🗃️</div>
       <div class="mc-title">Employee Records</div>
       <div class="mc-desc">Search, track and manage all onboarding cases</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="surveys" class="module-card live-card" data-module="vibecheck">
+    <a href="surveys/" class="module-card live-card" data-module="vibecheck">
       <div class="mc-icon">✌️</div>
       <div class="mc-title">#vibecheck</div>
       <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
@@ -444,11 +423,10 @@ function hrSignOut(){
       <div class="mc-desc">Live dashboard — weekly trends, scores by campaign, response feed</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="oldreset.html" class="module-card" data-module="reset" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
-    <a href="leave" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="rejected-offers.html" class="module-card live-card" data-module="rejected"><div class="mc-icon">📉</div><div class="mc-title">Rejected Offers</div><div class="mc-desc">Why candidates declined — reasons, notes and trends</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="disciplinary" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="payroll" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Contracted vs actual pay, CTC, SARS &amp; leave — live from SimplePay</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="reset.html" class="module-card" data-module="reset" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
+    <a href="leave/" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="disciplinary/" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="payroll/" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
     <a href="hr-admin.html" class="module-card live-card" id="hr-admin-card" data-module="admin" style="display:none;border-color:#1B2A4A"><div class="mc-icon">🔐</div><div class="mc-title">Manage Access</div><div class="mc-desc">Add HR portal users and control module permissions</div><div class="mc-badge" style="background:#e8eefc;color:#1B2A4A">Admin</div></a>
     <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
     <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
@@ -746,6 +724,35 @@ window.sendVibecheck = function(){
 loadStats();
 loadManagers();
 loadCampaigns();
+</script>
+<script>
+/* ── SimplePay reconcile flag ──
+   Counts Active/Onboarded employees whose InSimplePay = 0 (computed field added to the
+   "Get Employees for Employee Page on Portal" flow). Shown only to records/admin users. */
+(function(){
+  try{
+    var s=JSON.parse(sessionStorage.getItem('hrportal_session')||'{}');
+    var mods=Array.isArray(s.modules)?s.modules.map(function(m){return String(m).toLowerCase();}):[];
+    if((s.role||'').toLowerCase()!=='admin' && mods.indexOf('records')<0)return;
+  }catch(e){return;}
+  var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var b=d&&d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+      var rows=Array.isArray(b)?b:(b&&b.employees)||[];
+      var missing=rows.filter(function(e){
+        var st=(e.Status||'');
+        var inSp=(e.InSimplePay===1||e.InSimplePay==='1'||e.InSimplePay===true);
+        return (st==='Active'||st==='Onboarded') && e.InSimplePay!==undefined && e.InSimplePay!==null && !inSp;
+      });
+      if(!missing.length)return;
+      var names=missing.map(function(e){return (e.FirstName||'')+' '+(e.LastName||'');});
+      document.getElementById('spFlagCount').textContent=missing.length+' employee'+(missing.length!==1?'s':'')+' ('+names.slice(0,3).join(', ')+(names.length>3?'…':'')+')';
+      document.getElementById('spFlag').style.display='flex';
+    })
+    .catch(function(){/* flag stays hidden on error */});
+})();
 </script>
 </body>
 </html>

@@ -396,6 +396,14 @@ function hrSignOut(){
     <span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#c0392b;white-space:nowrap">Load them now →</span>
   </a>
 
+  <!-- Offboarding in-progress flag -->
+  <a href="offboarding/finalize.html" id="obFlag" style="display:none;align-items:center;gap:12px;background:#fcefe9;border:1px solid #e8b8ae;border-left:4px solid #c0392b;border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;text-decoration:none;color:#1B2A4A">
+    <span style="font-size:20px">🚪</span>
+    <span style="flex:1;font-size:13px;line-height:1.5"><b style="font-family:'Montserrat',sans-serif" id="obFlagCount">0 employees</b> are being offboarded and need HR action.</span>
+    <span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#c0392b;white-space:nowrap">Review now →</span>
+  </a>
+
+
   <!-- MODULES -->
   <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
   <div class="module-grid">
@@ -750,6 +758,30 @@ loadCampaigns();
       var names=missing.map(function(e){return (e.FirstName||'')+' '+(e.LastName||'');});
       document.getElementById('spFlagCount').textContent=missing.length+' employee'+(missing.length!==1?'s':'')+' ('+names.slice(0,3).join(', ')+(names.length>3?'…':'')+')';
       document.getElementById('spFlag').style.display='flex';
+    })
+    .catch(function(){/* flag stays hidden on error */});
+})();
+</script>
+<script>
+/* ── Offboarding in-progress flag ──
+   Counts OffboardingChecklist rows where CompletedAt IS NULL — i.e. offboarding
+   started by a manager but not yet finalized by HR. Shown only to records/admin users. */
+(function(){
+  try{
+    var s=JSON.parse(sessionStorage.getItem('hrportal_session')||'{}');
+    var mods=Array.isArray(s.modules)?s.modules.map(function(m){return String(m).toLowerCase();}):[];
+    if((s.role||'').toLowerCase()!=='admin' && mods.indexOf('records')<0)return;
+  }catch(e){return;}
+  var GET_OPEN_OFFBOARDING_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc19dc8d00de471ba692b9ba0a3cccff/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=HQW1ZrJYo6EAMxuaJLkG06wG5ASfcOWUlZDYUhA5Ie4';
+  fetch(GET_OPEN_OFFBOARDING_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var b=d&&d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+      var rows=Array.isArray(b)?b:(b&&b.value)||[];
+      if(!rows.length)return;
+      var names=rows.map(function(e){return (e.FirstName||'')+' '+(e.LastName||'');});
+      document.getElementById('obFlagCount').textContent=rows.length+' employee'+(rows.length!==1?'s':'')+' ('+names.slice(0,3).join(', ')+(names.length>3?'…':'')+')';
+      document.getElementById('obFlag').style.display='flex';
     })
     .catch(function(){/* flag stays hidden on error */});
 })();
