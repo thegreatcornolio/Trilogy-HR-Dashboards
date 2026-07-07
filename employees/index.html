@@ -546,7 +546,10 @@ function recomputeMissing(e, detail){
   if(emergMissing) missing.push('emergency contact');
 
   var anyMissing = missing.length>0;
-  if(anyMissing){
+  if(onboardState(e)==='left'){
+    gi('missingCard').style.display='none';
+    gi('onboardedBadge').style.display='none';
+  } else if(anyMissing){
     gi('missingCard').style.display='block';
     gi('onboardedBadge').style.display='none';
     var prefix = (e.Status==='Active') ? 'This employee is Active but their onboarding details are incomplete. ' : '';
@@ -572,6 +575,17 @@ function selectEmployee(id){
   gi('st1').className='stage-dot done';
   gi('st2').className='stage-dot '+(st==='onboarded'||st==='active'?'done':'active');
   gi('st3').className='stage-dot '+(st==='active'?'done':(st==='onboarded'?'active':''));
+
+  // Left employees: no editing, no onboarding actions — the record is closed
+  var editTabBtn = document.querySelector('.tab-bar .tab-btn:nth-child(4)');
+  if(editTabBtn){
+    if(st==='left'){
+      editTabBtn.style.display='none';
+      if(editTabBtn.classList.contains('active')) switchTab('overview', document.querySelector('.tab-bar .tab-btn:nth-child(1)'));
+    } else {
+      editTabBtn.style.display='';
+    }
+  }
 
   // Overview
   gi('d-fn').textContent=e.FirstName||'—';
