@@ -117,7 +117,13 @@ tr.selected td{background:#edffd6}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
-<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
+<script>/* HR Portal auth gate */(function(){
+  try{
+    var s=JSON.parse(sessionStorage.getItem('hrportal_session')||'{}');
+    var mods=Array.isArray(s.modules)?s.modules.map(function(m){return String(m).toLowerCase();}):[];
+    if(!s.email || ((s.role||'').toLowerCase()!=='admin' && mods.indexOf('records')<0)){ window.location.replace('../'); }
+  }catch(e){ window.location.replace('../'); }
+})();</script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
