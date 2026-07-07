@@ -74,7 +74,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 
 <nav class="nav">
   <div class="nav-left">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 60" height="26"><rect x="0" y="0" width="14" height="60" rx="7" fill="#A2E000"/><rect x="19" y="0" width="14" height="60" rx="7" fill="#4AFD0E"/><rect x="38" y="0" width="14" height="60" rx="7" fill="#1AAA00"/></svg>
+    <img src="../trilogy-logo.png" alt="Trilogy" height="26">
     <span class="nav-sec">Finalize Offboarding</span>
   </div>
   <a href="../" class="nav-back">← Back to HR Portal</a>
@@ -99,10 +99,25 @@ var FLOWS = {
 
 var UIF_CODES = [
   {code:2,  label:'2 · Deceased'},
+  {code:3,  label:'3 · Retired'},
   {code:4,  label:'4 · Dismissed'},
   {code:5,  label:'5 · Contract Expired'},
   {code:6,  label:'6 · Resigned'},
-  {code:11, label:'11 · Retrenched / Staff Reduction'},
+  {code:7,  label:'7 · Constructive Dismissal'},
+  {code:8,  label:'8 · Insolvency/Liquidation'},
+  {code:9,  label:'9 · Maternity'},
+  {code:9,  label:'9 · Adoption'},
+  {code:10, label:'10 · Long-term leave due to illness (still employed)'},
+  {code:10, label:'10 · Long-term illness'},
+  {code:11, label:'11 · Retrenched/Staff Reduction'},
+  {code:12, label:'12 · Transfer to another Branch'},
+  {code:13, label:'13 · Absconded'},
+  {code:14, label:'14 · Business Closed'},
+  {code:15, label:'15 · Death of Domestic Employer'},
+  {code:16, label:'16 · Voluntary Severance Package (VSP)'},
+  {code:17, label:'17 · Reduced Working Time'},
+  {code:18, label:'18 · Commissioning Parental'},
+  {code:19, label:'19 · Parental'},
 ];
 var EXIT_TYPE_TO_UIF = { Resigned:6, Dismissed:4, ContractEnded:5, ProbationFailed:4, Retrenched:11, Deceased:2 };
 
