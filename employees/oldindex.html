@@ -496,8 +496,8 @@ function renderTable(list){
   gi('empBody').innerHTML=list.map(function(e){
     var st=onboardState(e);
     var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
-    var spBadge=spMissing(e)?' <span style="display:inline-block;margin-top:3px;background:#fcefe9;color:#c0392b;border:1px solid #e8b8ae;border-radius:20px;padding:1px 8px;font-size:10px;font-weight:700;font-family:Montserrat,sans-serif;white-space:nowrap">⚠ Not in SimplePay</span>':'';
-    var cb=spMissing(e)?'<input type="checkbox" '+(spSelected[e.EmployeeID]?'checked ':'')+'onclick="toggleSp(\''+e.EmployeeID+'\',event)" style="width:15px;height:15px;cursor:pointer;accent-color:#b9770e" title="Select to load onto SimplePay">':'';
+    var spBadge=spMissing(e)?' <button onclick="quickAddSp(\''+e.EmployeeID+'\',event)" style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;background:#fcefe9;color:#c0392b;border:1px solid #e8b8ae;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;font-family:Montserrat,sans-serif;white-space:nowrap;cursor:pointer">⚠ Not in SimplePay · <span style="text-decoration:underline">Add</span></button>':'';
+    var cb=spMissing(e)?'<input type="checkbox" '+(spSelected[e.EmployeeID]?'checked ':'')+'onclick="toggleSp(\''+e.EmployeeID+'\',event)" style="width:16px;height:16px;cursor:pointer;accent-color:#b9770e;margin-right:6px;vertical-align:middle" title="Select for bulk load to SimplePay">':'<span style="display:inline-block;width:16px;margin-right:6px"></span>';
     return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
       '<td style="white-space:nowrap">'+cb+' <div class="emp-avatar" style="display:inline-flex;vertical-align:middle">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
       '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
@@ -868,8 +868,8 @@ loadCampaignsJSON();
 </div>
 <script>
 /* ── SimplePay bulk sync ── */
-// SYNC_EMPLOYEE flow — paste its URL (with sig) when built:
-var SYNC_EMPLOYEE_URL='';
+// SYNC_EMPLOYEE flow — lists employees missing from SimplePay and creates them.
+const SYNC_EMPLOYEE_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5fb492970bec429abc4953bf7e3596aa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_Cfnqxe41R-aTQI1o4qc466CLQal8zeuceSKFm_vOGI";
 // Simple HR override password (visible in page source by design, same convention as hradmin). CHANGE ME:
 var HR_OVERRIDE_PASSWORD='trilogy-override-2026';
 
@@ -884,6 +884,12 @@ function toggleSp(id,ev){
   ev.stopPropagation();
   if(spSelected[id])delete spSelected[id]; else spSelected[id]=true;
   updateBulkBar();
+}
+function quickAddSp(id,ev){
+  ev.stopPropagation();
+  spSelected={}; spSelected[id]=true;
+  updateBulkBar();
+  openBulkModal();
 }
 function updateBulkBar(){
   var n=Object.keys(spSelected).length;

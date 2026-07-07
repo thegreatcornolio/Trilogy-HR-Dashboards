@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.HR_REQUIRED_MODULE='records';</script>
-<script src="/hr-guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trilogy BPO — Employee Records</title>
@@ -52,6 +50,11 @@ tr.selected td{background:#edffd6}
 .s-tobe{background:#fff3cd;color:#856404}
 .s-onboarded{background:#d1ecf1;color:#0c5460}
 .s-active{background:var(--green-light);color:var(--green-dark)}
+.s-left{background:#fdf0ef;color:#c0392b}
+.leavers-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:1.25rem;overflow:hidden}
+.leavers-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer}
+.leavers-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.leavers-body{padding:0 20px 18px;max-width:520px}
 .s-exited{background:#f0f0f0;color:#888}
 .emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
 .loading-row td{text-align:center;padding:3rem;color:var(--text3)}
@@ -111,9 +114,10 @@ tr.selected td{background:#edffd6}
 .footer-logo{height:18px}
 .footer-note{font-size:11px;color:rgba(255,255,255,.2)}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
-
+<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
@@ -133,6 +137,19 @@ tr.selected td{background:#edffd6}
       <div class="hstat"><div class="hstat-num" id="statToBe">—</div><div class="hstat-label">To be onboarded</div></div>
       <div class="hstat"><div class="hstat-num" id="statOnboarded">—</div><div class="hstat-label">Onboarded</div></div>
       <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active</div></div>
+      <div class="hstat"><div class="hstat-num" id="statLeft">—</div><div class="hstat-label">Left</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell" style="padding-bottom:0">
+  <div class="leavers-card" id="leaversCard" style="display:none">
+    <div class="leavers-head" onclick="toggleLeaversCard()">
+      <div class="leavers-title">📊 Reasons for Leaving <span class="count-badge" id="leaversCount"></span></div>
+      <span id="leaversToggleIcon">▾</span>
+    </div>
+    <div class="leavers-body" id="leaversBody">
+      <canvas id="leaversChart" height="90"></canvas>
     </div>
   </div>
 </div>
@@ -149,14 +166,9 @@ tr.selected td{background:#edffd6}
         <option value="tobe">To be onboarded</option>
         <option value="onboarded">Onboarded</option>
         <option value="active">Active</option>
-        <option value="nosp">⚠ Not in SimplePay</option>
+        <option value="left">Left</option>
       </select>
       <span class="count-badge" id="countBadge">Loading…</span>
-    </div>
-    <div id="bulkBar" style="display:none;align-items:center;gap:12px;background:#fffaf2;border:1px solid var(--border);border-left:3px solid #b9770e;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px">
-      <b style="font-family:'Montserrat',sans-serif" id="bulkCount">0 selected</b>
-      <span style="color:var(--text3);font-size:12px">Selected employees will be created in SimplePay (payment method "cash" — banking captured in SimplePay afterwards).</span>
-      <button id="bulkGo" onclick="openBulkModal()" style="margin-left:auto;padding:8px 16px;background:#1e1e1e;color:#fff;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer">⇡ Load onto SimplePay</button>
     </div>
     <div class="tbl-wrap">
       <table id="empTable">
@@ -273,32 +285,10 @@ tr.selected td{background:#edffd6}
         <div class="tab-content" id="tab-edit">
           <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Edit fields — saved immediately to the database.</div>
           <div class="field-group"><label>Job title</label><input type="text" class="field-input" id="edit-jt"><button class="save-field-btn" onclick="saveField('JobTitle','edit-jt')">Save</button><div class="save-result" id="save-jt"></div></div>
-          <div class="field-group"><label>Campaign</label><select class="field-input" id="edit-camp"><option value="">— select —</option></select><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
+          <div class="field-group"><label>Campaign</label><input type="text" class="field-input" id="edit-camp"><button class="save-field-btn" onclick="saveField('Campaign','edit-camp')">Save</button><div class="save-result" id="save-camp"></div></div>
           <div class="field-group"><label>Work email</label><input type="email" class="field-input" id="edit-wemail"><button class="save-field-btn" onclick="saveField('WorkEmail','edit-wemail')">Save</button><div class="save-result" id="save-wemail"></div></div>
-          <div class="field-group"><label>Reports to</label><select class="field-input" id="edit-mgr"><option value="">— select —</option></select><button class="save-field-btn" onclick="saveManager()">Save</button><div class="save-result" id="save-mgr"></div></div>
-          <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>Retrenched</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
-
-          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
-            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.4rem">Personal &amp; contact details</div>
-            <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Correct captured information or update changed contact details. Each field saves immediately.</div>
-            <div class="field-group"><label>First name</label><input type="text" class="field-input" id="edit-fname"><button class="save-field-btn" onclick="saveField('FirstName','edit-fname')">Save</button><div class="save-result" id="save-fname"></div></div>
-            <div class="field-group"><label>Last name</label><input type="text" class="field-input" id="edit-lname"><button class="save-field-btn" onclick="saveField('LastName','edit-lname')">Save</button><div class="save-result" id="save-lname"></div></div>
-            <div class="field-group"><label>ID type</label><select class="field-input" id="edit-idtype"><option>SA ID</option><option>Passport</option><option>Asylum / Permit</option></select><button class="save-field-btn" onclick="saveField('IDType','edit-idtype')">Save</button><div class="save-result" id="save-idtype"></div></div>
-            <div class="field-group"><label>ID number</label><input type="text" class="field-input" id="edit-idnum"><button class="save-field-btn" onclick="saveField('IDNumber','edit-idnum')">Save</button><div class="save-result" id="save-idnum"></div></div>
-            <div class="field-group"><label>Passport number</label><input type="text" class="field-input" id="edit-passport"><button class="save-field-btn" onclick="saveField('PassportNumber','edit-passport')">Save</button><div class="save-result" id="save-passport"></div></div>
-            <div class="field-group"><label>Date of birth</label><input type="date" class="field-input" id="edit-dob"><button class="save-field-btn" onclick="saveField('DateOfBirth','edit-dob')">Save</button><div class="save-result" id="save-dob"></div></div>
-            <div class="field-group"><label>Mobile</label><input type="text" class="field-input" id="edit-mobile"><button class="save-field-btn" onclick="saveField('Mobile','edit-mobile')">Save</button><div class="save-result" id="save-mobile"></div></div>
-            <div class="field-group"><label>Personal email</label><input type="email" class="field-input" id="edit-pemail"><button class="save-field-btn" onclick="saveField('PersonalEmail','edit-pemail')">Save</button><div class="save-result" id="save-pemail"></div></div>
-            <div class="field-group"><label>Address</label><input type="text" class="field-input" id="edit-address"><button class="save-field-btn" onclick="saveField('Address','edit-address')">Save</button><div class="save-result" id="save-address"></div></div>
-            <div class="field-row">
-              <div class="field-group"><label>City</label><input type="text" class="field-input" id="edit-city"><button class="save-field-btn" onclick="saveField('City','edit-city')">Save</button><div class="save-result" id="save-city"></div></div>
-              <div class="field-group"><label>Postal code</label><input type="text" class="field-input" id="edit-postal"><button class="save-field-btn" onclick="saveField('PostalCode','edit-postal')">Save</button><div class="save-result" id="save-postal"></div></div>
-            </div>
-            <div class="field-group"><label>Province</label><input type="text" class="field-input" id="edit-province"><button class="save-field-btn" onclick="saveField('Province','edit-province')">Save</button><div class="save-result" id="save-province"></div></div>
-            <div class="field-group"><label>Salary</label><input type="text" class="field-input" id="edit-salary"><button class="save-field-btn" onclick="saveField('Salary','edit-salary')">Save</button><div class="save-result" id="save-salary"></div></div>
-            <div class="field-group"><label>Salary frequency</label><select class="field-input" id="edit-salfreq"><option>Monthly</option><option>Weekly</option><option>Fortnightly</option></select><button class="save-field-btn" onclick="saveField('SalaryFrequency','edit-salfreq')">Save</button><div class="save-result" id="save-salfreq"></div></div>
-            <div class="field-group"><label>Start date</label><input type="date" class="field-input" id="edit-startdate"><button class="save-field-btn" onclick="saveField('StartDate','edit-startdate')">Save</button><div class="save-result" id="save-startdate"></div></div>
-          </div>
+          <div class="field-group"><label>Reports to</label><input type="text" class="field-input" id="edit-mgr"><button class="save-field-btn" onclick="saveField('ReportsTo','edit-mgr')">Save</button><div class="save-result" id="save-mgr"></div></div>
+          <div class="field-group"><label>Status</label><select class="field-input" id="edit-status"><option>Contract Signed</option><option>Onboarded</option><option>Active</option><option>Resigned</option><option>Dismissed</option><option>ContractEnded</option><option>ProbationFailed</option><option>Retrenched</option><option>Deceased</option><option>AWOL</option></select><button class="save-field-btn" onclick="saveField('Status','edit-status')">Save</button><div class="save-result" id="save-status"></div></div>
 
           <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
             <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.4rem">Onboarding details</div>
@@ -382,70 +372,8 @@ tr.selected td{background:#edffd6}
 <div class="footer"><div class="footer-inner"><img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo"><div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div></div></div>
 
 <script>
-var MANAGERS_JSON_URL = '../managers.json';
-var CAMPAIGNS_JSON_URL = '../campaigns.json';
-var managersData = [];
-var campaignsData = [];
-
-function loadManagersJSON(){
-  fetch(MANAGERS_JSON_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){
-      managersData=d;
-      var sel=gi('edit-mgr');
-      sel.innerHTML='<option value="">— select —</option>';
-      d.forEach(function(m){
-        var o=document.createElement('option');
-        o.value=m.name; o.dataset.email=m.email; o.textContent=m.name;
-        sel.appendChild(o);
-      });
-      if(selectedEmp) gi('edit-mgr').value=selectedEmp.ReportsTo||'';
-    })
-    .catch(function(e){console.warn('Could not load managers.json',e);});
-}
-
-function loadCampaignsJSON(){
-  fetch(CAMPAIGNS_JSON_URL+'?v='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(d){
-      campaignsData=d;
-      var sel=gi('edit-camp');
-      sel.innerHTML='<option value="">— select —</option>';
-      d.forEach(function(c){
-        var o=document.createElement('option');
-        o.value=c.name; o.textContent=c.name;
-        sel.appendChild(o);
-      });
-      if(selectedEmp) gi('edit-camp').value=selectedEmp.Campaign||'';
-    })
-    .catch(function(e){console.warn('Could not load campaigns.json',e);});
-}
-
-// Save both ReportsTo (name) and ReportsToEmail in one shot
-function saveManager(){
-  if(!selectedEmp)return;
-  var sel=gi('edit-mgr');
-  var name=sel.value.trim();
-  var opt=sel.options[sel.selectedIndex];
-  var email=(opt&&opt.dataset.email)||'';
-  var resultEl=gi('save-mgr');
-  if(!name){resultEl.textContent='✗ Select a manager';resultEl.style.color='var(--red)';return;}
-  fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'ReportsTo',value:name})})
-  .then(function(r){if(!r.ok&&r.status!==202)throw new Error('Failed ReportsTo');
-    return fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:selectedEmp.EmployeeID,field:'ReportsToEmail',value:email})});
-  })
-  .then(function(r){
-    if(r.ok||r.status===202){
-      resultEl.textContent='✓ Saved';resultEl.style.color='var(--green-dark)';
-      selectedEmp.ReportsTo=name; selectedEmp.ReportsToEmail=email;
-      gi('d-mgr').textContent=name;
-      setTimeout(function(){resultEl.textContent='';},3000);
-    } else {throw new Error('Failed ReportsToEmail');}
-  })
-  .catch(function(){resultEl.textContent='✗ Failed';resultEl.style.color='var(--red)';});
-}
-
 var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var GET_LEAVER_REASONS_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/13bebe03d8254ff5b682b193f6c40049/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RmIHd35nagADquJDmy6JwDLbtfTwkqoTuWDCNeI21fc';
 var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
 var UPDATE_EMPLOYEE_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/882adc50c39f456e93b0767e359039d9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d_TtNO1OilTGr9ZKN0HT_FVs8KcUtLUeUzBPePWD7ac';
 var FORM_SUBMIT_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca3acd1371c642deb0e3244b96a47875/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4GrSOQGwS9HY-OJAZKI6W_-m4u8ZtwpbUHwkj939AIU';
@@ -460,8 +388,11 @@ function gi(id){return document.getElementById(id);}
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
 function initials(f,l){return ((f||'')[0]||'')+((l||'')[0]||'');}
 
+var LEFT_STATUSES=['Resigned','Dismissed','ContractEnded','ProbationFailed','Retrenched','Deceased','AWOL'];
+
 // ── ONBOARD STATE ──
 function onboardState(e){
+  if(LEFT_STATUSES.indexOf(e.Status)>-1) return 'left';
   if(e.Status==='Active') return 'active';
   if(e.OnboardingComplete && e.OnboardingComplete.toLowerCase()==='yes') return 'onboarded';
   return 'tobe';
@@ -474,20 +405,58 @@ function loadEmployees(){
   .then(function(d){
     var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
     allEmployees=Array.isArray(data)?data:(data.employees||[]);
-    allEmployees.sort(function(a,b){
-      var an=((a.LastName||'')+' '+(a.FirstName||'')).toLowerCase();
-      var bn=((b.LastName||'')+' '+(b.FirstName||'')).toLowerCase();
-      return an<bn?-1:an>bn?1:0;
-    });
-    renderStats(); filterTable();
+    renderStats(); renderTable(allEmployees);
   })
   .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
 }
 
 function renderStats(){
-  var tobe=0,onb=0,act=0;
-  allEmployees.forEach(function(e){var s=onboardState(e);if(s==='tobe')tobe++;else if(s==='onboarded')onb++;else if(s==='active')act++;});
-  gi('statToBe').textContent=tobe; gi('statOnboarded').textContent=onb; gi('statActive').textContent=act;
+  var tobe=0,onb=0,act=0,left=0;
+  allEmployees.forEach(function(e){var s=onboardState(e);if(s==='tobe')tobe++;else if(s==='onboarded')onb++;else if(s==='active')act++;else if(s==='left')left++;});
+  gi('statToBe').textContent=tobe; gi('statOnboarded').textContent=onb; gi('statActive').textContent=act; gi('statLeft').textContent=left;
+}
+
+// ── LEAVERS CHART ──
+var leaversChartInstance=null;
+var EXIT_TYPE_LABELS={Resigned:'Resigned (no reason given)',Dismissed:'Dismissed',ContractEnded:'Contract Ended',ProbationFailed:'Probation Failed',Retrenched:'Retrenched',Deceased:'Deceased',AWOL:'AWOL'};
+
+function loadLeaverReasons(){
+  if(GET_LEAVER_REASONS_URL.indexOf('PASTE_')===0) return;
+  fetch(GET_LEAVER_REASONS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+      var rows=Array.isArray(data)?data:(data.value||[]);
+      renderLeaversChart(rows);
+    })
+    .catch(function(){/* card stays hidden on error */});
+}
+
+function renderLeaversChart(rows){
+  if(!rows||!rows.length) return;
+  var counts={};
+  rows.forEach(function(r){
+    var label = (r.ExitType==='Resigned' && r.ResignationReason) ? r.ResignationReason : (EXIT_TYPE_LABELS[r.ExitType]||r.ExitType||'Unknown');
+    counts[label]=(counts[label]||0)+1;
+  });
+  var labels=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
+  var values=labels.map(function(l){return counts[l];});
+  gi('leaversCount').textContent=rows.length+' total';
+  gi('leaversCard').style.display='block';
+  var ctx=gi('leaversChart').getContext('2d');
+  if(leaversChartInstance) leaversChartInstance.destroy();
+  leaversChartInstance=new Chart(ctx,{
+    type:'bar',
+    data:{labels:labels,datasets:[{data:values,backgroundColor:'#4AFD0E',borderRadius:4}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{precision:0}}}}
+  });
+}
+
+function toggleLeaversCard(){
+  var body=gi('leaversBody'), icon=gi('leaversToggleIcon');
+  var hidden=body.style.display==='none';
+  body.style.display=hidden?'block':'none';
+  icon.textContent=hidden?'▾':'▸';
 }
 
 function renderTable(list){
@@ -495,15 +464,13 @@ function renderTable(list){
   if(!list.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
   gi('empBody').innerHTML=list.map(function(e){
     var st=onboardState(e);
-    var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
-    var spBadge=spMissing(e)?' <button onclick="quickAddSp(\''+e.EmployeeID+'\',event)" style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;background:#fcefe9;color:#c0392b;border:1px solid #e8b8ae;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;font-family:Montserrat,sans-serif;white-space:nowrap;cursor:pointer">⚠ Not in SimplePay · <span style="text-decoration:underline">Add</span></button>':'';
-    var cb=spMissing(e)?'<input type="checkbox" '+(spSelected[e.EmployeeID]?'checked ':'')+'onclick="toggleSp(\''+e.EmployeeID+'\',event)" style="width:16px;height:16px;cursor:pointer;accent-color:#b9770e;margin-right:6px;vertical-align:middle" title="Select for bulk load to SimplePay">':'<span style="display:inline-block;width:16px;margin-right:6px"></span>';
+    var pill=st==='active'?'<span class="status-pill s-active">Active</span>':st==='left'?'<span class="status-pill s-left">'+(e.Status||'Left')+'</span>':st==='onboarded'?'<span class="status-pill s-onboarded">Onboarded</span>':'<span class="status-pill s-tobe">To be onboarded</span>';
     return '<tr class="clickable'+(selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'')+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
-      '<td style="white-space:nowrap">'+cb+' <div class="emp-avatar" style="display:inline-flex;vertical-align:middle">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName).toUpperCase()+'</div></td>'+
       '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
       '<td>'+(e.JobTitle||'—')+'</td>'+
       '<td>'+(e.StartDate?e.StartDate.split('T')[0]:'—')+'</td>'+
-      '<td>'+pill+spBadge+'</td></tr>';
+      '<td>'+pill+'</td></tr>';
   }).join('');
 }
 
@@ -513,7 +480,7 @@ function filterTable(){
   var filtered=allEmployees.filter(function(e){
     var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
     var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.IDNumber||'').includes(q);
-    var mf=!f||(f==='nosp'?spMissing(e):onboardState(e)===f);
+    var mf=!f||onboardState(e)===f;
     return mq&&mf;
   });
   renderTable(filtered);
@@ -636,22 +603,6 @@ function selectEmployee(id){
   gi('edit-wemail').value=e.WorkEmail||'';
   gi('edit-mgr').value=e.ReportsTo||'';
   gi('edit-status').value=e.Status||'Contract Signed';
-  // Personal & contact detail edit fields
-  gi('edit-fname').value=e.FirstName||'';
-  gi('edit-lname').value=e.LastName||'';
-  gi('edit-idtype').value=e.IDType||'SA ID';
-  gi('edit-idnum').value=e.IDNumber||'';
-  gi('edit-passport').value=e.PassportNumber||'';
-  gi('edit-dob').value=(e.DateOfBirth||'').split('T')[0];
-  gi('edit-mobile').value=e.Mobile||'';
-  gi('edit-pemail').value=e.PersonalEmail||'';
-  gi('edit-address').value=e.Address||'';
-  gi('edit-city').value=e.City||'';
-  gi('edit-postal').value=e.PostalCode||'';
-  gi('edit-province').value=e.Province||'';
-  gi('edit-salary').value=e.Salary||'';
-  gi('edit-salfreq').value=e.SalaryFrequency||'Monthly';
-  gi('edit-startdate').value=(e.StartDate||'').split('T')[0];
   // Prefill onboarding edit fields from employee record (emergency/banking filled async from detail)
   gi('ob-title').value=e.Title||'';
   gi('ob-initials').value=e.Initials||'';
@@ -699,8 +650,6 @@ function selectEmployee(id){
     if(detail.emergency_rel)  gi('ob-ecrel').value=detail.emergency_rel;
     if(detail.emergency_phone)gi('ob-ecnum').value=detail.emergency_phone;
     if(detail.bank_name)      gi('ob-bank').value=detail.bank_name;
-    if(detail.account_holder) gi('ob-holder').value=detail.account_holder;
-    if(detail.account_type)   gi('ob-acctype').value=detail.account_type;
     if(detail.account_number) gi('ob-accnum').value=detail.account_number;
     // Re-evaluate missing info now that banking/emergency are known
     recomputeMissing(e, detail);
@@ -848,91 +797,7 @@ function saveDisc(){
 function closeModal(id){gi(id).classList.remove('open');}
 
 loadEmployees();
-loadManagersJSON();
-loadCampaignsJSON();
-</script>
-<!-- ── Bulk load onto SimplePay modal ── -->
-<div id="spModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:1.5rem">
-  <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
-    <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#1B2A4A;margin-bottom:10px">⇡ Load onto SimplePay</div>
-    <div style="font-size:13px;color:#4A5568;line-height:1.6;margin-bottom:10px">The following employees will be <b>created in SimplePay</b> (payment method "cash"; capture banking and payroll inputs in SimplePay afterwards):</div>
-    <div id="spModalList" style="font-size:13px;background:#f7f6f2;border-radius:8px;padding:10px 14px;margin-bottom:14px;max-height:180px;overflow:auto"></div>
-    <label style="display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7a8499;margin-bottom:4px">HR override password</label>
-    <input id="spModalPw" type="password" placeholder="Password" style="width:100%;padding:10px 14px;border:1px solid #c8c7c3;border-radius:8px;font-size:13px;box-sizing:border-box;margin-bottom:14px" onkeydown="if(event.key==='Enter')runBulkSync()">
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button onclick="closeBulkModal()" style="padding:10px 18px;border:1px solid #c8c7c3;border-radius:8px;background:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#4A5568;cursor:pointer">Cancel</button>
-      <button id="spModalGo" onclick="runBulkSync()" style="padding:10px 18px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Confirm &amp; load</button>
-    </div>
-    <div id="spModalStatus" style="font-size:12px;margin-top:12px;display:none"></div>
-  </div>
-</div>
-<script>
-/* ── SimplePay bulk sync ── */
-// SYNC_EMPLOYEE flow — lists employees missing from SimplePay and creates them.
-const SYNC_EMPLOYEE_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5fb492970bec429abc4953bf7e3596aa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_Cfnqxe41R-aTQI1o4qc466CLQal8zeuceSKFm_vOGI";
-// Simple HR override password (visible in page source by design, same convention as hradmin). CHANGE ME:
-var HR_OVERRIDE_PASSWORD='trilogy-override-2026';
-
-var spSelected={}; // EmployeeID -> true
-
-function spKnown(e){ return e.InSimplePay!==undefined && e.InSimplePay!==null; }
-function spMissing(e){
-  var st=onboardState(e);
-  return spKnown(e) && !(e.InSimplePay===1||e.InSimplePay==='1'||e.InSimplePay===true) && (st==='active'||st==='onboarded');
-}
-function toggleSp(id,ev){
-  ev.stopPropagation();
-  if(spSelected[id])delete spSelected[id]; else spSelected[id]=true;
-  updateBulkBar();
-}
-function quickAddSp(id,ev){
-  ev.stopPropagation();
-  spSelected={}; spSelected[id]=true;
-  updateBulkBar();
-  openBulkModal();
-}
-function updateBulkBar(){
-  var n=Object.keys(spSelected).length;
-  gi('bulkBar').style.display=n?'flex':'none';
-  gi('bulkCount').textContent=n+' selected';
-}
-function openBulkModal(){
-  if(!SYNC_EMPLOYEE_URL){alert('The SYNC_EMPLOYEE flow is not connected yet.\n\nBuild the flow and paste its URL into SYNC_EMPLOYEE_URL in this page.');return;}
-  var ids=Object.keys(spSelected); if(!ids.length)return;
-  gi('spModalList').innerHTML=ids.map(function(id){
-    var e=allEmployees.find(function(x){return x.EmployeeID===id;});
-    return '<div style="padding:2px 0">• <b>'+((e&&(e.FirstName+' '+e.LastName))||id)+'</b> <span style="color:#7a8499;font-size:11px">'+(e&&e.StartDate?('started '+e.StartDate.split('T')[0]):'')+'</span></div>';
-  }).join('');
-  gi('spModalPw').value=''; gi('spModalStatus').style.display='none'; gi('spModalGo').disabled=false;
-  gi('spModal').style.display='flex';
-  gi('spModalPw').focus();
-}
-function closeBulkModal(){ gi('spModal').style.display='none'; }
-async function runBulkSync(){
-  var pw=gi('spModalPw').value;
-  if(pw!==HR_OVERRIDE_PASSWORD){ var st=gi('spModalStatus'); st.style.display='block'; st.style.color='#c0392b'; st.textContent='Incorrect override password.'; return; }
-  var ids=Object.keys(spSelected), st=gi('spModalStatus'), go=gi('spModalGo');
-  go.disabled=true; st.style.display='block'; st.style.color='#4A5568';
-  var ok=0, fail=[];
-  for(var i=0;i<ids.length;i++){
-    var e=allEmployees.find(function(x){return x.EmployeeID===ids[i];});
-    st.textContent='Creating '+((e&&(e.FirstName+' '+e.LastName))||ids[i])+'… ('+(i+1)+' of '+ids.length+')';
-    try{
-      var r=await fetch(SYNC_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync',employee_id:String(ids[i])})});
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      ok++;
-      if(e)e.InSimplePay=1;
-      delete spSelected[ids[i]];
-    }catch(err){ fail.push(((e&&(e.FirstName+' '+e.LastName))||ids[i])+' ('+err.message+')'); }
-  }
-  updateBulkBar(); filterTable();
-  if(fail.length){ st.style.color='#c0392b'; st.textContent='✓ '+ok+' created · ✗ failed: '+fail.join(', ')+' — check the SYNC_EMPLOYEE flow run history.'; go.disabled=false; }
-  else{ st.style.color='#2a8a00'; st.textContent='✓ All '+ok+' created in SimplePay. Capture banking and payroll inputs in SimplePay next.'; setTimeout(closeBulkModal,2500); }
-}
-// Preset filter from HR-home banner link (?sp=missing)
-(function(){
-  try{ if(new URLSearchParams(location.search).get('sp')==='missing'){ var f=gi('onboardFilter'); if(f){ f.value='nosp'; } } }catch(e){}
-})();
+loadLeaverReasons();
 </script>
 </body>
 </html>
