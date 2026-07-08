@@ -376,7 +376,7 @@ function hrSignOut(){
   <div class="lookup-card">
     <div class="lookup-header">
       <div><h3>Find an employee</h3><p>Search by name or reference number</p></div>
-      <a href="employees/" class="lookup-view-all">View all records →</a>
+      <a href="employees" class="lookup-view-all">View all records →</a>
     </div>
     <div class="lookup-body">
       <div class="lookup-row">
@@ -390,7 +390,7 @@ function hrSignOut(){
   </div>
 
   <!-- SimplePay reconcile flag -->
-  <a href="employees/?sp=missing" id="spFlag" style="display:none;align-items:center;gap:12px;background:#fcefe9;border:1px solid #e8b8ae;border-left:4px solid #c0392b;border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;text-decoration:none;color:#1B2A4A">
+  <a href="employees?sp=missing" id="spFlag" style="display:none;align-items:center;gap:12px;background:#fcefe9;border:1px solid #e8b8ae;border-left:4px solid #c0392b;border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;text-decoration:none;color:#1B2A4A">
     <span style="font-size:20px">⚠️</span>
     <span style="flex:1;font-size:13px;line-height:1.5"><b style="font-family:'Montserrat',sans-serif" id="spFlagCount">0 employees</b> are on the HR system but <b>not loaded in SimplePay</b>. They won't receive pay or accrue leave until loaded.</span>
     <span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#c0392b;white-space:nowrap">Load them now →</span>
@@ -399,19 +399,19 @@ function hrSignOut(){
   <!-- MODULES -->
   <div class="section-head"><h2>HR modules</h2><div class="section-line"></div><div class="section-tag">Select a module</div></div>
   <div class="module-grid">
-    <a href="onboarding/" class="module-card live-card" data-module="onboarding">
+    <a href="onboarding" class="module-card live-card" data-module="onboarding">
       <div class="mc-icon">👤</div>
       <div class="mc-title">Employee Onboarding</div>
       <div class="mc-desc">Letter of offer, contract, documentation workflow</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="employees/" class="module-card live-card" data-module="records">
+    <a href="employees" class="module-card live-card" data-module="records">
       <div class="mc-icon">🗃️</div>
       <div class="mc-title">Employee Records</div>
       <div class="mc-desc">Search, track and manage all onboarding cases</div>
       <div class="mc-badge badge-live">Live</div>
     </a>
-    <a href="surveys/" class="module-card live-card" data-module="vibecheck">
+    <a href="surveys" class="module-card live-card" data-module="vibecheck">
       <div class="mc-icon">✌️</div>
       <div class="mc-title">#vibecheck</div>
       <div class="mc-desc">Weekly pulse survey — send the link, track responses</div>
@@ -424,9 +424,9 @@ function hrSignOut(){
       <div class="mc-badge badge-live">Live</div>
     </a>
     <a href="reset.html" class="module-card" data-module="reset" style="border-color:#c0392b;opacity:.8"><div class="mc-icon">🧹</div><div class="mc-title">Test Reset Tool</div><div class="mc-desc">Clear all test data from SQL, SharePoint and files</div><div class="mc-badge" style="background:#fdf0ef;color:#c0392b">Dev only</div></a>
-    <a href="leave/" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="disciplinary/" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
-    <a href="payroll/" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="leave" class="module-card live-card" data-module="leave"><div class="mc-icon">🌴</div><div class="mc-title">Leave Management</div><div class="mc-desc">Annual, sick, family responsibility & maternity leave</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="disciplinary" class="module-card live-card" data-module="disciplinary"><div class="mc-icon">⚖️</div><div class="mc-title">Disciplinary</div><div class="mc-desc">Warnings, hearings, records & outcomes</div><div class="mc-badge badge-live">Live</div></a>
+    <a href="payroll" class="module-card live-card" data-module="payroll"><div class="mc-icon">💰</div><div class="mc-title">Payroll</div><div class="mc-desc">Payroll submissions, banking details, salary runs</div><div class="mc-badge badge-live">Live</div></a>
     <a href="hr-admin.html" class="module-card live-card" id="hr-admin-card" data-module="admin" style="display:none;border-color:#1B2A4A"><div class="mc-icon">🔐</div><div class="mc-title">Manage Access</div><div class="mc-desc">Add HR portal users and control module permissions</div><div class="mc-badge" style="background:#e8eefc;color:#1B2A4A">Admin</div></a>
     <div class="module-card placeholder"><div class="mc-icon">📋</div><div class="mc-title">Job Requisition</div><div class="mc-desc">Create and approve job reqs, track open roles</div><div class="mc-badge badge-soon">Coming soon</div></div>
     <div class="module-card placeholder"><div class="mc-icon">📄</div><div class="mc-title">Contract Generation</div><div class="mc-desc">Employment contracts, addenda, amendments</div><div class="mc-badge badge-soon">Coming soon</div></div>
