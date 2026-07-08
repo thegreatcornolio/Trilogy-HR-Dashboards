@@ -78,26 +78,38 @@ tr.expand-row td{background:#fafaf8;white-space:normal;cursor:default}
 .hidden{display:none}
 
 /* Payslip document */
-.payslip-overlay{position:fixed;inset:0;background:rgba(20,20,20,.55);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:3rem 1rem;overflow-y:auto}
+:root{--ps-navy:#0c1926;--ps-lime:#caea70;--ps-mint:#71e56e;--ps-offwhite:#f5f7f9}
+.payslip-overlay{position:fixed;inset:0;background:rgba(12,25,38,.6);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:3rem 1rem;overflow-y:auto}
 .payslip-overlay.hidden{display:none}
-.payslip-doc{background:#fff;width:100%;max-width:680px;border-radius:var(--radius-lg);box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
-.payslip-head{background:var(--navy);padding:1.75rem 2rem;display:flex;align-items:center;justify-content:space-between}
-.payslip-head img{height:26px}
-.payslip-head .ps-tag{font-family:'Montserrat',sans-serif;color:rgba(255,255,255,.5);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
-.payslip-body{padding:2rem}
-.ps-row{display:flex;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
-.ps-block-label{font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:.2rem}
-.ps-block-value{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--text)}
-.ps-section{margin-bottom:1.5rem}
-.ps-section-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);border-bottom:2px solid var(--border);padding-bottom:.4rem;margin-bottom:.6rem}
-.ps-line{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
-.ps-line.total{font-family:'Montserrat',sans-serif;font-weight:800;border-top:1px solid var(--border);margin-top:4px;padding-top:9px}
-.ps-nett{background:var(--green-light);border-radius:var(--radius);padding:1.1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
-.ps-nett .lbl{font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--green-dark)}
-.ps-nett .val{font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--green-dark)}
+.payslip-doc{background:var(--ps-offwhite);width:100%;max-width:640px;border-radius:16px;box-shadow:0 24px 70px rgba(12,25,38,.4);overflow:hidden}
+.payslip-head{background:var(--ps-navy);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between}
+.payslip-head img{height:24px}
+.payslip-head .ps-tag{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ps-navy);background:var(--ps-lime);padding:5px 12px;border-radius:20px}
+.payslip-body{padding:1.75rem;max-height:60vh;overflow-y:auto}
+.ps-emp-row{display:flex;align-items:center;gap:14px;margin-bottom:1.25rem}
+.ps-avatar{width:46px;height:46px;border-radius:50%;background:var(--ps-navy);color:var(--ps-lime);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;flex-shrink:0}
+.ps-emp-name{font-family:'Montserrat',sans-serif;font-weight:800;font-size:17px;color:var(--ps-navy);line-height:1.2}
+.ps-emp-period{font-size:12px;color:#5b6b7a;margin-top:1px}
+.ps-row{display:none}
+.ps-block-label{font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8b98a3}
+.ps-block-value{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--ps-navy)}
+.ps-section{background:#fff;border:1px solid #e6e9ec;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:.9rem}
+.ps-section-title{display:flex;align-items:center;gap:8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ps-navy);margin-bottom:.6rem}
+.ps-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.ps-dot.income{background:var(--ps-mint)}
+.ps-dot.deduction{background:var(--ps-navy)}
+.ps-dot.employer{background:var(--ps-lime)}
+.ps-line{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#3d4a56}
+.ps-line.total{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--ps-navy);border-top:1px solid #edf0f2;margin-top:6px;padding-top:9px}
+.ps-nett{background:linear-gradient(120deg,var(--ps-lime),var(--ps-mint));border-radius:12px;padding:1.1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;margin-top:.25rem}
+.ps-nett .lbl{font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ps-navy)}
+.ps-nett .val{font-family:'Montserrat',sans-serif;font-weight:900;font-size:23px;color:var(--ps-navy)}
 .ps-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
-.ps-close:hover{color:#fff}
-.ps-actions{padding:1.25rem 2rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem}
+.ps-close:hover{color:var(--ps-lime)}
+.ps-actions{padding:1.1rem 1.75rem;background:var(--ps-offwhite);border-top:1px solid #e6e9ec;display:flex;justify-content:flex-end;gap:.6rem}
+.ps-actions .btn-outline{background:#fff}
+.ps-actions .btn:not(.btn-outline){background:var(--ps-navy);color:var(--ps-lime)}
+.ps-actions .btn:not(.btn-outline):hover{background:#152634;color:var(--ps-lime)}
 
 @media print {
   body * { visibility:hidden; }
@@ -458,6 +470,8 @@ function renderEmployeePayslipHistory(rows) {
 }
 
 /* ── Branded payslip document rendering (shared) ── */
+function initials(name) { return (name || '??').split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+
 function buildPayslipDocHtml(name, periodLabel, income, deduction, sideline, nettPay) {
   const fmtLines = arr => (arr || []).filter(x => x[0].toLowerCase() !== 'total')
     .map(x => '<div class="ps-line"><span>' + escapeHtml(x[0]) + '</span><span class="money">' + money2(Number(x[1])) + '</span></div>').join('');
@@ -466,18 +480,16 @@ function buildPayslipDocHtml(name, periodLabel, income, deduction, sideline, net
   let employerContribHtml = '';
   (sideline || []).forEach(block => {
     if (!Array.isArray(block) || block[0].toLowerCase() !== 'employer contribution') return;
-    employerContribHtml = '<div class="ps-section"><div class="ps-section-title">Employer Contributions</div>' + fmtLines(block[1]) +
+    employerContribHtml = '<div class="ps-section"><div class="ps-section-title"><span class="ps-dot employer"></span>Employer Contributions</div>' + fmtLines(block[1]) +
       '<div class="ps-line total"><span>Total</span><span class="money">' + money2(totalOf(block[1])) + '</span></div></div>';
   });
 
   return '' +
-    '<div class="ps-row">' +
-      '<div><div class="ps-block-label">Employee</div><div class="ps-block-value">' + escapeHtml(name) + '</div></div>' +
-      '<div style="text-align:right"><div class="ps-block-label">Pay period</div><div class="ps-block-value">' + escapeHtml(periodLabel) + '</div></div>' +
-    '</div>' +
-    '<div class="ps-section"><div class="ps-section-title">Income</div>' + fmtLines(income) +
+    '<div class="ps-emp-row"><div class="ps-avatar">' + initials(name) + '</div>' +
+    '<div><div class="ps-emp-name">' + escapeHtml(name) + '</div><div class="ps-emp-period">Pay period · ' + escapeHtml(periodLabel) + '</div></div></div>' +
+    '<div class="ps-section"><div class="ps-section-title"><span class="ps-dot income"></span>Income</div>' + fmtLines(income) +
       '<div class="ps-line total"><span>Total</span><span class="money">' + money2(totalOf(income)) + '</span></div></div>' +
-    '<div class="ps-section"><div class="ps-section-title">Deductions</div>' + fmtLines(deduction) +
+    '<div class="ps-section"><div class="ps-section-title"><span class="ps-dot deduction"></span>Deductions</div>' + fmtLines(deduction) +
       '<div class="ps-line total"><span>Total</span><span class="money">' + money2(totalOf(deduction)) + '</span></div></div>' +
     employerContribHtml +
     '<div class="ps-nett"><span class="lbl">Nett Pay</span><span class="val">' + money2(nettPay) + '</span></div>';
