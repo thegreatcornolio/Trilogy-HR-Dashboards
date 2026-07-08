@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Salary Agreements</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--amber:#b9770e;--blue:#1f6feb}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4);max-width:680px}
+
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.asat{font-size:12px;color:var(--text3)}
+.asat b{font-family:'Montserrat',sans-serif;color:var(--text);font-weight:700}
+.btn{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover:not(:disabled){background:var(--green);color:#111}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;box-shadow:0 1px 8px rgba(27,42,74,.08)}
+.card-label{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
+.card-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;color:var(--text);line-height:1.1}
+.card-sub{font-size:12px;color:var(--text3);margin-top:.3rem}
+.card.flag{border-left:3px solid var(--amber)}
+.card.flag .card-num{color:var(--amber)}
+
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);box-shadow:0 1px 8px rgba(27,42,74,.08)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:11px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;position:sticky;top:0}
+th.num,td.num{text-align:right}
+td{padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f7f6f2}
+.emp-name{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text)}
+.emp-role{font-size:11px;color:var(--text3)}
+.money{font-variant-numeric:tabular-nums}
+.gap-under{color:var(--red);font-weight:700;font-family:'Montserrat',sans-serif}
+.gap-over{color:var(--amber);font-weight:700;font-family:'Montserrat',sans-serif}
+.gap-none{color:var(--text3)}
+.row-flag td{background:#fff8ee}
+.row-flag:hover td{background:#fdf1dd}
+.leave-cell{font-family:'Montserrat',sans-serif;font-weight:600;font-size:12px}
+
+.panel{border-radius:var(--radius);padding:1rem 1.25rem;font-size:13px;margin-bottom:1.5rem}
+.panel-info{background:#eef2f7;border:1px solid var(--border2);color:var(--text2)}
+.panel-warn{background:#fcefe9;border:1px solid var(--red);color:var(--red)}
+.panel-title{font-family:'Montserrat',sans-serif;font-weight:800;margin-bottom:.25rem}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.center{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.foot-note{font-size:12px;color:var(--text3);margin-top:1.5rem;text-align:center;line-height:1.7}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<script>/* HR Portal auth gate — reads the same MSAL session the portal sets */
+(function () {
+  var KEY = 'hrportal_session';
+  var MODULE = 'payroll'; // must match the card's data-module
+  var raw = sessionStorage.getItem(KEY);
+  if (!raw) { window.location.replace('../index.html'); return; }
+  try {
+    var s = JSON.parse(raw);
+    var isAdmin = (s.role || '').toLowerCase() === 'admin';
+    var mods = Array.isArray(s.modules) ? s.modules.map(function (m) { return String(m).toLowerCase(); }) : [];
+    if (!isAdmin && mods.indexOf(MODULE) < 0) {
+      window.location.replace('../index.html');
+    }
+  } catch (e) {
+    sessionStorage.removeItem(KEY);
+    window.location.replace('../index.html');
+  }
+})();
+</script>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Salary Agreements</div>
+  </div>
+  <a href="index.html" class="nav-back">← Payroll</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Finance</div>
+    <div class="hero-title">Salary Agreements</div>
+    <div class="hero-sub">Contracted vs actual pay for every active employee. Flags anyone paid below their agreed contract (e.g. a founder deferring salary until the company scales) or costing more than contract once benefits are added.</div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="bar">
+    <div class="asat" id="asat">Loading…</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="refreshBtn" onclick="refresh()"><span id="refreshTxt">↻ Refresh</span></button>
+      <button class="btn" id="pullBtn" onclick="pullFromSimplePay()" style="background:transparent;border:1px solid var(--border2);color:var(--text)"><span id="pullTxt">⇣ Pull from SimplePay</span></button>
+    </div>
+  </div>
+
+  <div id="loadErr" class="panel panel-warn hidden"></div>
+
+  <div id="content" class="hidden">
+    <div class="cards" id="cards"></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th class="num">Contracted</th>
+            <th class="num">Actual basic</th>
+            <th class="num">Basic vs contract</th>
+            <th class="num">Actual CTC</th>
+            <th class="num">CTC vs contract</th>
+            <th class="num">Monthly SARS</th>
+            <th class="num">Nett pay</th>
+            <th class="num">Leave (A / S / F)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="foot-note">
+      Figures are the most recent finalised payslip per employee, pulled from SimplePay.<br>
+      Exact payslips and SARS submissions live in SimplePay — this is a management overview.
+    </div>
+  </div>
+
+  <div id="loading" class="center"><span class="spinner" style="border-top-color:#1B2A4A;border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Loading pay &amp; leave…</div>
+
+</div>
+
+<script>
+/* ── Flow endpoints (unchanged from the original payroll page) ── */
+const READ_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/816c0774c0214f63a21a4662d86ddfed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3fHxMihj8JztXCxFdROj-Q3EMOEM2sCs1FW9RyOGQ9k";
+const PULL_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/63206e6ac0f54687971c58d176e4303e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rqmXyK_Sp8LBqg7z0ogVBrFC8fp1rxAgFS-wsFRtwwQ";
+
+const zar0 = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const num = v => (v === null || v === undefined || v === '') ? null : Number(v);
+const money = v => v === null ? '—' : zar0.format(v);
+
+function gapCell(diff) {
+  if (diff === null || Math.abs(diff) < 0.5) return '<span class="gap-none">— on contract</span>';
+  if (diff > 0) return '<span class="gap-under">' + zar0.format(diff) + ' under</span>';
+  return '<span class="gap-over">' + zar0.format(Math.abs(diff)) + ' over</span>';
+}
+
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  if (isNaN(d)) return String(s).slice(0, 10);
+  return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function load() {
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('content').classList.add('hidden');
+  document.getElementById('loadErr').classList.add('hidden');
+  try {
+    const res = await fetch(READ_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if (!res.ok) throw new Error('The pay & leave flow returned status ' + res.status + '.');
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* empty body */ }
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+    if (!rows.length) {
+      document.getElementById('asat').textContent = 'No pay data yet — run the payroll pull first.';
+      document.getElementById('loading').classList.add('hidden');
+      return;
+    }
+    render(rows);
+  } catch (err) {
+    const el = document.getElementById('loadErr');
+    el.innerHTML = '<div class="panel-title">⚠ Couldn\'t load pay data</div>' + escapeHtml(String(err.message || err));
+    el.classList.remove('hidden');
+    document.getElementById('loading').classList.add('hidden');
+  }
+}
+
+function render(rows) {
+  const snap = rows[0].SnapshotDate || rows[0].PayslipDate;
+  document.getElementById('asat').innerHTML = 'Pay data as at <b>' + fmtDate(rows[0].PayslipDate) + '</b> · snapshot taken <b>' + fmtDate(snap) + '</b>';
+
+  let totalCTC = 0, totalSARS = 0, totalNett = 0, underCount = 0, underTotal = 0, overCount = 0;
+  rows.forEach(r => {
+    totalCTC += num(r.CTCActual) || 0;
+    totalSARS += num(r.SARSEmployerActual) || 0;
+    totalNett += num(r.NettPayActual) || 0;
+    const bd = num(r.BasicDifference);
+    if (bd !== null && bd > 0.5) { underCount++; underTotal += bd; }
+    const cd = num(r.CTCDifference);
+    if (cd !== null && cd < -0.5) overCount++;
+  });
+
+  const cards = [
+    { label: 'Total nett paid', num: zar0.format(totalNett), sub: 'this pay run · ' + rows.length + ' employees' },
+    { label: 'Total monthly CTC', num: zar0.format(totalCTC), sub: 'cost to company' },
+    { label: 'Monthly SARS remittance', num: zar0.format(totalSARS), sub: 'PAYE + UIF + SDL' },
+    { label: 'Paid under contract', num: underCount, sub: underCount ? zar0.format(underTotal) + ' / month total' : 'none', flag: underCount > 0 },
+    { label: 'Cost above contract', num: overCount, sub: overCount ? 'benefits push CTC over' : 'none', flag: overCount > 0 }
+  ];
+  document.getElementById('cards').innerHTML = cards.map(c =>
+    '<div class="card' + (c.flag ? ' flag' : '') + '"><div class="card-label">' + c.label + '</div><div class="card-num">' + c.num + '</div><div class="card-sub">' + c.sub + '</div></div>'
+  ).join('');
+
+  const body = document.getElementById('tbody');
+  body.innerHTML = '';
+  rows.forEach(r => {
+    const basicDiff = num(r.BasicDifference);
+    const ctcDiff = num(r.CTCDifference);
+    const flagged = (basicDiff !== null && Math.abs(basicDiff) > 0.5) || (ctcDiff !== null && Math.abs(ctcDiff) > 0.5);
+    const al = num(r.AnnualLeaveBalance), sl = num(r.SickLeaveBalance), fl = num(r.FamilyLeaveBalance);
+    const leave = (al === null && sl === null && fl === null) ? '—'
+      : (al === null ? '—' : al) + ' / ' + (sl === null ? '—' : sl) + ' / ' + (fl === null ? '—' : fl);
+    const tr = document.createElement('tr');
+    if (flagged) tr.className = 'row-flag';
+    tr.innerHTML =
+      '<td><div class="emp-name">' + escapeHtml(r.FullName || '—') + '</div><div class="emp-role">' + escapeHtml(r.JobTitle || r.Department || '') + '</div></td>' +
+      '<td class="num money">' + money(num(r.ContractedMonthly)) + '</td>' +
+      '<td class="num money">' + money(num(r.BasicSalaryActual)) + '</td>' +
+      '<td class="num">' + gapCell(basicDiff) + '</td>' +
+      '<td class="num money">' + money(num(r.CTCActual)) + '</td>' +
+      '<td class="num">' + gapCell(ctcDiff) + '</td>' +
+      '<td class="num money">' + money(num(r.SARSEmployerActual)) + '</td>' +
+      '<td class="num money">' + money(num(r.NettPayActual)) + '</td>' +
+      '<td class="num leave-cell">' + leave + '</td>';
+    body.appendChild(tr);
+  });
+
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('content').classList.remove('hidden');
+}
+
+async function refresh() {
+  const btn = document.getElementById('refreshBtn'), txt = document.getElementById('refreshTxt');
+  btn.disabled = true;
+  txt.innerHTML = '<span class="spinner"></span> Refreshing…';
+  await load();
+  btn.disabled = false;
+  txt.textContent = '↻ Refresh';
+}
+
+async function pullFromSimplePay() {
+  const ok = confirm(
+    'Pull live data from SimplePay?\n\n' +
+    'This calls SimplePay for EVERY employee on payroll (roughly 3 seconds each). ' +
+    'With a large payroll this can take several minutes.\n\n' +
+    'Continue?'
+  );
+  if (!ok) return;
+  const btn = document.getElementById('pullBtn'), txt = document.getElementById('pullTxt');
+  const rbtn = document.getElementById('refreshBtn');
+  btn.disabled = true; rbtn.disabled = true;
+  txt.innerHTML = '<span class="spinner" style="border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Pulling from SimplePay… this may take several minutes';
+  try {
+    const r = await fetch(PULL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    txt.textContent = '✓ Pull complete — reloading…';
+    await load();
+  } catch (e) {
+    alert('Pull failed or timed out: ' + e.message + '\n\nNote: very long runs can exceed the browser timeout — the flow may still be running in the background. Wait a few minutes, then click Refresh.');
+  }
+  btn.disabled = false; rbtn.disabled = false;
+  txt.textContent = '⇣ Pull from SimplePay';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+load();
+</script>
+</body>
+</html>
