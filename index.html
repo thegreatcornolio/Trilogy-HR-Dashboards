@@ -370,7 +370,7 @@ function renderModules(){
 
 // ── ARTICLE ──
 var RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
-var SHRM_RSS  = 'https://www.shrm.org/rss/pages/rss.aspx';
+var SHRM_RSS  = 'https://www.hrdive.com/feeds/news/';
 
 function loadArticle(){
   fetch(RSS_PROXY + encodeURIComponent(SHRM_RSS))
@@ -383,7 +383,7 @@ function loadArticle(){
       document.getElementById('articleLoading').style.display='none';
       document.getElementById('articleContent').style.display='block';
       document.getElementById('articleTitle').textContent = item.title;
-      document.getElementById('articleMeta').textContent = 'SHRM · ' + new Date(item.pubDate).toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'});
+      document.getElementById('articleMeta').textContent = 'HR Dive · ' + new Date(item.pubDate).toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'});
       document.getElementById('articleLink').href = item.link;
     })
     .catch(function(){
