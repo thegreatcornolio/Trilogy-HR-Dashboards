@@ -295,17 +295,12 @@ function checkExistingSession(){
 function signIn(){
   var btn = document.getElementById('loginBtn');
   btn.disabled = true;
-  btn.textContent = 'Signing in…';
-  msalInstance.loginPopup({scopes:['User.Read']})
-    .then(handleAuthResult)
-    .catch(function(e){
-      btn.disabled = false;
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 21 21"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg> Sign in with Microsoft';
-      if(e.errorCode !== 'user_cancelled') showLoginErr('Sign-in failed. Please try again.');
-    });
+  btn.textContent = 'Redirecting…';
+  msalInstance.loginRedirect({scopes:['User.Read']});
 }
 
 function handleAuthResult(result){
+  if(!result) return;
   var email = result.account.username;
   // Check access against HR_Users
   fetch(CHECK_ACCESS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:email})})
