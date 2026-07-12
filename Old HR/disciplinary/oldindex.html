@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Disciplinary Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--red-light:#fde8e8;--orange:#e67e22;--orange-light:#fef3e2;--amber:#f39c12}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05)}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.hstat{border-left:2px solid var(--green);padding-left:1rem}
+.hstat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.hstat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.shell{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;display:grid;grid-template-columns:1fr 440px;gap:1.5rem;align-items:start}
+@media(max-width:980px){.shell{grid-template-columns:1fr;padding:1.5rem 1rem 4rem}}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.search-wrap input:focus{outline:none;border-color:var(--navy)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.filter-sel{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer}
+.count-badge{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:0 1px 8px rgba(27,42,74,.08);background:var(--surface);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.clickable{cursor:pointer;transition:background .12s}
+tr.clickable:hover td{background:#f7f6f2}
+tr.selected td{background:var(--green-light)}
+.emp-name{font-weight:700;color:var(--text)}
+.emp-ref{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.s-active{background:var(--green-light);color:var(--green-dark)}
+.s-onboarded{background:#d1ecf1;color:#0c5460}
+.s-exited{background:#f0f0f0;color:#888}
+.emp-avatar{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.emp-flag{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;box-shadow:0 0 0 2px rgba(192,57,43,.2)}
+.loading-row td{text-align:center;padding:3rem;color:var(--text3)}
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Detail panel */
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:80px}
+.detail-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.detail-empty-icon{font-size:40px;margin-bottom:.75rem}
+.panel-header{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:12px}
+.panel-avatar{width:44px;height:44px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#111;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.panel-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.panel-ref{font-size:11px;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif}
+.panel-body{padding:1.25rem;max-height:calc(100vh - 160px);overflow-y:auto}
+/* Disciplinary status cards */
+.disc-clear{background:#d4edda;border:1px solid #28a745;border-radius:var(--radius-lg);padding:1rem;text-align:center;color:#155724;font-weight:600;font-size:13px;margin-bottom:1rem}
+.disc-alert{background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius-lg);padding:1rem;color:var(--red);margin-bottom:1rem}
+.disc-alert-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;margin-bottom:.25rem}
+.disc-alert-body{font-size:12px}
+/* Category pills */
+.cat-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.cat-verbal{background:#fff3cd;color:#856404}
+.cat-written{background:#fde8d8;color:#8a3a00}
+.cat-final{background:var(--red-light);color:var(--red)}
+.cat-hearing{background:#f0d9f7;color:#6b1e8c}
+.cat-suspension{background:#d1ecf1;color:#0c5460}
+.cat-dismissal{background:#1e1e1e;color:#fff}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;text-decoration:none;transition:all .15s}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy2)}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}
+.btn-outline:hover{background:var(--offwhite)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#a93226}
+.btn-block{width:100%;margin-bottom:8px}
+/* Section divider */
+.detail-section{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin:.75rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.detail-section::before,.detail-section::after{content:'';flex:1;height:1px;background:var(--border)}
+/* Category reference card */
+.cat-guide{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem}
+.cat-guide-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.6rem}
+.cat-guide-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cat-guide-row:last-child{margin-bottom:0}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;margin-bottom:.25rem}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
+.field-group{margin-bottom:1rem}
+.field-group label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.field-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.field-input:focus{outline:none;border-color:var(--navy)}
+.mini-spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+/* Footer */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Disciplinary</div>
+  </div>
+  <a href="../../../trilogy-hr" class="nav-back">← HR Portal</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · People</div>
+    <div class="hero-title">Disciplinary Management</div>
+    <div class="hero-sub">Log and track disciplinary actions across all employees. All records are stored in Azure SQL and follow the Trilogy disciplinary code.</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="statActive">—</div><div class="hstat-label">Active employees</div></div>
+      <div class="hstat"><div class="hstat-num" id="statTotal">—</div><div class="hstat-label">Total employees</div></div>
+      <div class="hstat"><div class="hstat-num" id="statLoading" style="font-size:14px;padding-top:4px;opacity:.5">Select employee</div><div class="hstat-label">to check records</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- ── LEFT PANEL: EMPLOYEE LIST ── -->
+  <div class="shell-left">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, job title or campaign…" oninput="filterTable()">
+      </div>
+      <select class="filter-sel" id="statusFilter" onchange="filterTable()">
+        <option value="">All employees</option>
+        <option value="Active">Active</option>
+        <option value="Onboarded">Onboarded</option>
+      </select>
+      <span class="count-badge" id="countBadge">Loading…</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px"></th>
+            <th>Employee</th>
+            <th>Job title</th>
+            <th>Campaign</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="empBody">
+          <tr class="loading-row"><td colspan="5"><div class="spinner"></div>Loading employees…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL: DISCIPLINARY DETAIL ── -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty" id="detailEmpty">
+      <div class="detail-empty-icon">⚖️</div>
+      <p style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:.25rem">Select an employee</p>
+      <p style="font-size:12px;color:var(--text3)">Click any row to view disciplinary records and log new actions</p>
+    </div>
+
+    <div id="detailContent" style="display:none">
+      <div class="panel-header">
+        <div class="panel-avatar" id="panelAvatar">—</div>
+        <div>
+          <div class="panel-name" id="panelName">—</div>
+          <div class="panel-ref" id="panelRef">—</div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Quick info -->
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Job title</div>
+            <div style="font-size:12px;color:var(--text)" id="d-jt">—</div>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Campaign</div>
+            <div style="font-size:12px;color:var(--text)" id="d-camp">—</div>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Start date</div>
+            <div style="font-size:12px;color:var(--text)" id="d-sd">—</div>
+          </div>
+        </div>
+
+        <!-- Disciplinary status -->
+        <div class="detail-section">Disciplinary record</div>
+        <div id="discStatusWrap">
+          <div style="text-align:center;padding:.75rem;color:var(--text3);font-size:12px"><span class="mini-spinner"></span> Checking record…</div>
+        </div>
+
+        <!-- Action buttons -->
+        <button class="btn btn-danger btn-block" onclick="openDiscModal()" style="margin-top:.75rem">＋ Log disciplinary action</button>
+        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees" style="text-decoration:none">↗ Open full employee record</a>
+
+        <!-- Category reference -->
+        <div class="detail-section">Category guide</div>
+        <div class="cat-guide">
+          <div class="cat-guide-title">Disciplinary categories</div>
+          <div class="cat-guide-row"><span class="cat-pill cat-verbal">Verbal Warning</span><span style="font-size:11px;color:var(--text3)">First informal warning</span></div>
+          <div class="cat-guide-row"><span class="cat-pill cat-written">Written Warning</span><span style="font-size:11px;color:var(--text3)">Formal written notice (6–12 months)</span></div>
+          <div class="cat-guide-row"><span class="cat-pill cat-final">Final Written Warning</span><span style="font-size:11px;color:var(--text3)">Last chance before dismissal</span></div>
+          <div class="cat-guide-row"><span class="cat-pill cat-hearing">Disciplinary Hearing</span><span style="font-size:11px;color:var(--text3)">Formal hearing proceeding</span></div>
+          <div class="cat-guide-row"><span class="cat-pill cat-suspension">Suspension</span><span style="font-size:11px;color:var(--text3)">Pending investigation</span></div>
+          <div class="cat-guide-row"><span class="cat-pill cat-dismissal">Dismissal</span><span style="font-size:11px;color:var(--text3)">Employment terminated</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DISCIPLINARY MODAL ── -->
+<div class="modal-overlay" id="discModal">
+  <div class="modal">
+    <div class="modal-title">Log disciplinary action</div>
+    <div class="modal-sub">Record a disciplinary action for <strong id="discEmpName"></strong></div>
+    <div class="field-group">
+      <label>Date of incident</label>
+      <input type="date" class="field-input" id="discDate">
+    </div>
+    <div class="field-group">
+      <label>Category</label>
+      <select class="field-input" id="discCategory">
+        <option>Verbal Warning</option>
+        <option>Written Warning</option>
+        <option>Final Written Warning</option>
+        <option>Disciplinary Hearing</option>
+        <option>Suspension</option>
+        <option>Dismissal</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Description</label>
+      <textarea class="field-input" id="discDescription" rows="3" placeholder="Describe the misconduct or incident…"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Outcome</label>
+      <input type="text" class="field-input" id="discOutcome" placeholder="e.g. Warning issued, dismissed, suspended for 3 days">
+    </div>
+    <div class="field-group">
+      <label>Issued by</label>
+      <input type="text" class="field-input" id="discIssuedBy" placeholder="HR Manager name">
+    </div>
+    <div class="field-group">
+      <label>Expiry date (optional)</label>
+      <input type="date" class="field-input" id="discExpiry">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('discModal')" style="flex:1">Cancel</button>
+      <button class="btn btn-danger" onclick="saveDisc()" style="flex:2">Save record</button>
+    </div>
+    <div id="discResult" style="font-size:12px;text-align:center;margin-top:.75rem;min-height:16px"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+var GET_EMPLOYEES_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/845f7381bca24e189eb44725203089dd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QrjlEFKXktx5JYxWNb8LgUJAxi8TGzHqLjXh0RriG0U';
+var GET_DETAIL_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b82b43d3cc048efb566f7ff40093ad8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqilALe0lU6amkgr8t_Y-zIIUjaefCz2qgeQjEeys9c';
+var SAVE_DISC_URL='https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8ef7ff35f9f45aea1b8844dff8acdf4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TB2XdL0cTuf6xXNy3QBIbCORYriYOygOVYPx-Bv_03M';
+
+var ELIGIBLE_STATUSES=['Active','Onboarded','Resigned','Dismissed','Retrenched','AWOL','Deceased'];
+var allEmployees=[], selectedEmp=null;
+
+function gi(id){return document.getElementById(id);}
+function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
+
+function catClass(cat){
+  cat=(cat||'').toLowerCase();
+  if(cat.includes('verbal'))return 'cat-verbal';
+  if(cat.includes('final'))return 'cat-final';
+  if(cat.includes('written'))return 'cat-written';
+  if(cat.includes('hearing'))return 'cat-hearing';
+  if(cat.includes('suspension'))return 'cat-suspension';
+  if(cat.includes('dismissal'))return 'cat-dismissal';
+  return 'cat-verbal';
+}
+
+// ── LOAD ──
+function loadEmployees(){
+  fetch(GET_EMPLOYEES_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_employees'})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var data=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    var all=Array.isArray(data)?data:(data.employees||[]);
+    allEmployees=all.filter(function(e){return ELIGIBLE_STATUSES.indexOf(e.Status)>=0;});
+    renderStats();
+    filterTable();
+  })
+  .catch(function(err){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">⚠️ Could not load employees.<br><small>'+err.message+'</small></td></tr>';});
+}
+
+function renderStats(){
+  var active=0,total=allEmployees.length;
+  allEmployees.forEach(function(e){if(e.Status==='Active')active++;});
+  gi('statActive').textContent=active;
+  gi('statTotal').textContent=total;
+}
+
+function filterTable(){
+  var q=gi('searchInput').value.toLowerCase();
+  var f=gi('statusFilter').value;
+  var filtered=allEmployees.filter(function(e){
+    var name=((e.FirstName||'')+' '+(e.LastName||'')).toLowerCase();
+    var mq=!q||name.includes(q)||(e.EmployeeID||'').toLowerCase().includes(q)||(e.JobTitle||'').toLowerCase().includes(q)||(e.Campaign||'').toLowerCase().includes(q);
+    var mf=!f||e.Status===f;
+    return mq&&mf;
+  });
+  gi('countBadge').textContent=filtered.length+' employee'+(filtered.length!==1?'s':'');
+  if(!filtered.length){gi('empBody').innerHTML='<tr class="loading-row"><td colspan="5">No employees found</td></tr>';return;}
+  gi('empBody').innerHTML=filtered.map(function(e){
+    var statusCls=e.Status==='Active'?'s-active':e.Status==='Onboarded'?'s-onboarded':'s-exited';
+    var sel=selectedEmp&&selectedEmp.EmployeeID===e.EmployeeID?' selected':'';
+    return '<tr class="clickable'+sel+'" onclick="selectEmployee(\''+e.EmployeeID+'\')">'+
+      '<td><div class="emp-avatar">'+initials(e.FirstName,e.LastName)+'</div></td>'+
+      '<td><div class="emp-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="emp-ref">'+(e.EmployeeID||'')+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.JobTitle||'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--text2)">'+(e.Campaign||'—')+'</td>'+
+      '<td><span class="status-pill '+statusCls+'">'+(e.Status||'—')+'</span></td>'+
+      '</tr>';
+  }).join('');
+}
+
+// ── SELECT ──
+function selectEmployee(id){
+  var e=allEmployees.find(function(x){return x.EmployeeID===id;});
+  if(!e)return;
+  selectedEmp=e;
+  gi('detailEmpty').style.display='none';
+  gi('detailContent').style.display='block';
+  gi('panelAvatar').textContent=initials(e.FirstName,e.LastName);
+  gi('panelName').textContent=(e.FirstName||'')+' '+(e.LastName||'');
+  gi('panelRef').textContent=e.EmployeeID+(e.JobTitle?' · '+e.JobTitle:'');
+  gi('d-jt').textContent=e.JobTitle||'—';
+  gi('d-camp').textContent=e.Campaign||'—';
+  gi('d-sd').textContent=e.StartDate?e.StartDate.split('T')[0]:'—';
+  gi('empRecordLink').href='../employees/?ref='+encodeURIComponent(e.EmployeeID);
+
+  // Reset disc status
+  gi('discStatusWrap').innerHTML='<div style="text-align:center;padding:.75rem;color:var(--text3);font-size:12px"><span class="mini-spinner"></span> Checking record…</div>';
+  filterTable();
+
+  // Fetch detail
+  fetch(GET_DETAIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:e.EmployeeID})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var detail=d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;
+    renderDisc(detail);
+  })
+  .catch(function(err){
+    gi('discStatusWrap').innerHTML='<div style="color:var(--text3);font-size:12px;padding:.5rem">⚠️ Could not load record — '+err.message+'</div>';
+  });
+}
+
+function renderDisc(detail){
+  var count=parseInt(detail.active_disciplinary||0);
+  if(count===0){
+    gi('discStatusWrap').innerHTML='<div class="disc-clear">✓ Clear disciplinary record</div>';
+  } else {
+    gi('discStatusWrap').innerHTML=
+      '<div class="disc-alert">'+
+        '<div class="disc-alert-title">⚠️ '+count+' active disciplinary record'+(count!==1?'s':'')+'</div>'+
+        '<div class="disc-alert-body">This employee has active disciplinary records on file. Log a new action below or view the full record in the employee record page.</div>'+
+      '</div>';
+  }
+}
+
+// ── DISCIPLINARY MODAL ──
+function openDiscModal(){
+  if(!selectedEmp)return;
+  gi('discEmpName').textContent=selectedEmp.FirstName+' '+selectedEmp.LastName;
+  gi('discDate').value=new Date().toISOString().split('T')[0];
+  gi('discDescription').value='';
+  gi('discOutcome').value='';
+  gi('discIssuedBy').value='';
+  gi('discExpiry').value='';
+  gi('discResult').innerHTML='';
+  gi('discModal').classList.add('open');
+}
+
+function saveDisc(){
+  var payload={
+    employee_id:selectedEmp.EmployeeID,
+    incident_date:gi('discDate').value,
+    category:gi('discCategory').value,
+    description:gi('discDescription').value,
+    outcome:gi('discOutcome').value,
+    issued_by:gi('discIssuedBy').value||'HR Portal',
+    status:'Active'
+  };
+  // Only send expiry if provided
+  var exp=gi('discExpiry').value;
+  if(exp)payload.expiry_date=exp;
+
+  if(!payload.incident_date||!payload.description){
+    gi('discResult').innerHTML='<span style="color:var(--red)">Please fill in the date and description</span>';
+    return;
+  }
+  gi('discResult').innerHTML='<span class="mini-spinner"></span> Saving…';
+  fetch(SAVE_DISC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(){
+    gi('discResult').innerHTML='<span style="color:var(--green-dark)">✓ Disciplinary record saved</span>';
+    setTimeout(function(){closeModal('discModal');selectEmployee(selectedEmp.EmployeeID);},1400);
+  })
+  .catch(function(){gi('discResult').innerHTML='<span style="color:var(--red)">✗ Failed to save</span>';});
+}
+
+function closeModal(id){gi(id).classList.remove('open');}
+
+loadEmployees();
+</script>
+</body>
+</html>

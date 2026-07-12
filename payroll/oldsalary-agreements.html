@@ -71,17 +71,25 @@ tbody tr:hover td{background:#f7f6f2}
 </style>
 </head>
 <body>
-<script>/* HomeBase auth gate */(function(){
-  var s=sessionStorage.getItem('homebase_session');
-  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
-  try{
-    var session=JSON.parse(s);
-    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
-    if(session.role!=='admin'&&mods.indexOf('payroll')===-1){
-      window.location.replace('https://home.trilogybpo.com?denied=payroll');
+<script>/* HR Portal auth gate — reads the same MSAL session the portal sets */
+(function () {
+  var KEY = 'hrportal_session';
+  var MODULE = 'payroll'; // must match the card's data-module
+  var raw = sessionStorage.getItem(KEY);
+  if (!raw) { window.location.replace('../index.html'); return; }
+  try {
+    var s = JSON.parse(raw);
+    var isAdmin = (s.role || '').toLowerCase() === 'admin';
+    var mods = Array.isArray(s.modules) ? s.modules.map(function (m) { return String(m).toLowerCase(); }) : [];
+    if (!isAdmin && mods.indexOf(MODULE) < 0) {
+      window.location.replace('../index.html');
     }
-  }catch(e){window.location.replace('https://home.trilogybpo.com');}
-})();</script>
+  } catch (e) {
+    sessionStorage.removeItem(KEY);
+    window.location.replace('../index.html');
+  }
+})();
+</script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">

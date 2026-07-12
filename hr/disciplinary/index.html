@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>window.HR_REQUIRED_MODULE='disciplinary';</script>
+<script src="/hr-guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trilogy BPO — Disciplinary Management</title>
@@ -113,15 +115,25 @@ tr.selected td{background:var(--green-light)}
 </style>
 </head>
 <body>
-<script>/* HR Portal auth gate */(function(){if(sessionStorage.getItem("hrportal_auth")!=="trilogy_hr_2026_secure"){window.location.replace("../");}})();</script>
+<script>/* HomeBase auth gate */(function(){
+  var s=sessionStorage.getItem('homebase_session');
+  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
+  try{
+    var session=JSON.parse(s);
+    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
+    if(session.role!=='admin'&&mods.indexOf('hr')===-1&&mods.indexOf('disciplinary')===-1){
+      window.location.replace('https://home.trilogybpo.com?denied=hr');
+    }
+  }catch(e){window.location.replace('https://home.trilogybpo.com');}
+})();</script>
 
 <nav class="nav">
   <div style="display:flex;align-items:center;gap:12px">
-    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <img src="../../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
     <div class="nav-divider"></div>
     <div class="nav-section">Disciplinary</div>
   </div>
-  <a href="../../trilogy-hr" class="nav-back">← HR Portal</a>
+  <a href="../" class="nav-back">← HR Hub</a>
 </nav>
 
 <div class="hero">
