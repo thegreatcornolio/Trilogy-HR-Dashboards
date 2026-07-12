@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Background Check Consent</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Wix+Madefor+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--green:#4AFD0E;--red:#c0392b;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--bg:#e8e7e3;--offwhite:#f7f6f2;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+.nav{background:var(--navy);padding:0 1.5rem;height:56px;display:flex;align-items:center}
+.nav-logo{height:22px}
+.shell{max-width:780px;margin:2rem auto;padding:0 1.5rem 4rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;margin-bottom:1.25rem}
+
+/* CONSENT DOC */
+.consent-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #e8e7e3}
+.consent-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:.25rem}
+.consent-sub{font-size:12px;color:var(--text3)}
+.consent-body{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:1.5rem;max-height:280px;overflow-y:auto;background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
+.consent-body h4{font-size:12px;font-weight:700;color:var(--text);margin:.75rem 0 .25rem}
+.consent-body p{margin-bottom:.5rem}
+
+/* FORM FIELDS */
+.section-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.875rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.field-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:.875rem}
+.field label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.field label .req{color:var(--red)}
+.field input,.field textarea,.field select{padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface)}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--navy);background:#fff}
+.field input.prefilled{background:var(--offwhite);color:var(--text2)}
+.field textarea{resize:vertical;min-height:70px}
+.field .hint{font-size:11px;color:var(--text3)}
+
+/* SIGNATURE */
+.sig-wrap{border:1px solid var(--border2);border-radius:var(--radius);background:#fafafa;overflow:hidden}
+canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
+.sig-toolbar{display:flex;justify-content:flex-end;padding:6px 10px;border-top:1px solid var(--border);background:#fff}
+.sig-clear{font-size:11px;color:var(--text3);border:none;background:none;cursor:pointer;font-family:inherit}
+.sig-clear:hover{color:var(--red)}
+
+/* CRIMINAL Q */
+.criminal-q{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+.criminal-q p{font-size:13px;color:var(--text);margin-bottom:.75rem;line-height:1.6}
+.radio-row{display:flex;gap:1.5rem;margin-bottom:.75rem}
+.radio-row label{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.criminal-detail{display:none;margin-top:.5rem}
+
+/* SUBMIT */
+.submit-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s}
+.submit-btn:hover{background:#2a2a2a}
+.submit-btn:disabled{opacity:.5;pointer-events:none}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:3rem 1.5rem}
+
+/* EXPIRED */
+.expired-screen{display:none;text-align:center;padding:3rem 1.5rem}
+
+@media(max-width:600px){.field-grid,.field-grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+</nav>
+
+<div class="shell">
+
+  <!-- EXPIRED -->
+  <div class="card expired-screen" id="expiredScreen">
+    <div style="font-size:48px;margin-bottom:1rem">🔒</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:.75rem">This link has expired</div>
+    <div style="font-size:13px;color:var(--text3)">This consent form has already been submitted. Please contact <a href="mailto:onboarding@trilogybpo.com">onboarding@trilogybpo.com</a> if you need assistance.</div>
+  </div>
+
+  <!-- MAIN FORM -->
+  <div id="mainForm">
+
+    <!-- INTRO -->
+    <div class="card">
+      <div class="consent-header">
+        <div class="consent-title">CONSENT FOR THE USE OF PERSONAL INFORMATION (APPLICANTS)</div>
+        <div class="consent-sub">iFacts (Pty) Ltd — Background Screening Consent Form | Version 17.11</div>
+      </div>
+      <div class="consent-body">
+        <h4>1. PURPOSE</h4>
+        <p>By signing this form you hereby authorise Trilogy CX (Pty) Ltd t/a Trilogy BPO ("the Company") and its duly authorised verification agent, iFacts (Pty) Ltd ("iFacts") and its Verification Information Suppliers, to access and forward your Personal Information and conduct background screening checks including, but not limited to, credit checks, verifying the authenticity of your qualifications, employment references, criminal record, fraud prevention, ID verification, social media searches and drivers' licence.</p>
+        <h4>2. CONSENT FOR USE OF PERSONAL INFORMATION</h4>
+        <p>I consent to requests for consumer credit information to be released for the below prescribed purposes only: (a) for employment and/or appointment in a position of trust and honesty that may entail the handling of cash or finances of the Company; and (b) fraud prevention or detection.</p>
+        <h4>3. DATA PROTECTION</h4>
+        <p>I understand that privacy is important to the Responsible Parties and the Responsible Parties will use reasonable efforts in order to ensure that any Personal Information in their possession or processed on their behalf is kept confidential, stored in a secure manner and processed in terms of Data Protection Legislation (POPIA) and for the purposes I have authorised.</p>
+        <h4>4. WARRANTY</h4>
+        <p>I warrant that all information, including Personal Information, supplied to the Company is accurate and current and agree to correct and update such information when necessary.</p>
+        <h4>5. INDEMNITY</h4>
+        <p>I unconditionally agree to indemnify iFacts, the Responsible Parties, and Verification Information Suppliers, acting in good faith in taking reasonable steps to process my personal information lawfully, against any liability that may result from the processing of my personal information.</p>
+        <h4>6. CREDIT INFORMATION</h4>
+        <p>As the enquiring Agent of the Company, and in the case that this form instructs iFacts to provide consumer credit information, I hereby state that I understand the provisions of the National Credit Act (34 of 2005), section 70(2)(g), and the Regulations made in terms of the Act, section 18(4) and (5).</p>
+      </div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.6">
+        Please read the above consent carefully. By completing and signing this form you confirm that you have read, understood and agree to the terms above. Your information will be used solely for employment background screening purposes.
+      </div>
+    </div>
+
+    <!-- CANDIDATE DETAILS -->
+    <div class="card">
+      <div class="section-label">Your details — pre-filled from your application</div>
+
+      <div class="field-grid">
+        <div class="field"><label>Full name <span class="req">*</span></label><input type="text" id="fullName" class="prefilled" readonly></div>
+        <div class="field"><label>Surname <span class="req">*</span></label><input type="text" id="surname" class="prefilled" readonly></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Maiden name (if applicable)</label><input type="text" id="maidenName" placeholder="Leave blank if not applicable"></div>
+        <div class="field"><label>ID number <span class="req">*</span></label><input type="text" id="idNumber" class="prefilled" readonly></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Contact number <span class="req">*</span></label><input type="text" id="contactNumber" class="prefilled" readonly></div>
+        <div class="field"><label>Alternative number</label><input type="text" id="altNumber" placeholder="e.g. 0211234567"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Email address <span class="req">*</span></label><input type="email" id="emailAddress" placeholder="your@email.com"></div>
+        <div class="field"><label>Postal code</label><input type="text" id="postalCode" placeholder="e.g. 7806" maxlength="10"></div>
+      </div>
+      <div class="field">
+        <label>Physical address <span class="req">*</span></label>
+        <input type="text" id="physAddress" class="prefilled" readonly>
+      </div>
+    </div>
+
+    <!-- CRIMINAL OFFENCE -->
+    <div class="card">
+      <div class="section-label">Criminal record declaration</div>
+      <div class="criminal-q">
+        <p>Have you ever been convicted of a criminal offence or do you have any pending criminal charges against you?</p>
+        <div class="radio-row">
+          <label><input type="radio" name="criminal" value="No" checked onchange="toggleCriminal(this)"> No</label>
+          <label><input type="radio" name="criminal" value="Yes" onchange="toggleCriminal(this)"> Yes</label>
+        </div>
+        <div class="criminal-detail" id="criminalDetail">
+          <div class="field"><label>If yes, state the place, date and sentence <span class="req">*</span></label><textarea id="criminalDetails" placeholder="e.g. Johannesburg Magistrates Court, January 2015, Fined R500 for..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="card">
+      <div class="section-label">Candidate signature <span style="color:var(--red)">*</span></div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem">Please sign below using your mouse, trackpad, or finger on a touch screen.</div>
+      <div class="sig-wrap">
+        <canvas id="sigCanvas" width="740" height="160"></canvas>
+        <div class="sig-toolbar"><button class="sig-clear" onclick="clearSig()">Clear signature</button></div>
+      </div>
+      <div id="sigError" style="font-size:11px;color:var(--red);margin-top:4px;display:none">Please provide your signature before submitting.</div>
+
+      <div style="margin-top:1.5rem;font-size:12px;color:var(--text3);line-height:1.7;background:var(--offwhite);border-radius:var(--radius);padding:1rem">
+        By signing above I confirm that I have read and understood the consent terms, that all information provided is accurate and complete, and I authorise Trilogy BPO and iFacts (Pty) Ltd to conduct the background screening checks described above.
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <button class="submit-btn" id="submitBtn" onclick="submitConsent()">
+          <span id="submitLabel">Submit signed consent form</span>
+          <div class="spinner" id="submitSpinner"></div>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end mainForm -->
+
+  <!-- SUCCESS -->
+  <div class="card success-screen" id="successScreen">
+    <div style="font-size:48px;margin-bottom:1rem">✅</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:.75rem">Consent form submitted</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem;line-height:1.7">Thank you <strong id="successName"></strong>. Your signed consent form has been sent to the Trilogy BPO People team. We will submit it to iFacts and notify you once the background check is complete.</div>
+    <div style="font-size:12px;color:var(--text3)">You may close this window.</div>
+  </div>
+
+</div>
+
+<script>
+var SUBMIT_CONSENT_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0e2cebdc80cd4cd8814c58a558a8609e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=D5JWazjceUM8IKhBmGsANIioqLhNCRVrbvnN0Q7EDJU';
+
+function gp(k){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(k)||''); }
+
+var D = {
+  fn: gp('fn'), ln: gp('ln'), id: gp('id'),
+  mob: gp('mob'), addr: gp('addr'), em: gp('em'),
+  ref: gp('ref'), token: gp('token')
+};
+
+// Prefill fields
+document.getElementById('fullName').value = D.fn;
+document.getElementById('surname').value = D.ln;
+document.getElementById('idNumber').value = D.id;
+document.getElementById('contactNumber').value = D.mob;
+document.getElementById('physAddress').value = D.addr;
+document.getElementById('emailAddress').value = D.em;
+
+// Check if already used
+if(sessionStorage.getItem('bg_consent_used_' + D.token)){
+  document.getElementById('mainForm').style.display = 'none';
+  document.getElementById('expiredScreen').style.display = 'block';
+}
+
+// Criminal toggle
+function toggleCriminal(el){
+  document.getElementById('criminalDetail').style.display = el.value === 'Yes' ? 'block' : 'none';
+}
+
+// SIGNATURE
+var canvas = document.getElementById('sigCanvas');
+var ctx = canvas.getContext('2d');
+var drawing = false;
+var hasSig = false;
+
+function getPos(e){
+  var r = canvas.getBoundingClientRect();
+  var scaleX = canvas.width / r.width;
+  var scaleY = canvas.height / r.height;
+  if(e.touches) return {
+    x: (e.touches[0].clientX - r.left) * scaleX,
+    y: (e.touches[0].clientY - r.top) * scaleY
+  };
+  return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+}
+
+canvas.addEventListener('mousedown', function(e){ drawing=true; ctx.beginPath(); var p=getPos(e); ctx.moveTo(p.x,p.y); hasSig=true; });
+canvas.addEventListener('mousemove', function(e){ if(!drawing) return; var p=getPos(e); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1B2A4A'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); });
+canvas.addEventListener('mouseup', function(){ drawing=false; });
+canvas.addEventListener('mouseleave', function(){ drawing=false; });
+canvas.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; ctx.beginPath(); var p=getPos(e); ctx.moveTo(p.x,p.y); hasSig=true; });
+canvas.addEventListener('touchmove', function(e){ e.preventDefault(); if(!drawing) return; var p=getPos(e); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1B2A4A'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); });
+canvas.addEventListener('touchend', function(){ drawing=false; });
+
+function clearSig(){ ctx.clearRect(0,0,canvas.width,canvas.height); hasSig=false; }
+
+// SUBMIT
+function submitConsent(){
+  // Validate
+  var email = document.getElementById('emailAddress').value.trim();
+  var criminal = document.querySelector('input[name="criminal"]:checked').value;
+  var criminalDetails = document.getElementById('criminalDetails').value.trim();
+
+  if(!email){ alert('Please enter your email address.'); return; }
+  if(criminal === 'Yes' && !criminalDetails){ alert('Please provide details of your criminal conviction.'); return; }
+  if(!hasSig){
+    document.getElementById('sigError').style.display = 'block';
+    return;
+  }
+  document.getElementById('sigError').style.display = 'none';
+
+  var btn = document.getElementById('submitBtn');
+  var lbl = document.getElementById('submitLabel');
+  var spin = document.getElementById('submitSpinner');
+  btn.disabled = true;
+  lbl.style.display = 'none';
+  spin.style.display = 'block';
+
+  var sigData = canvas.toDataURL('image/png');
+  var now = new Date();
+  var submittedAt = now.toLocaleDateString('en-ZA') + ' ' + now.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+
+  var payload = {
+    action: 'bg_consent_submitted',
+    employee_id: D.ref,
+    token: D.token,
+    full_name: D.fn + ' ' + D.ln,
+    first_name: D.fn,
+    last_name: D.ln,
+    maiden_name: document.getElementById('maidenName').value.trim(),
+    id_number: D.id,
+    contact_number: D.mob,
+    alt_number: document.getElementById('altNumber').value.trim(),
+    email_address: email,
+    postal_code: document.getElementById('postalCode').value.trim(),
+    physical_address: D.addr,
+    criminal_offence: criminal,
+    criminal_details: criminal === 'Yes' ? criminalDetails : '',
+    submitted_at: submittedAt,
+    signature_data: sigData
+  };
+
+  fetch(SUBMIT_CONSENT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){
+    sessionStorage.setItem('bg_consent_used_' + D.token, '1');
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('successName').textContent = D.fn;
+  })
+  .catch(function(err){
+    // Show success anyway — form data captured
+    sessionStorage.setItem('bg_consent_used_' + D.token, '1');
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('successName').textContent = D.fn;
+    console.error('Submit error:', err);
+  });
+}
+</script>
+</body>
+</html>

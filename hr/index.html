@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy HomeBase — HR</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy3:#333;
+  --green:#4AFD0E;--green-dark:#2a8a00;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --text:#fff;--text2:rgba(255,255,255,.6);--text3:rgba(255,255,255,.35);
+  --radius:10px;--radius-lg:14px;--radius-xl:20px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;font-size:14px}
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{height:24px}
+.nav-divider{width:1px;height:18px;background:var(--border2)}
+.nav-brand{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;color:#fff}
+.nav-brand span{color:var(--green)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-back{font-size:11px;color:var(--text3);text-decoration:none;font-family:'Montserrat',sans-serif;transition:color .15s}
+.nav-back:hover{color:var(--green)}
+.nav-name{font-size:12px;color:var(--text2)}
+.btn-logout{background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer}
+.btn-logout:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.hero{padding:3rem 2rem 2rem;max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:32px;font-weight:900;margin-bottom:.5rem}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:13px;color:var(--text2);max-width:480px}
+.module-grid{max-width:1100px;margin:0 auto;padding:0 2rem 3rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.module-card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;text-decoration:none;color:var(--text);transition:all .2s;position:relative;overflow:hidden;display:block}
+.module-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(74,253,14,.04) 0%,transparent 60%);opacity:0;transition:opacity .2s}
+.module-card:hover{border-color:rgba(74,253,14,.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.module-card:hover::before{opacity:1}
+.mc-icon{font-size:28px;margin-bottom:.875rem;display:block}
+.mc-title{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:#fff;margin-bottom:4px}
+.mc-desc{font-size:12px;color:var(--text3);line-height:1.5}
+.mc-arrow{position:absolute;bottom:1.25rem;right:1.25rem;font-size:16px;color:var(--green);opacity:0;transition:opacity .2s}
+.module-card:hover .mc-arrow{opacity:1}
+.mc-badge{position:absolute;top:12px;right:12px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:rgba(74,253,14,.15);color:var(--green)}
+.section-label{max-width:1100px;margin:0 auto;padding:1.5rem 2rem .75rem;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<script>
+(function(){
+  var s = sessionStorage.getItem('homebase_session');
+  if(!s){ window.location.replace('https://home.trilogybpo.com'); return; }
+  try{
+    var session = JSON.parse(s);
+    var mods = (session.modules||'').split(',').map(function(m){return m.trim();});
+    if(session.role !== 'admin' && mods.indexOf('hr') === -1){
+      window.location.replace('https://home.trilogybpo.com?denied=hr');
+    }
+  }catch(e){ window.location.replace('https://home.trilogybpo.com'); }
+})();
+</script>
+
+<nav class="nav">
+  <div class="nav-left">
+    <img src="../trilogy-logo.png" alt="Trilogy" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-brand">Trilogy <span>HomeBase</span></div>
+  </div>
+  <div class="nav-right">
+    <a href="https://home.trilogybpo.com" class="nav-back">← HomeBase</a>
+    <div class="nav-name" id="navName"></div>
+    <button class="btn-logout" onclick="sessionStorage.removeItem('homebase_session');window.location.replace('https://home.trilogybpo.com')">Sign out</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">People Operations</div>
+  <div class="hero-title">HR <span>Hub</span></div>
+  <div class="hero-sub">Manage your people — records, leave, disciplinary and culture insights all in one place.</div>
+</div>
+
+<div class="section-label">HR modules</div>
+<div class="module-grid">
+  <a href="employees/" class="module-card">
+    <span class="mc-icon">👥</span>
+    <div class="mc-title">Employee Records</div>
+    <div class="mc-desc">View and manage all employee data, banking, emergency contacts and status</div>
+    <div class="mc-badge">Live</div>
+    <div class="mc-arrow">→</div>
+  </a>
+  <a href="leave/" class="module-card">
+    <span class="mc-icon">🌴</span>
+    <div class="mc-title">Leave Management</div>
+    <div class="mc-desc">Annual, sick, family responsibility and maternity leave tracking</div>
+    <div class="mc-badge">Live</div>
+    <div class="mc-arrow">→</div>
+  </a>
+  <a href="disciplinary/" class="module-card">
+    <span class="mc-icon">⚖️</span>
+    <div class="mc-title">Disciplinary</div>
+    <div class="mc-desc">Incidents, hearings, warnings and performance improvement plans</div>
+    <div class="mc-badge">Live</div>
+    <div class="mc-arrow">→</div>
+  </a>
+  <a href="surveys/report.html" class="module-card">
+    <span class="mc-icon">📊</span>
+    <div class="mc-title">#Vibecheck Reports</div>
+    <div class="mc-desc">Weekly pulse survey results, trends and campaign breakdowns</div>
+    <div class="mc-badge">Live</div>
+    <div class="mc-arrow">→</div>
+  </a>
+  <a href="rejected-offers.html" class="module-card">
+    <span class="mc-icon">📉</span>
+    <div class="mc-title">Rejected Offers</div>
+    <div class="mc-desc">Why candidates declined — reasons, notes and trends</div>
+    <div class="mc-badge">Live</div>
+    <div class="mc-arrow">→</div>
+  </a>
+</div>
+
+<script>
+(function(){
+  try{
+    var s = JSON.parse(sessionStorage.getItem('homebase_session')||'{}');
+    if(s.displayName) document.getElementById('navName').textContent = s.displayName;
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
