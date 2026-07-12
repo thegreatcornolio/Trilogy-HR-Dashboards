@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — IT Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.0.0/lib/msal-browser.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--red-light:#fde8e8;--amber:#f39c12;--amber-light:#fff3cd;--blue:#2563eb;--blue-light:#dbeafe}
+html{overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* SCREENS */
+.screen{display:none}
+.screen.active{display:block}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:100}
+#login-screen.active{display:flex}
+.login-box{background:var(--navy2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-xl);padding:48px 40px;width:100%;max-width:420px;text-align:center}
+.login-logo{height:34px;margin-bottom:28px}
+.login-title{color:#fff;font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px}
+.login-sub{color:rgba(255,255,255,.4);font-size:13px;margin-bottom:32px;line-height:1.6}
+.btn-ms{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;background:#fff;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--text);cursor:pointer}
+.btn-ms:hover{background:#f0f0f0}
+.login-footer{margin-top:28px;color:rgba(255,255,255,.2);font-size:11px}
+.login-err{margin-top:16px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:10px 14px;color:#ffb0b0;font-size:13px;display:none}
+
+/* DENIED */
+#denied-screen{position:fixed;inset:0;background:var(--navy);display:none;align-items:center;justify-content:center;padding:1rem;z-index:100}
+#denied-screen.active{display:flex}
+.denied-box{background:var(--navy2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-xl);padding:48px 40px;width:100%;max-width:420px;text-align:center}
+.denied-ico{font-size:48px;margin-bottom:16px}
+.denied-title{color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+.denied-sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:24px;line-height:1.6}
+
+/* LOADING */
+#loading-overlay{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
+#loading-overlay.hidden{display:none}
+.load-logo{height:30px;margin-bottom:24px}
+.load-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:50}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:24px;background:rgba(255,255,255,.15)}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-applink{display:inline-flex;align-items:center;padding:6px 14px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.7);text-decoration:none;border:1px solid rgba(255,255,255,.15);border-radius:7px;transition:all .15s}
+.nav-applink:hover{background:var(--green);color:#111;border-color:var(--green)}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:var(--green);color:#111;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px}
+.nav-name{color:#fff;font-size:13px;font-weight:600}
+.btn-signout{padding:6px 14px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:7px;color:rgba(255,255,255,.6);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.btn-signout:hover{background:rgba(255,255,255,.06);color:#fff}
+
+/* HERO */
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:1200px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:14px;color:rgba(255,255,255,.4)}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:2rem;padding-bottom:5rem}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tab{padding:12px 20px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--text);border-bottom-color:var(--navy)}
+.tab .tab-count{display:inline-block;margin-left:6px;background:var(--border);color:var(--text2);font-size:11px;padding:1px 7px;border-radius:10px}
+.tab.active .tab-count{background:var(--green);color:#111}
+.tab-admin-only{display:none}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* QUEUE CARDS */
+.queue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
+.it-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.it-card-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.it-avatar{width:42px;height:42px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.it-name{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--text)}
+.it-meta{font-size:12px;color:var(--text3)}
+.it-card-body{padding:16px 18px}
+.it-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:13px;border-bottom:1px solid var(--offwhite)}
+.it-row:last-of-type{border-bottom:none}
+.it-row-k{color:var(--text3)}
+.it-row-v{font-weight:600;color:var(--text)}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.sp-pending{background:var(--amber-light);color:#856404}
+.sp-progress{background:var(--blue-light);color:#1e40af}
+.sp-done{background:var(--green-light);color:var(--green-dark)}
+.np-stage{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:.03em;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.np-urgent{background:var(--red-light);color:var(--red)}
+.np-soon{background:var(--amber-light);color:#856404}
+.np-active{background:var(--blue-light);color:#1e40af}
+.np-stage-note{font-size:11px;color:var(--text2);background:var(--offwhite);border-radius:6px;padding:6px 10px;margin-bottom:10px}
+.it-actions{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.it-input{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:inherit;outline:none}
+.it-input:focus{border-color:var(--navy)}
+.it-textarea{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:54px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy2)}
+.btn-green{background:var(--green);color:#111}.btn-green:hover{background:#5fff1a}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border2)}.btn-outline:hover{background:var(--offwhite)}
+.btn:disabled{opacity:.5;pointer-events:none}
+.btn-block{width:100%}
+
+/* EMPTY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.empty-ico{font-size:40px;margin-bottom:.5rem}
+.empty-title{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text2);margin-bottom:.25rem}
+
+/* SYNC BAR */
+.sync-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.sync-text{font-size:13px;color:var(--text2)}
+
+/* ADMIN / ACCESS */
+.access-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:600px}
+.access-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
+.access-row:last-child{border-bottom:none}
+.access-email{font-weight:600;color:var(--text)}
+.access-meta{font-size:11px;color:var(--text3)}
+.access-add{display:flex;gap:8px;margin-top:1rem;max-width:600px}
+.btn-remove{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 6px}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:var(--radius)}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:all .3s}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* FOOTER */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{height:18px}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+
+@media(max-width:640px){
+  .nav{padding:0 12px;gap:6px}
+  .nav-section{display:none}
+  .nav-left .nav-divider{display:none}
+  .nav-logo{height:24px}
+  .nav-applink{padding:5px 10px;font-size:11px}
+  .nav-right{gap:8px}
+  .nav-name{display:none}
+  .nav-avatar{width:32px;height:32px;font-size:12px}
+  .btn-signout{padding:5px 10px;font-size:11px}
+  .hero{padding:1.5rem 1rem 1.25rem}
+  .hero-title{font-size:22px}
+  .container{padding:1.25rem 1rem 4rem}
+  .queue-grid{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;gap:.5rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO" class="load-logo">
+  <div class="load-spinner"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen">
+  <div class="login-box">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="login-logo">
+    <div class="login-title">IT Onboarding</div>
+    <div class="login-sub">Sign in with your Trilogy Microsoft account to manage IT onboarding tasks.</div>
+    <button class="btn-ms" onclick="signIn()">
+      <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-footer">Trilogy BPO · Authorised IT staff only</div>
+  </div>
+</div>
+
+<!-- DENIED -->
+<div id="denied-screen" class="screen">
+  <div class="denied-box">
+    <div class="denied-ico">🔒</div>
+    <div class="denied-title">Access not authorised</div>
+    <div class="denied-sub" id="denied-sub">Your account doesn't have access to the IT onboarding portal. Contact an administrator to be added.</div>
+    <button class="btn-signout" onclick="signOut()" style="border-color:rgba(255,255,255,.25)">Sign out</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="portal" class="screen">
+  <nav class="nav">
+    <div class="nav-left">
+      <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+      <div class="nav-divider"></div>
+      <div class="nav-section">IT Onboarding</div>
+    </div>
+    <div class="nav-right">
+      <a class="nav-applink" href="https://home.trilogybpo.com" title="HomeBase">← HomeBase</a>
+      <div class="nav-divider"></div>
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name" id="nav-name"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-label">Trilogy BPO · IT</div>
+      <div class="hero-title">IT Onboarding Queue</div>
+      <div class="hero-sub">Prepare hardware and create accounts for incoming employees. Once an account is created, the work email is written back to the employee record.</div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="tabs">
+      <div class="tab active" data-tab="hardware" onclick="switchTab('hardware',this)">🖥️ Hardware Prep<span class="tab-count" id="cnt-hardware">0</span></div>
+      <div class="tab" data-tab="accounts" onclick="switchTab('accounts',this)">📧 Account Creation<span class="tab-count" id="cnt-accounts">0</span></div>
+      <div class="tab" data-tab="needs" onclick="switchTab('needs',this)">📨 Needs Account<span class="tab-count" id="cnt-needs">0</span></div>
+      <div class="tab" data-tab="done" onclick="switchTab('done',this)">✓ Completed<span class="tab-count" id="cnt-done">0</span></div>
+      <div class="tab" data-tab="offboarding" onclick="switchTab('offboarding',this)">🚪 Offboarding<span class="tab-count" id="cnt-offboarding">0</span></div>
+      <div class="tab tab-admin-only" data-tab="access" onclick="switchTab('access',this)">⚙️ Access</div>
+    </div>
+
+    <!-- HARDWARE -->
+    <div class="tab-panel active" id="panel-hardware">
+      <div class="queue-grid" id="grid-hardware"><div class="skel" style="height:200px"></div><div class="skel" style="height:200px"></div></div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="tab-panel" id="panel-accounts">
+      <div class="sync-bar">
+        <div class="sync-text">Created accounts in Microsoft 365? Sync to auto-match new work emails to employees.</div>
+        <button class="btn btn-navy" id="sync-btn" onclick="syncM365()">🔄 Sync from M365</button>
+      </div>
+      <div class="queue-grid" id="grid-accounts"></div>
+    </div>
+
+    <!-- NEEDS ACCOUNT (existing employees with no work email) -->
+    <div class="tab-panel" id="panel-needs">
+      <div class="sync-bar">
+        <div class="sync-text">Existing employees who have signed but don't yet have a Trilogy email. Sync from M365 or enter the email to write it to their record.</div>
+        <button class="btn btn-navy" id="sync-needs-btn" onclick="syncM365()">🔄 Sync from M365</button>
+      </div>
+      <div class="queue-grid" id="grid-needs"></div>
+    </div>
+
+    <!-- DONE -->
+    <div class="tab-panel" id="panel-done">
+      <div class="queue-grid" id="grid-done"></div>
+    </div>
+
+    <!-- OFFBOARDING -->
+    <div class="tab-panel" id="panel-offboarding">
+      <div class="queue-grid" id="grid-offboarding"></div>
+    </div>
+
+    <!-- ACCESS (admin) -->
+    <div class="tab-panel" id="panel-access">
+      <p style="color:var(--text2);margin-bottom:1rem;font-size:13px">People who can access this IT onboarding portal. They sign in with their Microsoft account.</p>
+      <div class="access-list" id="access-list"></div>
+      <div class="access-add">
+        <input type="email" class="it-input" id="new-access-email" placeholder="name@trilogybpo.com" style="flex:1">
+        <button class="btn btn-navy" onclick="addAccess()">Add person</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-inner">
+      <img src="../trilogy-logo.png" alt="Trilogy BPO" class="footer-logo">
+      <div class="footer-note">Trilogy BPO · Confidential · Internal use only</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ── CONFIG ──
+var MSAL_CONFIG = {
+  auth: {
+    clientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
+    authority: 'https://login.microsoftonline.com/77cde95f-930f-495e-89c6-4d2c30f6df21',
+    redirectUri: 'https://home.trilogybpo.com/it/'
+  },
+  cache: { cacheLocation: 'sessionStorage' }
+};
+var GRAPH_SCOPES = ['User.Read'];
+
+// ── FLOW URLS — replace placeholders once flows are built ──
+var FLOWS = {
+  CHECK_IT_ACCESS:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7549d84f99dd420cba3d5b9e9abb3bec/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NIsUb0jW814V2x7svy6XqcY7ZELnp4uR2PmgZgqAiOI',
+  MANAGE_IT_ACCESS: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1f04c676edb94d6faec6058c6d5385df/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LUdXxDePhEeVIlvThi6ngJdp5_SzCVuOUx_hmhIIltQ',
+  GET_IT_QUEUE:     'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f82c8b6f6dd45b6bd836dc11064b08f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=c_oaORVQe-jxKW4EKFfRf3nsZMQc0txx3nXBFGZGrfM',
+  UPDATE_IT_TASK:   'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27798c90d8424e43bbbe1c5540c5607b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=FyVvvjBtVJFzcz2AwxaqByQFkx7KHXRmldNQ3qwer8g',
+  SYNC_M365_EMAIL:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/75902f227946435bb98bfb16ba1970aa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=HS8F-_XuIAc55VmQyKBv5S2xZ1Gey84kCpdTtucqvrc',
+  GET_NEEDS_ACCOUNT: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/393cc9f6f2384eb4bc84b82f480d3cd9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tm2Bco5-78DTXHpki3yGspaqT5bm26fwL7JY0g5oF1M',
+  SET_WORK_EMAIL:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8a0c724763cc48469db93072cf172df2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=VqodDeuqNzRAG38AQXvH0fgznkmaRyd4kxODJq2lQuI',
+  // Same query HR's finalize page uses (GET_OFFBOARDING_DETAIL) — already returns everything this tab needs:
+  GET_IT_OFFBOARDING:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3e8ec30507b1437e9b16e08d492af12f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XogNNWvq0rNc876X2512jbLxg4i_kYW2vEFkq_8TYho',
+  UPDATE_IT_OFFBOARDING: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/08/workflows/0bff4aab2b274c7fbdf545ba9cfe8550/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H2qB7ZzlOGMXeHL02tpLmjEvKnIuDaufd_ehafrm7EI'
+};
+
+var ADMIN_EMAIL = 'craigs@trilogybpo.com';
+
+// ── STATE ──
+var S = { account:null, email:'', isAdmin:false, queue:[], access:[], needsAccount:[], offboarding:[], activeTab:'hardware' };
+
+var msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+
+// ── HomeBase SSO bridge ──
+var _hbSession = (function(){
+  try{ return JSON.parse(sessionStorage.getItem('homebase_session')||'null'); }catch(e){ return null; }
+})();
+var _hbHasIT = _hbSession && (_hbSession.role==='admin' || (_hbSession.modules||'').split(',').map(function(m){return m.trim();}).indexOf('it')>-1);
+function gi(id){return document.getElementById(id);}
+function showScreen(id){
+  ['login-screen','denied-screen','portal'].forEach(function(s){
+    var el=gi(s);
+    el.classList.remove('active');
+    el.style.display='none';
+  });
+  var target=gi(id);
+  target.classList.add('active');
+  target.style.display = (id==='portal') ? 'block' : 'flex';
+  gi('loading-overlay').classList.add('hidden');
+  gi('loading-overlay').style.display='none';
+}
+function toast(msg){var t=gi('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2600);}
+function initials(f,l){return((f||'')[0]||'').toUpperCase()+((l||'')[0]||'').toUpperCase();}
+function unwrap(d){return d && d.body ? (typeof d.body==='string'?JSON.parse(d.body):d.body) : d;}
+function rowsFrom(d){
+  if(Array.isArray(d))return d;
+  if(!d)return [];
+  var rs=d.ResultSets||d.resultSets||d.resultsets;
+  if(rs)return rs.Table1||rs.table1||(Array.isArray(rs)?rs:[]);
+  if(d.Table1)return d.Table1;
+  if(d.value&&Array.isArray(d.value))return d.value;
+  return [];
+}
+function fmtDate(s){ if(!s)return '—'; var d=new Date((''+s).split('T')[0]); return isNaN(d)?'—':d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}); }
+
+async function flow(url, body){
+  if(!url || url.indexOf('REPLACE_WITH')===0) throw new Error('Flow not configured yet');
+  var r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+  if(!r.ok) throw new Error('Flow HTTP '+r.status);
+  return unwrap(await r.json());
+}
+
+// ── AUTH ──
+async function init(){
+  // HomeBase SSO bridge — skip MSAL if already authenticated via HomeBase
+  if(_hbHasIT && _hbSession){
+    S.email = (_hbSession.email||'').toLowerCase();
+    S.isAdmin = (_hbSession.role==='admin' || S.email === ADMIN_EMAIL);
+    S.account = { name: _hbSession.displayName, username: _hbSession.email };
+    await checkAccess();
+    return;
+  }
+  await msalInstance.initialize();
+  try {
+    var resp = await msalInstance.handleRedirectPromise();
+    var accounts = msalInstance.getAllAccounts();
+    var account = resp ? resp.account : (accounts[0] || null);
+    if(!account){ showScreen('login-screen'); return; }
+    S.account = account;
+    S.email = (account.username||'').toLowerCase();
+    msalInstance.setActiveAccount(account);
+    await checkAccess();
+  } catch(e){
+    showScreen('login-screen');
+    gi('login-err').style.display='block';
+    gi('login-err').textContent='Sign-in error: '+e.message;
+  }
+}
+
+async function signIn(){
+  try {
+    await msalInstance.loginRedirect({ scopes: GRAPH_SCOPES });
+  } catch(e){
+    gi('login-err').style.display='block';
+    gi('login-err').textContent=e.message;
+  }
+}
+function signOut(){ msalInstance.logoutRedirect(); }
+
+async function checkAccess(){
+  S.isAdmin = (S.email === ADMIN_EMAIL);
+  try {
+    var d = await flow(FLOWS.CHECK_IT_ACCESS, { email: S.email });
+    var rows = rowsFrom(d);
+    var allowed = S.isAdmin || rows.some(function(r){ return (r.Email||'').toLowerCase() === S.email; });
+    if(!allowed){ showScreen('denied-screen'); return; }
+  } catch(e){
+    if(!S.isAdmin){
+      showScreen('denied-screen');
+      gi('denied-sub').textContent = 'Access check unavailable. Contact an administrator.';
+      return;
+    }
+  }
+  enterPortal();
+}
+
+function enterPortal(){
+  var name = (S.account.name || S.email).split(' ')[0];
+  gi('nav-name').textContent = name;
+  gi('nav-av').textContent = (name[0]||'?').toUpperCase();
+  if(S.isAdmin){ document.querySelectorAll('.tab-admin-only').forEach(function(el){el.style.display='block';}); }
+  showScreen('portal');
+  loadQueue();
+  loadNeedsAccount();
+  loadOffboardingQueue();
+  if(S.isAdmin) loadAccess();
+  var deepTab=new URLSearchParams(window.location.search).get('tab');
+  if(deepTab){
+    var el=document.querySelector('.tab[data-tab="'+deepTab+'"]');
+    if(el) switchTab(deepTab, el);
+  }
+}
+
+// ── QUEUE ──
+async function loadQueue(){
+  try {
+    var d = await flow(FLOWS.GET_IT_QUEUE, {});
+    S.queue = rowsFrom(d);
+  } catch(e){
+    S.queue = [];
+    gi('grid-hardware').innerHTML = '<div class="empty"><div class="empty-ico">⚠️</div><div class="empty-title">Queue unavailable</div><div>'+e.message+'</div></div>';
+    return;
+  }
+  renderQueue();
+}
+
+function renderQueue(){
+  // Hardware stage: hardware not yet ready
+  var hw = S.queue.filter(function(t){ return t.HardwareStatus !== 'Ready'; });
+  // Account stage: hardware ready (or contract signed) but account not yet created
+  var acc = S.queue.filter(function(t){ return t.HardwareStatus === 'Ready' && t.AccountStatus !== 'Created'; });
+  // Done: account created
+  var done = S.queue.filter(function(t){ return t.AccountStatus === 'Created'; });
+
+  gi('cnt-hardware').textContent = hw.length;
+  gi('cnt-accounts').textContent = acc.length;
+  gi('cnt-done').textContent = done.length;
+
+  gi('grid-hardware').innerHTML = hw.length ? hw.map(hwCard).join('') : emptyMsg('🖥️','No hardware to prep','New hires appear here when their offer is signed.');
+  gi('grid-accounts').innerHTML = acc.length ? acc.map(accCard).join('') : emptyMsg('📧','No accounts to create','Hires appear here once hardware is ready and the contract is signed.');
+  gi('grid-done').innerHTML = done.length ? done.map(doneCard).join('') : emptyMsg('✓','Nothing completed yet','Finished onboardings will show here.');
+}
+
+function emptyMsg(ico,title,sub){ return '<div class="empty" style="grid-column:1/-1"><div class="empty-ico">'+ico+'</div><div class="empty-title">'+title+'</div><div>'+sub+'</div></div>'; }
+
+// ── OFFBOARDING ──
+async function loadOffboardingQueue(){
+  try {
+    var d = await flow(FLOWS.GET_IT_OFFBOARDING, {});
+    S.offboarding = rowsFrom(d);
+  } catch(e){
+    S.offboarding = [];
+    gi('grid-offboarding').innerHTML = emptyMsg('⚠️','Unavailable', e.message);
+    gi('cnt-offboarding').textContent = 0;
+    return;
+  }
+  renderOffboarding();
+}
+
+function renderOffboarding(){
+  gi('cnt-offboarding').textContent = S.offboarding.length;
+  gi('grid-offboarding').innerHTML = S.offboarding.length
+    ? S.offboarding.map(obCard).join('')
+    : emptyMsg('🚪','No offboarding in progress','Employees appear here once a manager starts their offboarding.');
+}
+
+function obCard(t){
+  var equipDone = t.EquipmentReturned===true||t.EquipmentReturned===1||t.EquipmentReturned==='1';
+  var accessDone = t.SystemAccessRevoked===true||t.SystemAccessRevoked===1||t.SystemAccessRevoked==='1';
+  var fullName = ((t.FirstName||'')+' '+(t.LastName||'')).trim();
+  var safeName = fullName.replace(/'/g,"\\'");
+  return '<div class="it-card">'+
+    '<div class="it-card-head"><div class="it-avatar">'+initials(t.FirstName,t.LastName)+'</div>'+
+      '<div><div class="it-name">'+fullName+'</div><div class="it-meta">'+(t.ExitType||'—')+' · Last day '+fmtDate(t.LastWorkingDay)+'</div></div></div>'+
+    '<div class="it-card-body">'+
+      '<div class="it-row"><span class="it-row-k">Hardware</span><span class="it-row-v">'+(equipDone?statusPill('Reclaimed'):statusPill('Pending'))+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">System access</span><span class="it-row-v">'+(accessDone?statusPill('Revoked'):statusPill('Pending'))+'</span></div>'+
+      '<div class="it-actions">'+
+        (equipDone?'':'<button class="btn btn-green btn-block" onclick="markOffboarding('+t.ChecklistID+',\'equipment\',\''+safeName+'\')">✓ Hardware reclaimed</button>')+
+        (accessDone?'':'<button class="btn btn-green btn-block" onclick="markOffboarding('+t.ChecklistID+',\'access\',\''+safeName+'\')">✓ Access revoked</button>')+
+        (equipDone&&accessDone?'<div class="it-row" style="color:var(--green-dark);font-weight:700;font-size:12px">✓ Both checks complete — awaiting HR finalize</div>':'')+
+      '</div>'+
+    '</div></div>';
+}
+
+async function markOffboarding(checklistId, field, employeeName){
+  try {
+    await flow(FLOWS.UPDATE_IT_OFFBOARDING, {
+      checklist_id: checklistId,
+      field: field,
+      by: (S.account && S.account.name) || S.email,
+      employee_name: employeeName
+    });
+    toast(field==='equipment' ? 'Hardware marked reclaimed' : 'Access marked revoked');
+    await loadOffboardingQueue();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+// ── NEEDS ACCOUNT (existing employees, no work email) ──
+async function loadNeedsAccount(){
+  try {
+    var d = await flow(FLOWS.GET_NEEDS_ACCOUNT, {});
+    S.needsAccount = rowsFrom(d);
+  } catch(e){
+    S.needsAccount = [];
+    gi('grid-needs').innerHTML = emptyMsg('⚠️','Unavailable', e.message);
+    gi('cnt-needs').textContent = 0;
+    return;
+  }
+  renderNeeds();
+}
+
+function renderNeeds(){
+  gi('cnt-needs').textContent = S.needsAccount.length;
+  gi('grid-needs').innerHTML = S.needsAccount.length
+    ? S.needsAccount.map(needsCard).join('')
+    : emptyMsg('📨','Everyone has an email','All signed employees have a Trilogy work email.');
+}
+
+function needsCard(e){
+  var eid = e.EmployeeID;
+  var st = e.Status || '—';
+  // Urgency colouring by pipeline stage
+  var stageCls = 'sp-pending';
+  var stageNote = '';
+  if(st==='Offer Signed'){ stageCls='np-urgent'; stageNote='Procurement needed — start may be soon'; }
+  else if(st==='Contract Sent'){ stageCls='np-soon'; stageNote='Awaiting contract signature'; }
+  else if(st==='Contract Signed'){ stageCls='np-soon'; stageNote='Start date confirmed — create account'; }
+  else if(st==='Onboarded'||st==='To be onboarded'){ stageCls='np-active'; stageNote='Onboarding in progress'; }
+  else if(st==='Active'){ stageCls='np-active'; stageNote='Active without an email — needs attention'; }
+  return '<div class="it-card">'+
+    '<div class="it-card-head"><div class="it-avatar">'+initials(e.FirstName,e.LastName)+'</div>'+
+      '<div style="flex:1"><div class="it-name">'+(e.FirstName||'')+' '+(e.LastName||'')+'</div><div class="it-meta">'+(e.JobTitle||'—')+' · '+(e.Campaign||'—')+'</div></div>'+
+      '<span class="np-stage '+stageCls+'">'+st+'</span></div>'+
+    '<div class="it-card-body">'+
+      (stageNote?'<div class="np-stage-note">'+stageNote+'</div>':'')+
+      '<div class="it-row"><span class="it-row-k">Start date</span><span class="it-row-v">'+fmtDate(e.StartDate)+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Personal email</span><span class="it-row-v" style="font-size:12px">'+(e.PersonalEmail||'—')+'</span></div>'+
+      '<div class="it-actions">'+
+        '<input class="it-input" id="wemail-'+eid+'" placeholder="new.work@trilogybpo.com">'+
+        '<button class="btn btn-green btn-block" onclick="saveWorkEmail(\''+eid+'\')">✓ Save work email</button>'+
+      '</div>'+
+    '</div></div>';
+}
+
+async function saveWorkEmail(eid){
+  var el = gi('wemail-'+eid);
+  var email = el ? el.value.trim() : '';
+  if(!email){ toast('Enter the work email first'); return; }
+  try {
+    await flow(FLOWS.SET_WORK_EMAIL, { employee_id:eid, work_email:email });
+    toast('Work email saved to record');
+    await loadNeedsAccount();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+function statusPill(s){
+  if(s==='Ready'||s==='Created') return '<span class="status-pill sp-done">✓ '+s+'</span>';
+  if(s==='In Progress') return '<span class="status-pill sp-progress">● '+s+'</span>';
+  return '<span class="status-pill sp-pending">○ Pending</span>';
+}
+
+function hwCard(t){
+  var id=t.ITTaskID;
+  return '<div class="it-card">'+
+    '<div class="it-card-head"><div class="it-avatar">'+initials(t.FirstName,t.LastName)+'</div>'+
+      '<div><div class="it-name">'+(t.FirstName||'')+' '+(t.LastName||'')+'</div><div class="it-meta">'+(t.JobTitle||'—')+' · '+(t.Campaign||'—')+'</div></div></div>'+
+    '<div class="it-card-body">'+
+      '<div class="it-row"><span class="it-row-k">Expected start</span><span class="it-row-v">'+fmtDate(t.StartDate)+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Status</span><span class="it-row-v">'+(t.Status||'—')+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Hardware</span><span class="it-row-v">'+statusPill(t.HardwareStatus)+'</span></div>'+
+      '<div class="it-actions">'+
+        '<textarea class="it-textarea" id="note-'+id+'" placeholder="Notes (machine type, asset tag…)">'+(t.Notes||'')+'</textarea>'+
+        (t.HardwareStatus==='Pending'?'<button class="btn btn-outline btn-block" onclick="setHardware('+id+',\'In Progress\')">Mark in progress</button>':'')+
+        '<button class="btn btn-green btn-block" onclick="setHardware('+id+',\'Ready\')">✓ Hardware ready</button>'+
+      '</div>'+
+    '</div></div>';
+}
+
+function accCard(t){
+  var id=t.ITTaskID;
+  return '<div class="it-card">'+
+    '<div class="it-card-head"><div class="it-avatar">'+initials(t.FirstName,t.LastName)+'</div>'+
+      '<div><div class="it-name">'+(t.FirstName||'')+' '+(t.LastName||'')+'</div><div class="it-meta">'+(t.JobTitle||'—')+' · '+(t.Campaign||'—')+'</div></div></div>'+
+    '<div class="it-card-body">'+
+      '<div class="it-row"><span class="it-row-k">Start date</span><span class="it-row-v">'+fmtDate(t.StartDate)+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Personal email</span><span class="it-row-v" style="font-size:12px">'+(t.PersonalEmail||'—')+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Account</span><span class="it-row-v">'+statusPill(t.AccountStatus)+'</span></div>'+
+      '<div class="it-actions">'+
+        '<input class="it-input" id="email-'+id+'" placeholder="new.work@trilogybpo.com" value="'+(t.AssignedEmail||'')+'">'+
+        '<button class="btn btn-green btn-block" onclick="createAccount('+id+')">✓ Account created — save email</button>'+
+      '</div>'+
+    '</div></div>';
+}
+
+function doneCard(t){
+  return '<div class="it-card">'+
+    '<div class="it-card-head"><div class="it-avatar">'+initials(t.FirstName,t.LastName)+'</div>'+
+      '<div><div class="it-name">'+(t.FirstName||'')+' '+(t.LastName||'')+'</div><div class="it-meta">'+(t.JobTitle||'—')+'</div></div></div>'+
+    '<div class="it-card-body">'+
+      '<div class="it-row"><span class="it-row-k">Work email</span><span class="it-row-v" style="font-size:12px">'+(t.AssignedEmail||t.WorkEmail||'—')+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Start date</span><span class="it-row-v">'+fmtDate(t.StartDate)+'</span></div>'+
+      '<div class="it-row"><span class="it-row-k">Completed</span><span class="it-row-v">'+statusPill('Created')+'</span></div>'+
+    '</div></div>';
+}
+
+// ── ACTIONS ──
+async function setHardware(id, status){
+  var notes = gi('note-'+id) ? gi('note-'+id).value : '';
+  try {
+    await flow(FLOWS.UPDATE_IT_TASK, { it_task_id:id, field:'hardware', status:status, notes:notes });
+    toast(status==='Ready'?'Hardware marked ready':'Updated');
+    await loadQueue();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+async function createAccount(id){
+  var email = gi('email-'+id) ? gi('email-'+id).value.trim() : '';
+  if(!email){ toast('Enter the work email first'); return; }
+  try {
+    await flow(FLOWS.UPDATE_IT_TASK, { it_task_id:id, field:'account', status:'Created', assigned_email:email });
+    toast('Account saved — work email written to record');
+    await loadQueue();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+async function syncM365(){
+  var btns=[gi('sync-btn'),gi('sync-needs-btn')].filter(Boolean);
+  btns.forEach(function(b){b.disabled=true;b.textContent='Syncing…';});
+  try {
+    var d = await flow(FLOWS.SYNC_M365_EMAIL, {});
+    var matched = (d && (d.matched!==undefined?d.matched:rowsFrom(d).length)) || 0;
+    toast('Synced — '+matched+' email(s) matched');
+    await loadQueue();
+    await loadNeedsAccount();
+  } catch(e){ toast('Sync error: '+e.message); }
+  btns.forEach(function(b){b.disabled=false;b.textContent='🔄 Sync from M365';});
+}
+
+// ── ACCESS (admin) ──
+async function loadAccess(){
+  try {
+    var d = await flow(FLOWS.MANAGE_IT_ACCESS, { action:'list' });
+    S.access = rowsFrom(d);
+  } catch(e){ S.access = []; }
+  renderAccess();
+}
+function renderAccess(){
+  var el=gi('access-list');
+  if(!S.access.length){ el.innerHTML='<div class="access-row"><span class="access-meta">No one added yet besides the admin.</span></div>'; return; }
+  el.innerHTML = S.access.map(function(a){
+    var isAdmin=(a.Email||'').toLowerCase()===ADMIN_EMAIL;
+    return '<div class="access-row"><div><div class="access-email">'+a.Email+(isAdmin?' <span class="access-meta">(admin)</span>':'')+'</div><div class="access-meta">Added '+fmtDate(a.CreatedAt)+(a.AddedBy?' · by '+a.AddedBy:'')+'</div></div>'+
+      (isAdmin?'':'<button class="btn-remove" title="Remove" onclick="removeAccess(\''+(a.Email||'').replace(/'/g,"\\'")+'\')">×</button>')+'</div>';
+  }).join('');
+}
+async function addAccess(){
+  var email=gi('new-access-email').value.trim().toLowerCase();
+  if(!email||email.indexOf('@')<0){ toast('Enter a valid email'); return; }
+  try {
+    await flow(FLOWS.MANAGE_IT_ACCESS, { action:'add', email:email, added_by:S.email });
+    gi('new-access-email').value='';
+    toast('Access granted to '+email);
+    await loadAccess();
+  } catch(e){ toast('Error: '+e.message); }
+}
+async function removeAccess(email){
+  try {
+    await flow(FLOWS.MANAGE_IT_ACCESS, { action:'remove', email:email });
+    toast('Removed '+email);
+    await loadAccess();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+// ── TABS ──
+function switchTab(tab, el){
+  S.activeTab=tab;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  gi('panel-'+tab).classList.add('active');
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
