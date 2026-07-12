@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilogy · MIS · Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--blue:#2980b9}
+    html{scroll-behavior:smooth}body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;margin:0}*{box-sizing:border-box}
+    /* NAV */
+    .nav{background:var(--navy);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-divider{width:1px;height:24px;background:rgba(255,255,255,.15)}
+    .nav-section{color:rgba(255,255,255,.65);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase}
+    .nav-badge{background:rgba(74,253,14,.15);color:var(--green);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.06em}
+    .nav-back{color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;text-decoration:none;padding:6px 10px;border:1px solid rgba(255,255,255,.12);border-radius:6px;transition:all .15s}
+    .nav-back:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.06)}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--navy);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid rgba(74,253,14,.4)}
+    .nav-name{color:rgba(255,255,255,.8);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600}
+    .btn-signout{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.55);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .18s}
+    .btn-signout:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+    /* HERO */
+    .hero{background:var(--navy);padding:28px 0 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .hero-inner{max-width:1200px;margin:0 auto;padding:0 32px}
+    .hero-label{color:var(--green);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:6px}
+    .hero-title{color:#fff;font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900}
+    .hero-sub{color:rgba(255,255,255,.38);font-size:13px;margin-top:4px}
+    /* TABS */
+    .admin-tabs{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,.08)}
+    .admin-tabs-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex}
+    .admin-tab{padding:12px 18px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+    .admin-tab:hover{color:rgba(255,255,255,.75)}
+    .admin-tab.active{color:#fff;border-bottom-color:var(--green)}
+    /* CONTAINER */
+    .container{max-width:1200px;margin:0 auto;padding:28px 32px 56px}
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .toolbar-left{display:flex;align-items:center;gap:10px}
+    .search-input{padding:8px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-family:'Wix Madefor Text',sans-serif;font-size:13px;color:var(--text);outline:none;width:260px;background:var(--surface);transition:border-color .15s}
+    .search-input:focus{border-color:var(--blue)}
+    .btn-primary{background:var(--navy);color:#fff;border:none;padding:9px 18px;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background .18s;display:flex;align-items:center;gap:6px}
+    .btn-primary:hover{background:#111}
+    .btn-sm{padding:5px 12px;font-size:11px;border-radius:6px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;border:none;transition:all .15s}
+    .btn-edit{background:var(--bg);color:var(--text2)}.btn-edit:hover{background:var(--border2)}
+    .btn-delete{background:#fee2e2;color:var(--red)}.btn-delete:hover{background:#fca5a5}
+    /* USER TABLE */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden}
+    .user-table{width:100%;border-collapse:collapse;font-size:13px}
+    .user-table th{text-align:left;padding:10px 16px;border-bottom:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+    .user-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .user-table tr:last-child td{border-bottom:none}
+    .user-table tr:hover td{background:var(--offwhite)}
+    .user-av{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .user-name-cell{display:flex;align-items:center;gap:10px}
+    .user-name{font-weight:600}
+    .user-email{font-size:12px;color:var(--text3)}
+    .role-badge{display:inline-block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:capitalize}
+    .role-admin{background:#1e1e1e;color:#fff}
+    .role-exec{background:#dbeafe;color:#1e40af}
+    .role-manager{background:var(--green-light);color:var(--green-dark)}
+    .role-viewer{background:var(--bg);color:var(--text3)}
+    .campaign-tag{display:inline-block;background:#f3e8ff;color:#6b21a8;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px}
+    .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+    .dot-active{background:var(--green)}.dot-inactive{background:var(--text3)}
+    /* IMPORT TABLE */
+    .import-table{width:100%;border-collapse:collapse;font-size:12px}
+    .import-table th{text-align:left;padding:9px 14px;border-bottom:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+    .import-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .import-table tr:last-child td{border-bottom:none}
+    .import-table tr:hover td{background:var(--offwhite)}
+    .status-badge{display:inline-block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+    .s-success{background:var(--green-light);color:var(--green-dark)}
+    .s-error{background:#fee2e2;color:var(--red)}
+    .s-pending{background:#fef3c7;color:#92400e}
+    /* MODAL */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-backdrop.show{display:flex}
+    .modal{background:var(--surface);border-radius:var(--radius-xl);width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+    .modal-head{background:var(--navy);padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+    .modal-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#fff}
+    .modal-close{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .modal-close:hover{background:rgba(255,255,255,.1);color:#fff}
+    .modal-body{padding:24px}
+    .form-group{margin-bottom:16px}
+    .form-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;display:block}
+    .form-input{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-family:'Wix Madefor Text',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .15s}
+    .form-input:focus{border-color:var(--blue)}
+    .form-input:disabled{background:var(--bg);color:var(--text3);cursor:not-allowed}
+    .form-select{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-family:'Wix Madefor Text',sans-serif;font-size:13px;color:var(--text);outline:none;background:var(--surface)}
+    .campaign-checks{display:flex;flex-direction:column;gap:8px}
+    .check-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);transition:background .15s}
+    .check-label:hover{background:var(--offwhite)}
+    .check-label input[type=checkbox]{accent-color:var(--navy);width:15px;height:15px}
+    .toggle-wrap{display:flex;align-items:center;gap:10px}
+    .toggle{position:relative;width:40px;height:22px}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:11px;cursor:pointer;transition:.3s}
+    .toggle-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+    .toggle input:checked+.toggle-slider{background:var(--green-dark)}
+    .toggle input:checked+.toggle-slider:before{transform:translateX(18px)}
+    .modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border)}
+    .btn-cancel{background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;padding:8px 16px;border-radius:var(--radius);cursor:pointer}
+    .btn-save{background:var(--navy);color:#fff;border:none;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;padding:8px 20px;border-radius:var(--radius);cursor:pointer;letter-spacing:.04em;transition:background .18s}
+    .btn-save:hover{background:#111}
+    .btn-danger{background:var(--red);color:#fff;border:none;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;padding:8px 20px;border-radius:var(--radius);cursor:pointer}
+    /* EMPTY/LOADING */
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;color:var(--text3);text-align:center}
+    .empty-ico{font-size:36px;margin-bottom:10px}.empty-sub{font-size:13px}
+    #loading-overlay{position:fixed;inset:0;background:rgba(232,231,227,.85);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:14px}
+    .load-spinner{width:36px;height:36px;border:3px solid rgba(30,30,30,.12);border-top-color:var(--navy);border-radius:50%;animation:spin .75s linear infinite}
+    .load-txt{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;padding:12px 20px;border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:999;display:none;align-items:center;gap:8px;max-width:320px}
+    .toast.show{display:flex}.toast.success{border-left:3px solid var(--green)}.toast.error{border-left:3px solid var(--red)}
+    @media(max-width:640px){.nav,.hero-inner,.container,.admin-tabs-inner{padding-left:16px;padding-right:16px}.toolbar{flex-direction:column;align-items:flex-start;gap:10px}.search-input{width:100%}}
+  </style>
+</head>
+<body>
+<div id="loading-overlay"><div class="load-spinner"></div><div class="load-txt" id="load-txt">Loading…</div></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- USER MODAL -->
+<div class="modal-backdrop" id="user-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Add user</div>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-input" type="email" id="f-email" placeholder="user@trilogybpo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display name</label>
+        <input class="form-input" type="text" id="f-name" placeholder="First Last">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-select" id="f-role">
+          <option value="viewer">Viewer — campaign assigned only</option>
+          <option value="manager">Manager — campaign assigned only</option>
+          <option value="exec">Exec — all campaigns, exec view</option>
+          <option value="admin">Admin — all campaigns + admin panel</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Campaign access</label>
+        <div class="campaign-checks" id="campaign-checks">Loading…</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="f-active" checked><span class="toggle-slider"></span></label>
+          <span id="f-active-label" style="font-size:13px;color:var(--text2)">Active</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">DPR access</label>
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="f-billing"><span class="toggle-slider"></span></label>
+          <span id="f-billing-label" style="font-size:13px;color:var(--text2)">No access</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">Grants access to the Daily Profit Report (billing and productive hours). Off by default — this is more restrictive than general MIS dashboard access.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeUserModal()">Cancel</button>
+      <button class="btn-save" onclick="saveUser()">Save user</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-backdrop" id="delete-modal">
+  <div class="modal">
+    <div class="modal-head" style="background:#7f1d1d">
+      <div class="modal-title">Delete user</div>
+      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px">
+      <p style="margin:0 0 8px;font-size:15px">Are you sure you want to remove <strong id="delete-name"></strong>?</p>
+      <p style="margin:0;font-size:13px;color:var(--text3)">This will revoke their access to all campaigns immediately.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="confirmDelete()">Delete user</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADMIN LOGIN SCREEN -->
+<div id="admin-login" style="display:none;min-height:100vh;background:var(--navy);align-items:center;justify-content:center;">
+  <div style="background:#2a2a2a;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center">
+    <img src="/trilogy-logo.png" alt="Trilogy" style="height:32px;margin-bottom:24px">
+    <div style="color:var(--green);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">MIS Dashboard</div>
+    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:24px">Admin Access</div>
+    <div id="al-err" style="display:none;background:rgba(192,57,43,0.14);border:1px solid rgba(192,57,43,0.3);border-radius:8px;padding:10px 14px;color:#ffa0a0;font-size:13px;margin-bottom:14px">Incorrect credentials.</div>
+    <input id="al-user" type="text" placeholder="Username" autocomplete="off"
+      style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-family:'Wix Madefor Text',sans-serif;font-size:14px;outline:none;margin-bottom:10px">
+    <input id="al-pass" type="password" placeholder="Password"
+      style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-family:'Wix Madefor Text',sans-serif;font-size:14px;outline:none;margin-bottom:16px"
+      onkeydown="if(event.key==='Enter')submitAdminLogin()">
+    <button onclick="submitAdminLogin()"
+      style="width:100%;padding:13px;background:#fff;color:var(--navy);border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.04em">
+      Access Admin Panel
+    </button>
+    <div style="margin-top:20px"><a href="index.html" style="color:rgba(255,255,255,0.3);font-size:12px;text-decoration:none">← Back to campaigns</a></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <nav class="nav">
+    <div class="nav-left">
+      <img src="/trilogy-logo.png" alt="Trilogy" style="height:28px">
+      <div class="nav-divider"></div>
+      <div class="nav-section">MIS Dashboard</div>
+      <div class="nav-divider"></div>
+      <span class="nav-badge">🔧 Admin Panel</span>
+    </div>
+    <div class="nav-right">
+      <a class="nav-back" href="/mis">← Campaigns</a>
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name" id="nav-name"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-label">Trilogy BPO · MIS Dashboard</div>
+      <div class="hero-title">Admin Panel</div>
+      <div class="hero-sub">Manage users, campaign access and import health</div>
+    </div>
+  </div>
+
+  <div class="admin-tabs">
+    <div class="admin-tabs-inner">
+      <div class="admin-tab active" id="tab-users" onclick="switchTab('users')">👥 Users</div>
+      <div class="admin-tab" id="tab-imports" onclick="switchTab('imports')">📥 Import health</div>
+    </div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div id="section-users" class="container">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input class="search-input" type="text" id="user-search" placeholder="Search by name or email…" oninput="filterUsers()">
+        <span id="user-count" style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--text3)"></span>
+      </div>
+      <button class="btn-primary" onclick="openAddUser()">＋ Add user</button>
+    </div>
+    <div class="card">
+      <table class="user-table" id="user-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Campaigns</th>
+            <th>Status</th>
+            <th style="width:100px"></th>
+          </tr>
+        </thead>
+        <tbody id="user-tbody">
+          <tr><td colspan="5"><div class="empty-state"><div class="empty-ico">👥</div><div class="empty-sub">Loading users…</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- IMPORTS TAB -->
+  <div id="section-imports" class="container" style="display:none">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text2)">Last 50 import records</span>
+      </div>
+      <button class="btn-primary" onclick="loadData()">↻ Refresh</button>
+    </div>
+    <div class="card">
+      <table class="import-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Campaign</th><th>File type</th><th>Rows</th><th>Status</th><th>Imported at</th><th>Error</th>
+          </tr>
+        </thead>
+        <tbody id="import-tbody">
+          <tr><td colspan="7"><div class="empty-state"><div class="empty-ico">📥</div><div class="empty-sub">Loading…</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const SESSION_KEY='mis_session', ADMIN_KEY='mis_admin_unlocked';
+
+const FLOWS={
+  GET_DATA:   'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c774e75e054242e0be4bcb62fc423b34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=AZZ4banpMjVjRtfmPxs2xoApHAoUxHNEXOdEBBPgjy0',
+  SAVE_USER:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1201c7809b334b94ac1d63140c88c58c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Xy17IPFbJMRlGh774yFwXAculisw3_QNfnMgagmbLE',
+  DELETE_USER:'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5da09344686f44668e8f54043d020e42/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=yAHdb0Qk4KiR9qYM6AS5tFhdlemi9stInIhczsi5p-k',
+};
+
+function unwrap(d){
+  if(!d) return {};
+  if(typeof d==='string'){try{return unwrap(JSON.parse(d));}catch{return {};}}
+  if(d.body){return typeof d.body==='string'?unwrap(JSON.parse(d.body)):unwrap(d.body);}
+  return d;
+}
+async function callFlow(url,body={},attempt=0){
+  try{
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){if(r.status>=500&&attempt<3){await wait(1200*(attempt+1));return callFlow(url,body,attempt+1);}throw new Error('Flow HTTP '+r.status);}
+    const text=await r.text();
+    console.log('Flow response ('+attempt+'):', text.substring(0,300));
+    if(!text||text==='null'||text==='') return {};
+    try{return unwrap(JSON.parse(text));}
+    catch(e){console.error('Parse failed on:',text.substring(0,200));throw new Error('Response parse error: '+text.substring(0,80));}
+  }
+  catch(e){if(attempt<3&&!e.message?.startsWith('Flow HTTP')&&!e.message?.startsWith('Response parse')){await wait(1200*(attempt+1));return callFlow(url,body,attempt+1);}throw e;}
+}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function initials(n){return(n||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function fmtDateTime(iso){if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(iso){if(!iso)return'—';return new Date(iso).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+
+let S={session:null,users:[],campaigns:[],deleteTarget:null,editTarget:null};
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const raw=sessionStorage.getItem(SESSION_KEY);
+  const adminUnlocked=sessionStorage.getItem(ADMIN_KEY);
+  // No sessionStorage dependency — password prompt is built into this page
+  S.session = raw ? JSON.parse(raw) : {displayName:'Admin',role:'admin',campaigns:[]};
+  if(!adminUnlocked){showAdminLogin();return;}
+  document.getElementById('nav-av').textContent=initials(S.session.displayName);
+  document.getElementById('nav-name').textContent=S.session.displayName.split(' ')[0];
+  document.getElementById('f-active').addEventListener('change',e=>{
+    document.getElementById('f-active-label').textContent=e.target.checked?'Active':'Inactive';
+  });
+  document.getElementById('app').style.display='block';
+  loadData();
+});
+
+async function loadData(){
+  document.getElementById('load-txt').textContent='Loading admin data…';
+  document.getElementById('loading-overlay').style.display='flex';
+  try{
+    const raw=await callFlow(FLOWS.GET_DATA,{});
+    console.log('AdminGetData raw type:', typeof raw);
+    console.log('AdminGetData raw keys:', raw ? Object.keys(raw) : 'null');
+    console.log('AdminGetData sample:', JSON.stringify(raw).substring(0,400));
+    const data=(raw&&raw.Table1)?raw:(raw&&raw.resultsets)?raw.resultsets:raw||{};
+    S.users    =Array.isArray(data.Table1)?data.Table1:[];
+    S.campaigns=Array.isArray(data.Table2)?data.Table2:[];
+    const imports=Array.isArray(data.Table3)?data.Table3:[];
+    console.log('Users:', S.users.length, 'Campaigns:', S.campaigns.length, 'Imports:', imports.length);
+    renderUsers(S.users);
+    renderImports(imports);
+  }catch(err){
+    console.error('loadData error:', err);
+    showToast('Failed to load: '+err.message,'error');
+  }
+  finally{document.getElementById('loading-overlay').style.display='none';}
+}
+
+/* ── TABS ── */
+function switchTab(tab){
+  ['users','imports'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('section-'+t).style.display=t===tab?'block':'none';
+  });
+}
+
+/* ── USERS ── */
+function renderUsers(users){
+  document.getElementById('user-count').textContent=users.length+' user'+(users.length!==1?'s':'');
+  if(!users.length){
+    document.getElementById('user-tbody').innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="empty-ico">👥</div><div class="empty-sub">No users found.</div></div></td></tr>';
+    return;
+  }
+  document.getElementById('user-tbody').innerHTML=users.map(u=>{
+    const roleClass={'admin':'role-admin','exec':'role-exec','manager':'role-manager'}[u.Role]||'role-viewer';
+    const camps=(u.Campaigns||'').split(',').filter(Boolean);
+    const active=u.IsActive===1||u.IsActive===true||u.IsActive==='1'||u.IsActive==='true';
+    return`<tr>
+      <td><div class="user-name-cell">
+        <div class="user-av">${initials(u.DisplayName)}</div>
+        <div><div class="user-name">${u.DisplayName}</div><div class="user-email">${u.UserEmail}</div></div>
+      </div></td>
+      <td><span class="role-badge ${roleClass}">${u.Role}</span></td>
+      <td>${camps.length?camps.map(c=>`<span class="campaign-tag">${c}</span>`).join(''):'<span style="color:var(--text3);font-size:12px">None</span>'}</td>
+      <td><span class="status-dot ${active?'dot-active':'dot-inactive'}"></span>${active?'Active':'Inactive'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-sm btn-edit" onclick="openEditUser('${u.UserEmail.replace(/'/g,"\\'")}')">Edit</button>
+        <button class="btn-sm btn-delete" style="margin-left:4px" onclick="openDeleteUser('${u.UserEmail.replace(/'/g,"\\'")}','${u.DisplayName.replace(/'/g,"\\'")}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterUsers(){
+  const q=document.getElementById('user-search').value.toLowerCase();
+  const filtered=q?S.users.filter(u=>(u.DisplayName||'').toLowerCase().includes(q)||(u.UserEmail||'').toLowerCase().includes(q)):S.users;
+  renderUsers(filtered);
+}
+
+/* ── ADD/EDIT USER ── */
+function openAddUser(){
+  S.editTarget=null;
+  document.getElementById('modal-title').textContent='Add user';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-email').disabled=false;
+  document.getElementById('f-name').value='';
+  document.getElementById('f-role').value='viewer';
+  document.getElementById('f-active').checked=true;
+  document.getElementById('f-active-label').textContent='Active';
+  document.getElementById('f-billing').checked=false;
+  document.getElementById('f-billing-label').textContent='No access';
+  buildCampaignChecks([]);
+  document.getElementById('user-modal').classList.add('show');
+}
+
+function openEditUser(email){
+  const u=S.users.find(x=>x.UserEmail===email);if(!u)return;
+  S.editTarget=email;
+  document.getElementById('modal-title').textContent='Edit user';
+  document.getElementById('f-email').value=u.UserEmail;
+  document.getElementById('f-email').disabled=true;
+  document.getElementById('f-name').value=u.DisplayName;
+  document.getElementById('f-role').value=u.Role;
+  const active=u.IsActive===1||u.IsActive===true||u.IsActive==='1'||u.IsActive==='true';
+  document.getElementById('f-active').checked=active;
+  document.getElementById('f-active-label').textContent=active?'Active':'Inactive';
+  const billing=u.billing_access===1||u.billing_access===true||u.billing_access==='1'||u.billing_access==='true';
+  document.getElementById('f-billing').checked=billing;
+  document.getElementById('f-billing-label').textContent=billing?'Has access':'No access';
+  const assigned=(u.Campaigns||'').split(',').filter(Boolean);
+  buildCampaignChecks(assigned);
+  document.getElementById('user-modal').classList.add('show');
+}
+
+function buildCampaignChecks(selected){
+  const wrap=document.getElementById('campaign-checks');
+  if(!S.campaigns.length){wrap.innerHTML='<span style="color:var(--text3);font-size:13px">No campaigns available</span>';return;}
+  wrap.innerHTML=S.campaigns.map(c=>`
+    <label class="check-label">
+      <input type="checkbox" value="${c.CampaignCode}" ${selected.includes(c.CampaignCode)?'checked':''}>
+      ${c.CampaignName||c.CampaignCode}
+    </label>`).join('');
+}
+
+function closeUserModal(){document.getElementById('user-modal').classList.remove('show');}
+
+async function saveUser(){
+  const email=document.getElementById('f-email').value.trim();
+  const displayName=document.getElementById('f-name').value.trim();
+  const role=document.getElementById('f-role').value;
+  const isActive=document.getElementById('f-active').checked?1:0;
+  const billingAccess=document.getElementById('f-billing').checked?1:0;
+  const campaigns=Array.from(document.querySelectorAll('#campaign-checks input:checked')).map(i=>i.value).join(',');
+  if(!email||!displayName){showToast('Email and display name are required.','error');return;}
+  closeUserModal();
+  document.getElementById('load-txt').textContent='Saving user…';
+  document.getElementById('loading-overlay').style.display='flex';
+  try{
+    await callFlow(FLOWS.SAVE_USER,{email,displayName,role,campaigns,isActive,billingAccess});
+    showToast(S.editTarget?'User updated.':'User added.','success');
+    await loadData();
+  }catch(err){
+    document.getElementById('loading-overlay').style.display='none';
+    showToast('Save failed: '+err.message,'error');
+  }
+}
+
+/* ── DELETE ── */
+function openDeleteUser(email,name){
+  S.deleteTarget=email;
+  document.getElementById('delete-name').textContent=name;
+  document.getElementById('delete-modal').classList.add('show');
+}
+function closeDeleteModal(){document.getElementById('delete-modal').classList.remove('show');S.deleteTarget=null;}
+
+async function confirmDelete(){
+  if(!S.deleteTarget)return;
+  const emailToDelete = S.deleteTarget;
+  closeDeleteModal();
+  document.getElementById('load-txt').textContent='Deleting user…';
+  document.getElementById('loading-overlay').style.display='flex';
+  try{
+    await callFlow(FLOWS.DELETE_USER,{email:emailToDelete});
+    showToast('User deleted.','success');
+    await loadData();
+  }catch(err){
+    document.getElementById('loading-overlay').style.display='none';
+    showToast('Delete failed: '+err.message,'error');
+  }
+}
+
+/* ── IMPORTS ── */
+function renderImports(rows){
+  if(!rows.length){document.getElementById('import-tbody').innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="empty-ico">📥</div><div class="empty-sub">No import records found.</div></div></td></tr>';return;}
+  document.getElementById('import-tbody').innerHTML=rows.map(r=>{
+    const sClass=r.Status==='Success'?'s-success':r.Status==='Error'?'s-error':'s-pending';
+    return`<tr>
+      <td>${fmtDate(r.ReportDate)}</td>
+      <td><span class="campaign-tag">${r.CampaignCode}</span></td>
+      <td style="font-size:12px">${r.FileType||'—'}</td>
+      <td style="font-family:'Montserrat',sans-serif;font-weight:600">${r.RowsImported||0}</td>
+      <td><span class="status-badge ${sClass}">${r.Status}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${fmtDateTime(r.ImportedAt)}</td>
+      <td style="font-size:12px;color:var(--red);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.ErrorMessage||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── TOAST ── */
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=(type==='success'?'✓ ':'✕ ')+msg;
+  t.className='toast show '+(type==='error'?'error':'success');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.className='toast',3500);
+}
+
+
+const ADMIN_USER='admin', ADMIN_PASS='YouCantComeIn';
+function showAdminLogin(){
+  document.getElementById('admin-login').style.display='flex';
+  document.getElementById('app').style.display='none';
+  setTimeout(()=>document.getElementById('al-user').focus(),100);
+}
+function submitAdminLogin(){
+  const u=document.getElementById('al-user').value.trim();
+  const p=document.getElementById('al-pass').value;
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('app').style.display='block';
+    loadData();
+  }else{
+    document.getElementById('al-err').style.display='block';
+    document.getElementById('al-pass').value='';
+    document.getElementById('al-pass').focus();
+  }
+}
+function signOut(){sessionStorage.removeItem(SESSION_KEY);sessionStorage.removeItem(ADMIN_KEY);window.location.href='/mis/';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeUserModal();closeDeleteModal();}});
+document.getElementById('user-modal').addEventListener('click',function(e){if(e.target===this)closeUserModal();});
+document.getElementById('delete-modal').addEventListener('click',function(e){if(e.target===this)closeDeleteModal();});
+</script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilogy · MIS Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.0.0/lib/msal-browser.min.js"></script>
+  <style>
+    :root {
+      --navy:       #1e1e1e;
+      --navy2:      #2a2a2a;
+      --green:      #4AFD0E;
+      --green-light:#edffd6;
+      --green-dark: #2a8a00;
+      --offwhite:   #F7F6F2;
+      --border:     #e2e1dd;
+      --border2:    #c8c7c3;
+      --surface:    #fff;
+      --bg:         #e8e7e3;
+      --text:       #1B2A4A;
+      --text2:      #4A5568;
+      --text3:      #7a8499;
+      --radius:     8px;
+      --radius-lg:  12px;
+      --radius-xl:  16px;
+      --red:        #c0392b;
+      --orange:     #e67e22;
+      --blue:       #2980b9;
+    }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { font-family: 'Wix Madefor Text', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; margin: 0; overflow-x: hidden; }
+    * { box-sizing: border-box; }
+
+    /* ── LOGIN ── */
+    #login-screen { min-height:100vh; background:var(--navy); display:flex; align-items:center; justify-content:center; padding:20px; }
+    .login-box { background:var(--navy2); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius-xl); padding:48px 40px; width:100%; max-width:420px; text-align:center; }
+    .login-title { color:#fff; font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; margin-bottom:8px; }
+    .login-sub { color:rgba(255,255,255,0.38); font-size:14px; line-height:1.6; margin-bottom:36px; }
+    .login-tag { display:inline-block; background:rgba(74,253,14,0.12); color:var(--green); font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:6px 18px; border-radius:6px; margin-bottom:20px; }
+    .btn-ms { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:14px 20px; background:#fff; color:var(--text); border:none; border-radius:var(--radius); font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:0.02em; transition:all 0.2s; }
+    .btn-ms:hover { background:#f0f4ff; transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+    .login-err { margin-top:14px; background:rgba(192,57,43,0.14); border:1px solid rgba(192,57,43,0.3); border-radius:var(--radius); padding:10px 14px; color:#ffa0a0; font-size:13px; display:none; line-height:1.5; }
+    .login-footer { margin-top:40px; color:rgba(255,255,255,0.18); font-size:11px; }
+
+    /* ── LOADING ── */
+    #loading-overlay { position:fixed; inset:0; background:var(--navy); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
+    .load-spinner { width:36px; height:36px; border:3px solid rgba(74,253,14,0.18); border-top-color:var(--green); border-radius:50%; animation:spin 0.75s linear infinite; margin-bottom:16px; }
+    .load-txt { color:rgba(255,255,255,0.38); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── NAV ── */
+    .nav { background:var(--navy); height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 32px; position:sticky; top:0; z-index:100; }
+    .nav-left { display:flex; align-items:center; gap:12px; }
+    .nav-divider { width:1px; height:24px; background:rgba(255,255,255,0.15); }
+    .nav-section { color:rgba(255,255,255,0.65); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .nav-avatar { width:34px; height:34px; border-radius:50%; background:var(--green); color:var(--navy); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid rgba(74,253,14,0.4); }
+    .nav-name { color:rgba(255,255,255,0.8); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; }
+    .nav-role-badge { background:rgba(74,253,14,0.14); color:var(--green); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; padding:3px 9px; border-radius:4px; }
+    .nav-admin-btn { background:transparent; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.55); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; padding:6px 12px; border-radius:6px; cursor:pointer; letter-spacing:0.04em; transition:all 0.18s; display:none; }
+    .nav-admin-btn:hover { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.9); }
+    .btn-signout { background:transparent; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.55); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; padding:6px 12px; border-radius:6px; cursor:pointer; letter-spacing:0.04em; transition:all 0.18s; }
+    .btn-signout:hover { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.9); }
+
+    /* ── HERO ── */
+    .hero { background:var(--navy); padding:40px 0 36px; }
+    .hero-inner { max-width:1200px; margin:0 auto; padding:0 32px; }
+    .hero-label { color:var(--green); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; margin-bottom:8px; }
+    .hero-title { color:#fff; font-family:'Montserrat',sans-serif; font-size:30px; font-weight:900; margin-bottom:5px; line-height:1.15; }
+    .hero-sub { color:rgba(255,255,255,0.38); font-size:14px; margin-bottom:28px; }
+    .hero-stats { display:flex; gap:14px; flex-wrap:wrap; }
+    .hstat { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-lg); padding:14px 20px; min-width:120px; }
+    .hstat-num { color:#fff; font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; line-height:1; margin-bottom:4px; }
+    .hstat-num.green { color:var(--green); }
+    .hstat-label { color:rgba(255,255,255,0.38); font-size:10px; font-family:'Montserrat',sans-serif; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; }
+
+    /* ── CONTAINER ── */
+    .container { max-width:1200px; margin:0 auto; padding:28px 32px 56px; }
+
+    /* ── SECTION LABEL ── */
+    .section-label { font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); margin-bottom:14px; margin-top:8px; }
+
+    /* ── REPORT GRID ── */
+    .report-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+
+    /* ── REPORT CARD ── */
+    .report-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:24px; text-decoration:none; color:var(--text); display:flex; flex-direction:column; gap:10px; transition:all 0.18s; cursor:pointer; }
+    .report-card:hover { border-color:var(--green); box-shadow:0 4px 16px rgba(74,253,14,0.12); transform:translateY(-2px); }
+    .report-card.admin-card { border-color:var(--border2); background:var(--offwhite); }
+    .report-card.admin-card:hover { border-color:var(--navy); box-shadow:0 4px 16px rgba(30,30,30,0.1); }
+    .rc-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:4px; }
+    .rc-icon.green { background:var(--green-light); }
+    .rc-icon.blue { background:#dbeafe; }
+    .rc-icon.orange { background:#fef3c7; }
+    .rc-icon.purple { background:#f3e8ff; }
+    .rc-icon.teal { background:#ccfbf1; }
+    .rc-icon.dark { background:rgba(30,30,30,0.07); }
+    .rc-title { font-family:'Montserrat',sans-serif; font-size:15px; font-weight:800; color:var(--text); }
+    .rc-sub { font-size:12px; color:var(--text3); line-height:1.5; }
+    .rc-arrow { font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; color:var(--green-dark); margin-top:auto; }
+    .rc-arrow.dark { color:var(--text3); }
+
+    /* ── CAMPAIGN HEADER ── */
+    .campaign-header { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:20px 24px; margin-bottom:20px; display:flex; align-items:center; gap:16px; }
+    .campaign-dot { width:12px; height:12px; border-radius:50%; background:var(--green); flex-shrink:0; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    .campaign-name { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:var(--text); }
+    .campaign-meta { font-size:12px; color:var(--text3); margin-top:2px; }
+    .campaign-badge { margin-left:auto; background:var(--green-light); color:var(--green-dark); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; padding:4px 12px; border-radius:4px; }
+
+    /* ── ADMIN MODAL ── */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; display:none; align-items:center; justify-content:center; }
+    .modal-backdrop.show { display:flex; }
+    .modal { background:var(--surface); border-radius:var(--radius-xl); padding:32px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+    .modal-title { font-family:'Montserrat',sans-serif; font-size:16px; font-weight:800; margin-bottom:6px; }
+    .modal-sub { font-size:13px; color:var(--text3); margin-bottom:20px; }
+    .modal-input { width:100%; padding:10px 14px; border:1px solid var(--border2); border-radius:var(--radius); font-family:'Wix Madefor Text',sans-serif; font-size:14px; color:var(--text); margin-bottom:10px; outline:none; transition:border-color 0.15s; }
+    .modal-input:focus { border-color:var(--green-dark); }
+    .modal-btn { width:100%; padding:12px; background:var(--navy); color:#fff; border:none; border-radius:var(--radius); font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:0.04em; transition:background 0.18s; margin-bottom:8px; }
+    .modal-btn:hover { background:#111; }
+    .modal-cancel { width:100%; padding:10px; background:transparent; border:1px solid var(--border); border-radius:var(--radius); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; color:var(--text3); cursor:pointer; }
+    .modal-err { background:#fee2e2; border:1px solid #fca5a5; border-radius:var(--radius); padding:8px 12px; color:var(--red); font-size:12px; margin-bottom:10px; display:none; }
+
+    /* ── SKEL ── */
+    .skel { background:linear-gradient(90deg,var(--bg) 25%,var(--border) 50%,var(--bg) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:960px) { .report-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px) {
+      .nav { padding:0 16px; }
+      .nav-name,.nav-role-badge { display:none; }
+      .hero-inner,.container { padding-left:16px; padding-right:16px; }
+      .hero-title { font-size:22px; }
+      .report-grid { grid-template-columns:1fr; gap:12px; }
+      .login-box { padding:36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <img src="/trilogy-logo.png" alt="Trilogy" style="height:38px;display:block;margin:0 auto 24px">
+    <div class="login-tag">MIS Dashboard</div>
+    <div class="login-title">Campaign Reporting</div>
+    <div class="login-sub">Sign in with your Trilogy Microsoft account to access your campaign dashboards.</div>
+    <button class="btn-ms" onclick="signIn()">
+      <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1"  y="1"  width="9" height="9" fill="#F35325"/>
+        <rect x="11" y="1"  width="9" height="9" fill="#81BC06"/>
+        <rect x="1"  y="11" width="9" height="9" fill="#05A6F0"/>
+        <rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-footer">Trilogy CX (Pty) Ltd · Authorised users only</div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <img src="/trilogy-logo.png" alt="Trilogy" style="height:30px;margin-bottom:32px">
+  <div class="load-spinner"></div>
+  <div class="load-txt" id="load-txt">Loading…</div>
+</div>
+
+<!-- ADMIN PASSWORD MODAL -->
+<div class="modal-backdrop" id="admin-modal">
+  <div class="modal">
+    <div class="modal-title">🔧 Admin Access</div>
+    <div class="modal-sub">Enter admin credentials to continue.</div>
+    <div class="modal-err" id="admin-err">Incorrect credentials. Try again.</div>
+    <input class="modal-input" type="text"     id="admin-user" placeholder="Username" autocomplete="off">
+    <input class="modal-input" type="password" id="admin-pass" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button class="modal-btn" onclick="checkAdmin()">Access Admin Panel</button>
+    <button class="modal-cancel" onclick="closeAdminModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- PORTAL APP -->
+<div id="portal-app" style="display:none">
+
+  <nav class="nav">
+    <div class="nav-left">
+      <img src="/trilogy-logo.png" alt="Trilogy" style="height:28px">
+      <div class="nav-divider"></div>
+      <div class="nav-section">MIS Dashboard</div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-admin-btn" id="admin-nav-btn" onclick="openAdminModal()">🔧 Admin</button>
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name"       id="nav-name"></span>
+      <span class="nav-role-badge" id="nav-badge"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-label">Trilogy BPO · MIS Dashboard</div>
+      <div class="hero-title" id="hero-greeting">Good morning</div>
+      <div class="hero-sub"   id="hero-sub">Loading…</div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-num"       id="stat-campaigns">—</div><div class="hstat-label">Campaign(s)</div></div>
+        <div class="hstat"><div class="hstat-num green" id="stat-role">—</div><div class="hstat-label">Access level</div></div>
+        <div class="hstat"><div class="hstat-num"       id="stat-import">—</div><div class="hstat-label">Last import</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="main-container">
+    <div class="skel" style="height:80px;border-radius:12px;margin-bottom:20px"></div>
+    <div class="skel" style="height:24px;width:200px;margin-bottom:14px"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <div class="skel" style="height:140px;border-radius:16px"></div>
+      <div class="skel" style="height:140px;border-radius:16px"></div>
+      <div class="skel" style="height:140px;border-radius:16px"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+const CONFIG = {
+  azureClientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
+  azureTenantId: '77cde95f-930f-495e-89c6-4d2c30f6df21',
+  redirectUri:   'https://home.trilogybpo.com/mis/',
+  adminUser:     'admin',
+  adminPass:     'YouCantComeIn',
+};
+
+// ── HomeBase SSO bridge ──
+// If user already has a valid homebase_session with 'mis' access,
+// check if mis_session already exists — if so skip login entirely.
+(function(){
+  try{
+    var hbs = sessionStorage.getItem('homebase_session');
+    var mis = sessionStorage.getItem('mis_session');
+    if(hbs && !mis){
+      var session = JSON.parse(hbs);
+      var mods = (session.modules||'').split(',').map(function(m){return m.trim();});
+      if(session.role==='admin' || mods.indexOf('mis')>-1){
+        // Set a basic mis_session so sub-pages don't redirect
+        sessionStorage.setItem('mis_session', JSON.stringify({
+          email: session.email,
+          name: session.displayName,
+          role: session.role,
+          campaigns: ['NADClinic'],
+          billing_access: session.role==='admin' ? 1 : 0
+        }));
+      }
+    }
+  }catch(e){}
+})();
+
+const FLOWS = {
+  VALIDATE_USER: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7c9e3ad348f3419da97081e29723d328/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tBva4A3Khf41AIgPZYuZyt8SKCSX9y7wBONYSF-HteE',
+};
+
+const GRAPH_SCOPES = ['User.Read'];
+const SESSION_KEY  = 'mis_session';
+const ADMIN_KEY    = 'mis_admin_unlocked';
+
+/* ── helpers ── */
+function unwrap(d) {
+  return d.body ? (typeof d.body === 'string' ? JSON.parse(d.body) : d.body) : d;
+}
+async function callFlow(url, body = {}, attempt = 0) {
+  try {
+    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (!r.ok) {
+      if (r.status >= 500 && attempt < 3) { await wait(1200*(attempt+1)); return callFlow(url,body,attempt+1); }
+      throw new Error('Flow HTTP '+r.status);
+    }
+    return unwrap(await r.json());
+  } catch(e) {
+    if (attempt < 3 && !e.message?.startsWith('Flow HTTP')) { await wait(1200*(attempt+1)); return callFlow(url,body,attempt+1); }
+    throw e;
+  }
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function initials(name) { return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+function greet() { const h=new Date().getHours(); return h<12?'Good morning':h<17?'Good afternoon':'Good evening'; }
+function fmtDate(iso) { if(!iso) return '—'; const d=new Date(iso); return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}); }
+function showScreen(id) {
+  document.getElementById('login-screen').style.display    = id==='login'   ? 'flex'  : 'none';
+  document.getElementById('loading-overlay').style.display = id==='loading' ? 'flex'  : 'none';
+  document.getElementById('portal-app').style.display      = id==='app'     ? 'block' : 'none';
+}
+function setLoad(msg) { document.getElementById('load-txt').textContent = msg; }
+function showLoginErr(msg) { const el=document.getElementById('login-err'); el.textContent=msg; el.style.display='block'; }
+
+/* ── MSAL ── */
+let msalApp;
+async function init() {
+  msalApp = new msal.PublicClientApplication({
+    auth: { clientId:CONFIG.azureClientId, authority:'https://login.microsoftonline.com/'+CONFIG.azureTenantId, redirectUri:CONFIG.redirectUri },
+    cache: { cacheLocation:'sessionStorage', storeAuthStateInCookie:true },
+  });
+  await msalApp.initialize();
+  try {
+    const resp = await msalApp.handleRedirectPromise();
+    if (resp) { await loadDashboard(resp.account); return; }
+  } catch(e) { console.warn('Redirect:', e); }
+  const accounts = msalApp.getAllAccounts();
+  if (accounts.length) { await loadDashboard(accounts[0]); } else { showScreen('login'); }
+}
+async function signIn() {
+  document.getElementById('login-err').style.display = 'none';
+  try { await msalApp.loginRedirect({ scopes: GRAPH_SCOPES }); }
+  catch(e) { if (e.errorCode !== 'user_cancelled') showLoginErr(e.message || 'Sign-in failed.'); }
+}
+async function signOut() {
+  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(ADMIN_KEY);
+  await msalApp.logoutRedirect();
+}
+
+/* ── LOAD DASHBOARD ── */
+async function loadDashboard(account) {
+  showScreen('loading');
+  try {
+    setLoad('Verifying access…');
+    const email  = (account.username || '').toLowerCase();
+    const result = await callFlow(FLOWS.VALIDATE_USER, { email });
+
+    // Result is the Table1 array from SQL
+    const rows = Array.isArray(result) ? result : [];
+    if (!rows.length) {
+      showScreen('login');
+      showLoginErr('Access denied. Your account ('+ account.username +') has not been added to the MIS Dashboard. Contact your administrator.');
+      return;
+    }
+
+    const user = rows[0];
+    const session = {
+      email:          user.UserEmail,
+      displayName:    user.DisplayName,
+      role:           (user.Role || 'viewer').toLowerCase(),
+      campaigns:      user.Campaigns ? user.Campaigns.split(',').map(c=>c.trim()).filter(Boolean) : [],
+      billing_access: user.billing_access===1||user.billing_access===true||user.billing_access==='1'||user.billing_access==='True'||user.billing_access==='true',
+    };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    renderDashboard(session);
+  } catch(err) {
+    console.error('loadDashboard:', err);
+    showScreen('login');
+    showLoginErr('Failed to load dashboard: '+(err.message||'Unknown error'));
+  }
+}
+
+/* ── RENDER ── */
+function renderDashboard(session) {
+  const isAdmin = session.role === 'admin';
+  const isExec  = session.role === 'exec' || isAdmin;
+
+  // Nav
+  document.getElementById('nav-av').textContent    = initials(session.displayName);
+  document.getElementById('nav-name').textContent  = session.displayName.split(' ')[0];
+  document.getElementById('nav-badge').textContent = isAdmin ? 'Admin' : isExec ? 'Exec' : session.role.charAt(0).toUpperCase()+session.role.slice(1);
+  if (isAdmin) document.getElementById('admin-nav-btn').style.display = 'block';
+
+  // Hero
+  document.getElementById('hero-greeting').textContent = greet()+', '+session.displayName.split(' ')[0];
+  document.getElementById('hero-sub').textContent = 'MIS Dashboard · '+(isAdmin?'All campaigns':session.campaigns.join(', ')||'No campaigns assigned');
+  document.getElementById('stat-campaigns').textContent = isAdmin ? 'All' : session.campaigns.length;
+  document.getElementById('stat-role').textContent = isAdmin ? 'Admin' : isExec ? 'Executive' : session.role.charAt(0).toUpperCase()+session.role.slice(1);
+  document.getElementById('stat-import').textContent = '—';
+
+  // Main content
+  const container = document.getElementById('main-container');
+  const campaigns = session.campaigns.length ? session.campaigns : ['NADClinic'];
+
+  let html = '';
+
+  campaigns.forEach(campaign => {
+    html += `
+      <div class="campaign-header">
+        <div class="campaign-dot"></div>
+        <div>
+          <div class="campaign-name">${campaign}</div>
+          <div class="campaign-meta">Select a report to view</div>
+        </div>
+        <span class="campaign-badge">Active</span>
+      </div>
+      <div class="section-label">Reports</div>
+      <div class="report-grid">
+        ${session.billing_access ? `
+        <a class="report-card" href="nadclinic/dpr.html?campaign=${encodeURIComponent(campaign)}">
+          <div class="rc-icon" style="background:#e8f5e9">💷</div>
+          <div class="rc-title">Daily Profit Report</div>
+          <div class="rc-sub">Productive hours and billing by agent — previous day, week, month, or full month to date.</div>
+          <div class="rc-arrow">View report →</div>
+        </a>` : ''}
+        ${isAdmin ? `
+        <a class="report-card admin-card" href="admin.html">
+          <div class="rc-icon dark">🔧</div>
+          <div class="rc-title">Admin Panel</div>
+          <div class="rc-sub">Manage user access, campaign assignments and import health.</div>
+          <div class="rc-arrow dark">Open panel →</div>
+        </a>` : ''}
+      </div>`;
+
+    if (campaigns.indexOf(campaign) < campaigns.length - 1) {
+      html += '<hr style="border:none;border-top:1px solid var(--border);margin:28px 0">';
+    }
+  });
+
+  container.innerHTML = html;
+  showScreen('app');
+}
+
+/* ── ADMIN MODAL ── */
+function openAdminModal() {
+  if (sessionStorage.getItem(ADMIN_KEY)) { window.location.href='admin.html'; return; }
+  document.getElementById('admin-modal').classList.add('show');
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('admin-err').style.display = 'none';
+  setTimeout(() => document.getElementById('admin-user').focus(), 100);
+}
+function closeAdminModal() { document.getElementById('admin-modal').classList.remove('show'); }
+function checkAdmin() {
+  const u = document.getElementById('admin-user').value.trim();
+  const p = document.getElementById('admin-pass').value;
+  if (u === CONFIG.adminUser && p === CONFIG.adminPass) {
+    sessionStorage.setItem(ADMIN_KEY, '1');
+    const _s = sessionStorage.getItem(SESSION_KEY);
+    if (_s) sessionStorage.setItem('mis_admin_session', _s);
+    closeAdminModal();
+    window.location.href = 'admin.html';
+  } else {
+    document.getElementById('admin-err').style.display = 'block';
+    document.getElementById('admin-pass').value = '';
+    document.getElementById('admin-pass').focus();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

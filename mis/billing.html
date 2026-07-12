@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilogy · MIS · Billing Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    :root{--navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--orange:#e67e22;--blue:#2980b9;--purple:#6c3483}
+    html{scroll-behavior:smooth;overflow-x:hidden}body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;margin:0;overflow-x:hidden}*{box-sizing:border-box}
+    /* NAV */
+    .nav{background:var(--navy);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100}
+    .nav-left{display:flex;align-items:center;gap:12px}.nav-divider{width:1px;height:24px;background:rgba(255,255,255,0.15)}
+    .nav-section{color:rgba(255,255,255,0.65);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase}
+    .nav-back{color:rgba(255,255,255,0.45);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;text-decoration:none;padding:6px 10px;border:1px solid rgba(255,255,255,0.12);border-radius:6px;transition:all .15s}
+    .nav-back:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.06)}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--navy);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid rgba(74,253,14,0.4)}
+    .nav-name{color:rgba(255,255,255,.8);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600}
+    .btn-signout{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.55);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .18s}
+    .btn-signout:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+    /* TAB NAV */
+    .tab-nav{background:var(--offwhite);border-bottom:1px solid var(--border)}
+    .tab-nav-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;gap:2px}
+    .tab-link{padding:11px 16px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap}
+    .tab-link:hover{color:var(--text)}.tab-link.active{color:var(--text);border-bottom-color:var(--green)}
+    /* HERO */
+    .hero{background:var(--navy);padding:32px 0 28px}
+    .hero-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+    .hero-label{color:var(--green);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:6px}
+    .hero-title{color:#fff;font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;line-height:1.15}
+    .hero-sub{color:rgba(255,255,255,.38);font-size:13px;margin-top:4px}
+    /* RANGE BUTTONS */
+    .range-nav{display:flex;align-items:center;gap:6px}
+    .range-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);height:34px;padding:0 14px;border-radius:var(--radius);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;transition:all .15s}
+    .range-btn:hover{background:rgba(255,255,255,.14)}
+    .range-btn.active-range{background:rgba(74,253,14,.15);border-color:rgba(74,253,14,.4);color:var(--green)}
+    .hero-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    /* MONTH NAV */
+    .month-nav{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);overflow:hidden}
+    .month-arrow{background:transparent;border:none;color:rgba(255,255,255,.6);height:36px;width:36px;font-size:16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+    .month-arrow:hover:not(:disabled){background:rgba(255,255,255,.1);color:#fff}
+    .month-arrow:disabled{opacity:0.3;cursor:not-allowed}
+    .month-label{color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:0 16px;white-space:nowrap;min-width:130px;text-align:center}
+    /* CONTAINER */
+    .container{max-width:1200px;margin:0 auto;padding:24px 32px 56px}
+    /* KPI GRID */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px 22px}
+    .kpi-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+    .kpi-val{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:900;color:var(--text);line-height:1}
+    .kpi-sub{font-size:12px;color:var(--text3);margin-top:5px}
+    .kpi-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700}
+    .badge-green{background:var(--green-light);color:var(--green-dark)}
+    .badge-orange{background:#fff3e0;color:#e65100}
+    .badge-red{background:#fdecea;color:var(--red)}
+    /* CARDS */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:20px;overflow:hidden}
+    .card-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+    .card-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .ci-g{background:#edffd6}.ci-b{background:#e8f4f8}.ci-p{background:#f3e8ff}
+    .card-body{padding:20px 22px}
+    /* BILLING TABLE */
+    .billing-table{width:100%;border-collapse:collapse}
+    .billing-table th{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);text-align:left;padding:10px 14px;border-bottom:2px solid var(--border);white-space:nowrap}
+    .billing-table th.right,.billing-table td.right{text-align:right}
+    .billing-table td{padding:14px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .billing-table tr:last-child td{border-bottom:none}
+    .billing-table tr.total-row td{background:var(--offwhite);font-family:'Montserrat',sans-serif;font-weight:800;border-top:2px solid var(--border)}
+    .billing-table tr:hover:not(.total-row) td{background:var(--offwhite)}
+    .agent-cell{display:flex;align-items:center;gap:12px}
+    .agent-av{width:36px;height:36px;border-radius:50%;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .av0{background:#1e3a5f}.av1{background:#1a4731}.av2{background:#4a1942}
+    .agent-name-cell{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--text)}
+    .agent-sub{font-size:11px;color:var(--text3);font-family:'Wix Madefor Text',sans-serif}
+    .hours-strong{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--text)}
+    .value-strong{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--green-dark)}
+    /* PROGRESS BAR */
+    .prog-wrap{min-width:100px}
+    .prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+    .prog-pct{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700}
+    .prog-target{font-size:11px;color:var(--text3)}
+    .prog-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
+    .prog-bar{height:100%;border-radius:4px;transition:width .6s ease}
+    .prog-bar.green{background:var(--green)}
+    .prog-bar.orange{background:var(--orange)}
+    .prog-bar.red{background:var(--red)}
+    /* PROJECTION BANNER */
+    .proj-banner{background:var(--navy);border-radius:var(--radius-lg);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+    .proj-item{text-align:center}
+    .proj-val{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:#fff}
+    .proj-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .proj-divider{width:1px;height:40px;background:rgba(255,255,255,.12)}
+    /* SKEL */
+    .skel{background:linear-gradient(90deg,var(--border) 25%,var(--offwhite) 50%,var(--border) 75%);background-size:200% 100%;animation:skel 1.4s infinite;border-radius:var(--radius)}
+    @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    /* LOADING */
+    #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(3px);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+    .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* IMPORT STATUS */
+    .import-bar{background:var(--offwhite);border-top:1px solid var(--border);padding:10px 32px;display:flex;align-items:center;justify-content:center;gap:8px}
+    .import-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+    .import-txt{font-size:11px;color:var(--text3)}
+    /* RESPONSIVE */
+    @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.hero-inner{flex-direction:column;align-items:flex-start}}
+    @media(max-width:640px){.kpi-grid{grid-template-columns:1fr}.container{padding:16px}.billing-table td,.billing-table th{padding:10px 8px}}
+  </style>
+</head>
+<body>
+
+<div id="app" style="display:none">
+
+  <nav class="nav">
+    <div class="nav-left">
+      <img src="/trilogy-logo.png" alt="Trilogy" style="height:28px">
+      <div class="nav-divider"></div>
+      <div class="nav-section">MIS Dashboard</div>
+      <div class="nav-divider"></div>
+      <a class="nav-back" href="../index.html">← Campaigns</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name" id="nav-name"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="tab-nav"><div id="tab-nav-inner" class="tab-nav-inner"></div></div>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-label" id="hero-campaign">NADClinic · Billing Report</div>
+        <div class="hero-title">Billing Report</div>
+        <div class="hero-sub" id="hero-sub">Loading…</div>
+      </div>
+      <div class="hero-controls">
+        <div class="range-nav">
+          <button class="range-btn" onclick="setRange('day',this)">Yesterday</button>
+          <button class="range-btn" onclick="setRange('week',this)">7 days</button>
+          <button class="range-btn active-range" onclick="setRange('mtd',this)">MTD</button>
+        </div>
+        <div class="month-nav" id="month-nav-wrap">
+          <button class="month-arrow" id="prev-month" onclick="changeMonth(-1)">‹</button>
+          <div class="month-label" id="month-label">—</div>
+          <button class="month-arrow" id="next-month" onclick="changeMonth(1)" disabled>›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card"><div class="skel" style="height:70px"></div></div>
+      <div class="kpi-card"><div class="skel" style="height:70px"></div></div>
+      <div class="kpi-card"><div class="skel" style="height:70px"></div></div>
+      <div class="kpi-card"><div class="skel" style="height:70px"></div></div>
+    </div>
+
+    <div id="proj-banner-wrap"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-icon ci-g">💷</div>Agent Billing Breakdown</div>
+        <span style="font-size:11px;color:var(--text3)">£10.50 / productive hour · Target 135h/month</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div id="billing-table-wrap"><div class="skel" style="height:160px;margin:20px"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-icon ci-b">📈</div>Daily Productive Hours</div>
+        <span style="font-size:11px;color:var(--text3)">Target line at 6.75h / day</span>
+      </div>
+      <div class="card-body">
+        <canvas id="daily-chart" height="180"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="import-bar">
+    <div class="import-dot"></div>
+    <span class="import-txt" id="import-txt">Last import: checking…</span>
+  </div>
+
+</div>
+
+<div id="loading-overlay"><div class="spinner"></div><span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text3)">Loading billing data…</span></div>
+
+<script>
+'use strict';
+
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const SESSION_KEY = 'mis_session';
+const RATE = 10.50;
+const MONTHLY_TARGET = 135;
+const DAILY_TARGET = RATE > 0 ? MONTHLY_TARGET / 20 : 6.75; // 6.75h/day
+const BILLING_AGENTS = ['Demi Bennett', 'Mia Herselman', 'Nathaniel Debique'];
+const AV_COLORS = { 'Demi Bennett':'av0','Mia Herselman':'av1','Nathaniel Debique':'av2' };
+const FLOWS = {
+  GET_BILLING: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/326245b83959462fa8faa9bd63494ccc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Fje6OdaZIUxVtlY85qvjEfpiw8pGoq6JatfULfRQ2Wo'
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+function unwrap(d){return d.body?(typeof d.body==='string'?JSON.parse(d.body):d.body):d;}
+async function callFlow(url,body={},attempt=0){
+  try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){if(r.status>=500&&attempt<3){await wait(1200*(attempt+1));return callFlow(url,body,attempt+1);}throw new Error('Flow HTTP '+r.status);}
+  return unwrap(await r.json());}
+  catch(e){if(attempt<3&&!e.message?.startsWith('Flow HTTP')){await wait(1200*(attempt+1));return callFlow(url,body,attempt+1);}throw e;}
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function initials(n){return(n||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function localDate(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return`${y}-${m}-${day}`;}
+function fmtGBP(v){if(v===null||v===undefined)return'—';return'£'+parseFloat(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtHours(v){if(v===null||v===undefined)return'—';const h=parseFloat(v);return h.toFixed(2)+'h';}
+function fmtDate(iso){if(!iso)return'—';return new Date(iso+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+function badgeClass(pct){if(pct>=95)return'badge-green';if(pct>=80)return'badge-orange';return'badge-red';}
+function barClass(pct){if(pct>=95)return'green';if(pct>=80)return'orange';return'red';}
+
+let S = { session:null, campaign:'NADClinic', monthOffset:0, rangeMode:'mtd', chart:null };
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = sessionStorage.getItem(SESSION_KEY);
+  if(!raw){ window.location.href='../index.html'; return; }
+  S.session = JSON.parse(raw);
+  if(!S.session.billing_access){
+    window.location.href='../index.html?blocked=billing';
+    return;
+  }
+  const params = new URLSearchParams(window.location.search);
+  S.campaign = params.get('campaign') || (S.session.campaigns[0]) || 'NADClinic';
+  document.getElementById('nav-av').textContent = initials(S.session.displayName);
+  document.getElementById('nav-name').textContent = S.session.displayName.split(' ')[0];
+  document.getElementById('hero-campaign').textContent = S.campaign + ' · Billing Report';
+  document.getElementById('app').style.display = 'block';
+  setTabNav('billing');
+  updateMonthLabel();
+  loadData();
+});
+
+function setTabNav(active){
+  const c = encodeURIComponent(S.campaign);
+  document.getElementById('tab-nav-inner').innerHTML = [
+    ['daily','📊 Daily',`daily.html?campaign=${c}`],
+    ['weekly','📈 Weekly',`weekly.html?campaign=${c}`],
+    ['monthly','📅 Monthly',`monthly.html?campaign=${c}`],
+    ['agents','👤 Agents',`agents.html?campaign=${c}`],
+    ['queue','⏱ Queue',`queue.html?campaign=${c}`],
+    ['sla','📋 SLA',`sla.html?campaign=${c}`],
+    ['billing','💷 Billing',`billing.html?campaign=${c}`],
+  ].map(([id,lbl,href])=>`<a class="tab-link${id===active?' active':''}" href="${href}">${lbl}</a>`).join('');
+}
+
+function getDateRange(){
+  const now = new Date();
+  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate()-1);
+  if(S.rangeMode==='day'){
+    return { dateFrom:localDate(yesterday), dateTo:localDate(yesterday), label:'Yesterday', isMTD:false };
+  }
+  if(S.rangeMode==='week'){
+    const from = new Date(yesterday); from.setDate(from.getDate()-6);
+    return { dateFrom:localDate(from), dateTo:localDate(yesterday), label:'Last 7 days', isMTD:false };
+  }
+  // MTD or historical month
+  const y = now.getFullYear();
+  const m = now.getMonth() + S.monthOffset;
+  const first = new Date(y,m,1);
+  const isCurrentMonth = S.monthOffset===0;
+  const last = isCurrentMonth ? now : new Date(y,m+1,0);
+  const monthName = first.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  return { dateFrom:localDate(first), dateTo:localDate(last), label:isCurrentMonth?'Month to date':monthName, isMTD:isCurrentMonth };
+}
+
+function setRange(mode, btn){
+  S.rangeMode = mode;
+  S.monthOffset = 0;
+  document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active-range'));
+  btn.classList.add('active-range');
+  // Show month nav only for MTD so user can go back to previous months
+  document.getElementById('month-nav-wrap').style.opacity = mode==='mtd' ? '1' : '0.3';
+  document.getElementById('month-nav-wrap').style.pointerEvents = mode==='mtd' ? '' : 'none';
+  updateMonthLabel();
+  loadData();
+}
+
+function updateMonthLabel(){
+  const now = new Date();
+  const d = new Date(now.getFullYear(), now.getMonth() + S.monthOffset, 1);
+  const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  document.getElementById('month-label').textContent = label;
+  document.getElementById('next-month').disabled = S.monthOffset >= 0;
+}
+
+function changeMonth(dir){
+  S.monthOffset += dir;
+  if(S.monthOffset > 0) S.monthOffset = 0;
+  updateMonthLabel();
+  loadData();
+}
+
+function signOut(){ sessionStorage.removeItem(SESSION_KEY); window.location.href='/mis/'; }
+
+async function loadData(){
+  document.getElementById('loading-overlay').style.display = 'flex';
+  const { dateFrom, dateTo, label, isMTD } = getDateRange();
+  const fromFmt = new Date(dateFrom+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  const toFmt   = new Date(dateTo+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  const same = dateFrom===dateTo;
+  document.getElementById('hero-sub').textContent = `${label} · ${same ? toFmt : fromFmt+' – '+toFmt}`;
+  try {
+    const data = await callFlow(FLOWS.GET_BILLING, { campaignCode: S.campaign, dateFrom, dateTo });
+    const agents  = data.Table1 || [];
+    const daily   = data.Table2 || [];
+    const totals  = (data.Table3 || [])[0] || {};
+    const imp     = (data.Table4 || [])[0] || {};
+    renderKPIs(totals, agents, isMTD);
+    renderProjection(totals, agents, isMTD);
+    renderTable(agents);
+    renderChart(daily);
+    renderImport(imp);
+  } catch(e) {
+    console.error('Billing flow error:', e);
+    document.getElementById('hero-sub').textContent = 'Error loading data — check flow URL';
+  } finally {
+    document.getElementById('loading-overlay').style.display = 'none';
+  }
+}
+
+function renderKPIs(totals, agents, isMTD){
+  const totalHours = parseFloat(totals.TotalHours) || 0;
+  const totalValue = parseFloat(totals.TotalValue) || 0;
+  const attainment = parseFloat(totals.TeamAttainmentPct) || 0;
+  const days = parseInt(totals.DaysInPeriod) || 0;
+
+  // Monthly projection: avg daily × 20 working days × 3 agents
+  const avgDaily = parseFloat(totals.AvgHoursPerAgentPerDay) || 0;
+  const projMonthlyHours = avgDaily * 20 * 3;
+  const projValue = projMonthlyHours * RATE;
+
+  const cards = [
+    { label:'Total Productive Hours', val: totalHours.toFixed(1) + 'h', sub: `${days} day${days!==1?'s':''} · ${agents.length} agents` },
+    { label:'Total Billed Value', val: fmtGBP(totalValue), sub: `@ £${RATE.toFixed(2)}/hr` },
+    { label:'Team Attainment', val: attainment.toFixed(1) + '%', sub: `vs ${(DAILY_TARGET * days * 3).toFixed(0)}h target`, badge: attainment },
+    { label: isMTD ? 'Projected Monthly Value' : 'Full Month Value', val: fmtGBP(isMTD ? projValue : totalValue), sub: isMTD ? `Based on ${avgDaily.toFixed(2)}h/agent/day avg` : 'Completed month' },
+  ];
+
+  document.getElementById('kpi-grid').innerHTML = cards.map(c => `
+    <div class="kpi-card">
+      <div class="kpi-label">${c.label}</div>
+      <div class="kpi-val">${c.val}</div>
+      <div class="kpi-sub">
+        ${c.badge !== undefined ? `<span class="kpi-badge ${badgeClass(c.badge)}">${c.badge.toFixed(1)}%</span> ` : ''}
+        ${c.sub}
+      </div>
+    </div>`).join('');
+}
+
+function renderProjection(totals, agents, isMTD){
+  if(!isMTD){ document.getElementById('proj-banner-wrap').innerHTML=''; return; }
+  const avgDaily = parseFloat(totals.AvgHoursPerAgentPerDay) || 0;
+  const projTeamHours = avgDaily * 20 * 3;
+  const projValue = projTeamHours * RATE;
+  const targetValue = MONTHLY_TARGET * 3 * RATE;
+  const vs = projValue - targetValue;
+  const vsStr = (vs >= 0 ? '+' : '') + fmtGBP(vs);
+
+  document.getElementById('proj-banner-wrap').innerHTML = `
+    <div class="proj-banner">
+      <div class="proj-item"><div class="proj-val">${(avgDaily * 20).toFixed(1)}h</div><div class="proj-lbl">Proj. hours / agent / month</div></div>
+      <div class="proj-divider"></div>
+      <div class="proj-item"><div class="proj-val">${fmtGBP(projValue)}</div><div class="proj-lbl">Projected team monthly value</div></div>
+      <div class="proj-divider"></div>
+      <div class="proj-item"><div class="proj-val">${fmtGBP(targetValue)}</div><div class="proj-lbl">Target (${BILLING_AGENTS.length} × ${MONTHLY_TARGET}h × £${RATE})</div></div>
+      <div class="proj-divider"></div>
+      <div class="proj-item"><div class="proj-val" style="color:${vs>=0?'var(--green)':'#ff6b6b'}">${vsStr}</div><div class="proj-lbl">vs target</div></div>
+    </div>`;
+}
+
+function renderTable(agents){
+  if(!agents.length){
+    document.getElementById('billing-table-wrap').innerHTML='<p style="padding:20px;color:var(--text3);text-align:center">No data for this period</p>';
+    return;
+  }
+
+  // Calculate totals
+  const totHours = agents.reduce((s,a)=>s+parseFloat(a.TotalHours||0),0);
+  const totValue = agents.reduce((s,a)=>s+parseFloat(a.TotalValue||0),0);
+  const totTarget = agents.reduce((s,a)=>s+parseFloat(a.TargetHours||0),0);
+  const totAttain = totTarget>0 ? (totHours/totTarget*100) : 0;
+
+  const rows = agents.map((a,i) => {
+    const pct = parseFloat(a.AttainmentPct)||0;
+    const barW = Math.min(pct,100).toFixed(1);
+    const av = AV_COLORS[a.AgentName] || 'av0';
+    return `<tr>
+      <td>
+        <div class="agent-cell">
+          <div class="agent-av ${av}">${initials(a.AgentName)}</div>
+          <div><div class="agent-name-cell">${a.AgentName}</div><div class="agent-sub">${parseInt(a.DaysWorked)||0} days worked</div></div>
+        </div>
+      </td>
+      <td class="right"><span class="hours-strong">${fmtHours(a.TotalHours)}</span></td>
+      <td>
+        <div class="prog-wrap">
+          <div class="prog-top"><span class="prog-pct" style="color:${pct>=95?'var(--green-dark)':pct>=80?'var(--orange)':'var(--red)'}">${pct.toFixed(1)}%</span><span class="prog-target">${fmtHours(a.TargetHours)}</span></div>
+          <div class="prog-track"><div class="prog-bar ${barClass(pct)}" style="width:${barW}%"></div></div>
+        </div>
+      </td>
+      <td class="right">${fmtHours(a.AvgDailyHours)}<span style="font-size:11px;color:var(--text3)">/day</span></td>
+      <td class="right"><span class="value-strong">${fmtGBP(a.TotalValue)}</span></td>
+    </tr>`;
+  });
+
+  const totBarW = Math.min(totAttain,100).toFixed(1);
+  rows.push(`<tr class="total-row">
+    <td><div class="agent-cell"><div style="font-family:Montserrat,sans-serif;font-size:13px;font-weight:800">TOTAL</div></div></td>
+    <td class="right"><span class="hours-strong">${totHours.toFixed(2)}h</span></td>
+    <td>
+      <div class="prog-wrap">
+        <div class="prog-top"><span class="prog-pct" style="color:${totAttain>=95?'var(--green-dark)':totAttain>=80?'var(--orange)':'var(--red)'}">${totAttain.toFixed(1)}%</span><span class="prog-target">${totTarget.toFixed(1)}h</span></div>
+        <div class="prog-track"><div class="prog-bar ${barClass(totAttain)}" style="width:${totBarW}%"></div></div>
+      </div>
+    </td>
+    <td class="right">—</td>
+    <td class="right"><span class="value-strong">${fmtGBP(totValue)}</span></td>
+  </tr>`);
+
+  document.getElementById('billing-table-wrap').innerHTML = `
+    <table class="billing-table">
+      <thead><tr>
+        <th>Agent</th>
+        <th class="right">Productive Hours</th>
+        <th>Attainment vs Target</th>
+        <th class="right">Avg Daily</th>
+        <th class="right">Billed Value</th>
+      </tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table>`;
+}
+
+function renderChart(daily){
+  if(S.chart){ S.chart.destroy(); S.chart=null; }
+  if(!daily.length) return;
+
+  // Pivot by date
+  const dates = [...new Set(daily.map(d=>d.ReportDate))].sort();
+  const agentData = {};
+  BILLING_AGENTS.forEach(a=>{ agentData[a]=[]; });
+  dates.forEach(date=>{
+    BILLING_AGENTS.forEach(agent=>{
+      const row = daily.find(d=>d.ReportDate===date && d.AgentName===agent);
+      agentData[agent].push(row ? parseFloat(row.ProductiveHours)||0 : 0);
+    });
+  });
+
+  const COLORS = { 'Demi Bennett':'#2980b9','Mia Herselman':'#1a7a4a','Nathaniel Debique':'#6c3483' };
+
+  S.chart = new Chart(document.getElementById('daily-chart'), {
+    type: 'line',
+    data: {
+      labels: dates.map(d=>fmtDate(d)),
+      datasets: [
+        ...BILLING_AGENTS.map(a=>({
+          label: a.split(' ')[0],
+          data: agentData[a],
+          borderColor: COLORS[a],
+          backgroundColor: COLORS[a]+'22',
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.3,
+          fill: false,
+        })),
+        {
+          label: 'Daily Target',
+          data: dates.map(()=>DAILY_TARGET),
+          borderColor: '#e67e22',
+          borderWidth: 1.5,
+          borderDash: [6,4],
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Montserrat',size:11},boxWidth:12,padding:16}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{family:'Montserrat',size:11},color:'#7a8499'}},
+        y:{min:0,suggestedMax:10,grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{family:'Montserrat',size:11},color:'#7a8499',callback:v=>v+'h'},title:{display:true,text:'Hours',font:{family:'Montserrat',size:11},color:'#7a8499'}}
+      }
+    }
+  });
+}
+
+function renderImport(imp){
+  const txt = imp.ImportedAt
+    ? `Last import: ${new Date(imp.ImportedAt).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${imp.Status||'—'}`
+    : 'Import status unavailable';
+  document.getElementById('import-txt').textContent = txt;
+}
+</script>
+</body>
+</html>
