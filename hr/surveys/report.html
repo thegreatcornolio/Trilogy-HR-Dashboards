@@ -186,7 +186,7 @@ svg.trend{width:100%;height:100%}
       <option value="4">Last 4 weeks</option>
       <option value="8">Last 8 weeks</option>
       <option value="12">Last 12 weeks</option>
-      <option value="999">All time</option>
+      <option value="999" selected>All time</option>
     </select>
     <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
   </div>
@@ -230,9 +230,18 @@ function loadData(){
   document.getElementById('heroKpis').innerHTML = '<div class="kpi"><div class="loading-spinner" style="width:24px;height:24px;border-width:2px;margin:0 0 4px"></div><div class="kpi-label">Loading…</div></div>';
 
   fetch(DATA_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var items = d.value || [];
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      var d; try{ d=JSON.parse(txt); }catch(e){ d={}; }
+      console.log('RAW PARSED:', JSON.stringify(d).substring(0,100));
+      var body = d.body||d;
+      if(typeof body==='string') try{ body=JSON.parse(body); }catch(e){}
+      var items = [];
+      if(Array.isArray(body)) items = body;
+      else if(Array.isArray(d)) items = d;
+      else if(body.ResultSets&&body.ResultSets.Table1) items = body.ResultSets.Table1;
+      else if(body.value) items = body.value;
+      console.log('ITEMS COUNT:', items.length);
       allData = items.map(function(item){
         return {
           week: item.WeekNumber || 0,
