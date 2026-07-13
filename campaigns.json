@@ -6,12 +6,6 @@
     "name": "EXCO"
   },
   {
-    "name": "Sales"
-  },
-  {
-    "name": "Marketing"
-  },
-  {
     "name": "Finance"
   },
   {
@@ -22,5 +16,8 @@
   },
   {
     "name": "Support"
+  },
+  {
+    "name": "Sales & Marketing"
   }
 ]
