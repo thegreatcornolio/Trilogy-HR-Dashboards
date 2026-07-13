@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — Trilogy BPO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#eceae5;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:10px;--radius-lg:14px;--radius-xl:18px;--red:#c0392b;--amber:#f39c12;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* TOP BAR */
+.topbar{background:var(--navy);padding:14px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.topbar img{height:26px}
+.topbar-txt{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+
+/* CONTAINER */
+.container{max-width:620px;margin:0 auto;padding:0 16px 60px}
+
+/* JOB HERO */
+.job-hero{background:var(--navy);color:#fff;margin:0 -16px;padding:36px 24px 40px;position:relative;overflow:hidden}
+.job-hero::before{content:'';position:absolute;top:-120px;right:-80px;width:380px;height:380px;background:radial-gradient(circle,rgba(74,253,14,.1) 0%,transparent 70%)}
+.job-hero-inner{position:relative;z-index:2}
+.job-eyebrow{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.job-eyebrow::before{content:'';width:28px;height:2px;background:var(--green)}
+.job-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:14px}
+.job-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.job-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif}
+.job-tag.salary{background:rgba(74,253,14,.12);border-color:rgba(74,253,14,.3);color:var(--green)}
+
+/* JOB BODY */
+.job-section{margin-top:28px}
+.job-section h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.job-section h3::before{content:'';width:4px;height:16px;background:var(--green);border-radius:2px}
+.job-section p{color:var(--text2);font-size:14px}
+.job-list{list-style:none}
+.job-list li{padding-left:26px;position:relative;margin-bottom:8px;color:var(--text2);font-size:14px}
+.job-list li::before{content:'';position:absolute;left:0;top:8px;width:12px;height:12px;background:var(--green);border-radius:3px}
+
+/* FORM CARD */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);margin-top:32px;overflow:hidden}
+.form-head{background:var(--navy);padding:20px 24px}
+.form-head h2{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;color:#fff}
+.form-head p{font-size:13px;color:rgba(255,255,255,.5);margin-top:3px}
+.form-body{padding:24px}
+.form-group-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:8px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.form-group-label:first-child{margin-top:0}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px}
+.field label .req{color:var(--red)}
+.field input,.field select{width:100%;padding:13px 14px;border:1.5px solid var(--border2);border-radius:var(--radius);font-size:16px;font-family:inherit;color:var(--text);background:var(--offwhite);transition:border .15s,background .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--green-dark);background:#fff}
+.field input.error,.field select.error{border-color:var(--red);background:#fdf3f2}
+.field-hint{font-size:12px;color:var(--text3);margin-top:4px}
+.field-err{font-size:12px;color:var(--red);margin-top:4px;display:none}
+.field-err.show{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}}
+
+/* SEGMENTED */
+.seg{display:flex;gap:8px}
+.seg-btn{flex:1;padding:12px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--offwhite);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;text-align:center;transition:all .12s}
+.seg-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* CONSENT */
+.consent{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:8px}
+.consent-row{display:flex;gap:12px;align-items:flex-start}
+.consent-row input[type=checkbox]{width:22px;height:22px;margin-top:2px;flex-shrink:0;accent-color:var(--green-dark);cursor:pointer}
+.consent-row label{font-size:13px;color:var(--text2);line-height:1.5;cursor:pointer}
+.consent-row label strong{color:var(--text)}
+.consent-more{font-size:12px;color:var(--text3);margin-top:10px;line-height:1.5}
+
+/* SUBMIT */
+.submit-btn{width:100%;padding:16px;background:var(--green);color:#111;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:24px;transition:all .15s}
+.submit-btn:hover{background:#5fff1a}
+.submit-btn:disabled{opacity:.5;pointer-events:none}
+.submit-note{text-align:center;font-size:12px;color:var(--text3);margin-top:12px}
+
+/* STATES */
+.loading,.gone{text-align:center;padding:80px 24px;color:var(--text3)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green-dark);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS */
+.success{text-align:center;padding:50px 24px}
+.success-icon{width:80px;height:80px;background:var(--green-light,#edffd6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px}
+.success h1{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;margin-bottom:12px}
+.success p{color:var(--text2);font-size:15px;max-width:420px;margin:0 auto 8px}
+.next-steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-top:28px;text-align:left}
+.next-steps h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px}
+.step-item{display:flex;gap:14px;margin-bottom:16px}
+.step-item:last-child{margin-bottom:0}
+.step-num{width:28px;height:28px;background:var(--navy);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;flex-shrink:0}
+.step-txt{font-size:14px;color:var(--text2)}
+.step-txt strong{color:var(--text)}
+
+/* FOOTER */
+.foot{text-align:center;padding:30px 20px;color:var(--text3);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="../trilogy-logo.png" alt="Trilogy BPO">
+  <div class="topbar-txt">Careers</div>
+</div>
+
+<div class="container" id="container">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Loading role…</p>
+  </div>
+</div>
+
+<div class="foot">Trilogy CX (Pty) Ltd · We respect your privacy under POPIA</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG — application flow URLs
+// ══════════════════════════════════════════════════════════
+var FLOW = {
+  getRole:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/07f2f98f035c4533a2ada63b8cd7c3cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kmHspo-5s03LZAbA21KJKA3WtlLZMB4f6LN-S_YeLYo',
+  submitApp:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/44e1706b012c468aa035836d83ee45db/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=q8OWV5mPQvvR5R4bqm3AzQ6BeGgmv5ZceZpxDbv3tVQ'
+};
+
+var role=null;
+
+// Read ?role={slug}
+function getSlug(){
+  var p=new URLSearchParams(window.location.search);
+  return p.get('role')||p.get('r')||'';
+}
+
+function parseFlow(txt){
+  var data; try{ data=txt?JSON.parse(txt):{}; }catch(e){ console.error('Raw:',txt); return {rows:[]}; }
+  var rs=data.ResultSets||data; var table=rs.Table1||(Array.isArray(rs)?rs:null);
+  return { rows: table||(Array.isArray(data)?data:[data]) };
+}
+
+// ── LOAD ROLE ──
+function loadRole(){
+  var slug=getSlug();
+  if(!slug){ showGone('No role specified','This application link looks incomplete. Please use the link or QR code from the job advert.'); return; }
+
+  if(FLOW.getRole.indexOf('PASTE')!==-1){
+    // STUB demo role so the form is testable before flows are wired
+    role={RoleID:0,RoleTitle:'Customer Service Agent',CampaignTitle:'OakHouse Foods',Client:'OakHouse Foods',LOB:'Customer Service',
+      SalaryMin:8000,SalaryMax:9500,RoleDescription:'Join our team delivering outstanding customer support for a leading UK retail brand.',
+      KeyResponsibilities:'Handle inbound customer queries\nResolve issues with empathy and speed\nMeet quality and productivity targets',
+      Requirements:'Matric / Grade 12\nClear, confident English\nReliable and target-driven', IsActive:1};
+    renderRole(); return;
+  }
+
+  fetch(FLOW.getRole,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({URLSlug:slug})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var rows=parseFlow(txt).rows||[];
+    if(!rows.length || !rows[0].RoleID){ showGone('Role not found','This role may have closed or the link is incorrect. Please check the advert for an up-to-date link.'); return; }
+    role=rows[0]; renderRole();
+  })
+  .catch(function(){ showGone('Something went wrong','We couldn\'t load this role right now. Please try again shortly.'); });
+}
+
+function showGone(title,msg){
+  document.getElementById('container').innerHTML='<div class="gone"><h1 style="font-family:Montserrat;font-size:22px;margin-bottom:10px;color:var(--text)">'+esc(title)+'</h1><p>'+esc(msg)+'</p></div>';
+}
+
+// ── RENDER ROLE + FORM ──
+function renderRole(){
+  var salary='';
+  if(role.SalaryMin||role.SalaryMax){
+    var mn=role.SalaryMin?'R'+Number(role.SalaryMin).toLocaleString('en-ZA'):'';
+    var mx=(role.SalaryMax&&role.SalaryMax!==role.SalaryMin)?' – R'+Number(role.SalaryMax).toLocaleString('en-ZA'):'';
+    salary=mn+mx+' / month';
+  }
+  var resp=(role.KeyResponsibilities||'').split(/\n|;/).map(function(s){return s.trim();}).filter(Boolean);
+  var reqs=(role.Requirements||'').split(/\n|;/).map(function(s){return s.trim();}).filter(Boolean);
+
+  var html=''+
+  '<div class="job-hero"><div class="job-hero-inner">'+
+    '<div class="job-eyebrow">We\'re hiring</div>'+
+    '<div class="job-title">'+esc(role.RoleTitle||'Role')+'</div>'+
+    '<div class="job-meta">'+
+      (role.Client||role.CampaignTitle?'<span class="job-tag">'+esc(role.Client||role.CampaignTitle)+'</span>':'')+
+      (role.LOB?'<span class="job-tag">'+esc(role.LOB)+'</span>':'')+
+      (salary?'<span class="job-tag salary">'+esc(salary)+'</span>':'')+
+    '</div>'+
+  '</div></div>';
+
+  if(role.RoleDescription) html+='<div class="job-section"><h3>About the role</h3><p>'+esc(role.RoleDescription)+'</p></div>';
+  if(resp.length) html+='<div class="job-section"><h3>What you\'ll do</h3><ul class="job-list">'+resp.map(function(r){return '<li>'+esc(r)+'</li>';}).join('')+'</ul></div>';
+  if(reqs.length) html+='<div class="job-section"><h3>What we\'re looking for</h3><ul class="job-list">'+reqs.map(function(r){return '<li>'+esc(r)+'</li>';}).join('')+'</ul></div>';
+
+  // FORM
+  html+=''+
+  '<div class="form-card">'+
+    '<div class="form-head"><h2>Apply now</h2><p>Takes about 3 minutes</p></div>'+
+    '<div class="form-body">'+
+
+      '<div class="form-group-label">Your details</div>'+
+      '<div class="row2">'+
+        '<div class="field"><label>First name <span class="req">*</span></label><input id="fFirst" type="text" autocomplete="given-name"><div class="field-err" id="eFirst">Required</div></div>'+
+        '<div class="field"><label>Last name <span class="req">*</span></label><input id="fLast" type="text" autocomplete="family-name"><div class="field-err" id="eLast">Required</div></div>'+
+      '</div>'+
+      '<div class="field"><label>Preferred name</label><input id="fPreferred" type="text"><div class="field-hint">What you like to be called (optional)</div></div>'+
+
+      '<div class="field"><label>ID type <span class="req">*</span></label>'+
+        '<div class="seg"><button type="button" class="seg-btn active" id="segSAID" onclick="setIDType(\'SA_ID\')">SA ID</button><button type="button" class="seg-btn" id="segPass" onclick="setIDType(\'Passport\')">Passport</button></div></div>'+
+      '<div class="field"><label id="lblID">SA ID number <span class="req">*</span></label><input id="fID" type="text" inputmode="numeric" oninput="onIDInput()"><div class="field-err" id="eID">Required</div></div>'+
+
+      '<div class="row2">'+
+        '<div class="field"><label>Date of birth <span class="req">*</span></label><input id="fDOB" type="date"><div class="field-err" id="eDOB">Required</div></div>'+
+        '<div class="field"><label>Gender <span class="req">*</span></label><select id="fGender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select><div class="field-err" id="eGender">Required</div></div>'+
+      '</div>'+
+
+      '<div class="form-group-label">Contact</div>'+
+      '<div class="field"><label>Mobile number <span class="req">*</span></label><input id="fMobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="0__ ___ ____"><div class="field-err" id="eMobile">Required</div></div>'+
+      '<div class="field"><label>Email address <span class="req">*</span></label><input id="fEmail" type="email" inputmode="email" autocomplete="email"><div class="field-err" id="eEmail">Enter a valid email</div></div>'+
+
+      '<div class="form-group-label">Background</div>'+
+      '<div class="field"><label>Highest qualification</label><select id="fQual"><option value="">Select…</option><option>Below Matric</option><option>Matric / Grade 12</option><option>Certificate</option><option>Diploma</option><option>Degree</option><option>Postgraduate</option></select></div>'+
+      '<div class="field"><label>Are you currently employed?</label>'+
+        '<div class="seg"><button type="button" class="seg-btn" id="segEmpY" onclick="setEmployed(true)">Yes</button><button type="button" class="seg-btn" id="segEmpN" onclick="setEmployed(false)">No</button></div></div>'+
+      '<div class="field" id="noticeWrap" style="display:none"><label>Notice period</label><select id="fNotice"><option value="">Select…</option><option>Immediately available</option><option>1 week</option><option>2 weeks</option><option>1 month</option><option>More than 1 month</option></select></div>'+
+
+      '<div class="form-group-label">Consent</div>'+
+      '<div class="consent">'+
+        '<div class="consent-row">'+
+          '<input type="checkbox" id="fConsent">'+
+          '<label for="fConsent"><strong>I consent to Trilogy BPO processing my personal information</strong> for recruitment purposes, in line with POPIA. I understand my information will be used to assess my application and contact me about this and similar roles.</label>'+
+        '</div>'+
+        '<div class="consent-more">You can withdraw consent at any time by contacting us. We keep your data secure and only share it as needed for your application.</div>'+
+      '</div>'+
+      '<div class="field-err" id="eConsent" style="margin-top:8px">Please tick the consent box to continue</div>'+
+
+      '<button class="submit-btn" id="submitBtn" onclick="submitApp()">Submit application</button>'+
+      '<div class="submit-note">We\'ll send next steps to your email and WhatsApp.</div>'+
+
+    '</div>'+
+  '</div>';
+
+  document.getElementById('container').innerHTML=html;
+}
+
+// ── FORM STATE ──
+var idType='SA_ID', employed=null;
+function setIDType(t){
+  idType=t;
+  document.getElementById('segSAID').classList.toggle('active',t==='SA_ID');
+  document.getElementById('segPass').classList.toggle('active',t==='Passport');
+  document.getElementById('lblID').innerHTML=(t==='SA_ID'?'SA ID number':'Passport number')+' <span class="req">*</span>';
+}
+function setEmployed(v){
+  employed=v;
+  document.getElementById('segEmpY').classList.toggle('active',v===true);
+  document.getElementById('segEmpN').classList.toggle('active',v===false);
+  document.getElementById('noticeWrap').style.display=v===true?'block':'none';
+}
+
+// Auto-fill DOB + gender from SA ID
+function onIDInput(){
+  if(idType!=='SA_ID') return;
+  var v=document.getElementById('fID').value.replace(/\D/g,'');
+  if(v.length>=6){
+    var yy=parseInt(v.substring(0,2),10), mm=v.substring(2,4), dd=v.substring(4,6);
+    var nowYY=new Date().getFullYear()%100;
+    var year=(yy<=nowYY?2000:1900)+yy;
+    if(mm>='01'&&mm<='12'&&dd>='01'&&dd<='31'){
+      document.getElementById('fDOB').value=year+'-'+mm+'-'+dd;
+    }
+  }
+  if(v.length>=10){
+    var g=parseInt(v.substring(6,10),10);
+    document.getElementById('fGender').value=(g<5000?'Female':'Male');
+  }
+}
+
+// ── SUBMIT ──
+function submitApp(){
+  // clear errors
+  ['First','Last','ID','DOB','Gender','Mobile','Email','Consent'].forEach(function(k){
+    var e=document.getElementById('e'+k); if(e) e.classList.remove('show');
+    var f=document.getElementById('f'+k); if(f) f.classList.remove('error');
+  });
+
+  var first=val('fFirst'), last=val('fLast'), id=val('fID'), dob=val('fDOB'),
+      gender=val('fGender'), mobile=val('fMobile'), email=val('fEmail'),
+      consent=document.getElementById('fConsent').checked;
+
+  var ok=true;
+  if(!first){ fail('First','eFirst'); ok=false; }
+  if(!last){ fail('Last','eLast'); ok=false; }
+  if(!id){ fail('ID','eID'); ok=false; }
+  if(!dob){ fail('DOB','eDOB'); ok=false; }
+  if(!gender){ fail('Gender','eGender'); ok=false; }
+  if(!mobile){ fail('Mobile','eMobile'); ok=false; }
+  if(!email||email.indexOf('@')<1){ fail('Email','eEmail'); ok=false; }
+  if(!consent){ document.getElementById('eConsent').classList.add('show'); ok=false; }
+  if(!ok){ window.scrollTo({top:document.querySelector('.error,.field-err.show').offsetTop-120,behavior:'smooth'}); return; }
+
+  var payload={
+    RoleID: role.RoleID,
+    FirstName:first, LastName:last, PreferredName:val('fPreferred'),
+    IDType:idType, IDNumber:id, DateOfBirth:dob, Gender:gender,
+    Mobile:mobile, PersonalEmail:email,
+    CurrentlyEmployed: employed===null?null:(employed?true:false),
+    HighestQualification:val('fQual'), NoticePeriod:val('fNotice'),
+    POPIAConsentIP:null
+  };
+
+  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
+
+  if(FLOW.submitApp.indexOf('PASTE')!==-1){
+    setTimeout(function(){ showSuccess(first); },700); return;
+  }
+
+  fetch(FLOW.submitApp,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var row=parseFlow(txt).rows[0]||{};
+    if(row.Result==='Success' || row.Result==='Duplicate'){ showSuccess(first, row.Result==='Duplicate'); }
+    else { throw new Error(row.Message||'Submission failed'); }
+  })
+  .catch(function(err){ btn.disabled=false; btn.textContent='Submit application'; alert('Sorry, something went wrong: '+err.message+'\nPlease try again.'); });
+}
+
+function showSuccess(name, dup){
+  var html='<div class="success">'+
+    '<div class="success-icon">✓</div>'+
+    '<h1>'+(dup?'You\'ve already applied':'Application received!')+'</h1>'+
+    '<p>'+(dup?'We already have your application for this role, '+esc(name)+'. We\'ll be in touch.':'Thanks, '+esc(name)+'. Your application for <strong>'+esc(role.RoleTitle||'this role')+'</strong> is in.')+'</p>'+
+    '<div class="next-steps"><h3>What happens next</h3>'+
+      '<div class="step-item"><div class="step-num">1</div><div class="step-txt"><strong>Assessment</strong> — you\'ll get a link by email and WhatsApp to complete a short online assessment.</div></div>'+
+      '<div class="step-item"><div class="step-num">2</div><div class="step-txt"><strong>Review</strong> — our recruitment team reviews your application and assessment.</div></div>'+
+      '<div class="step-item"><div class="step-num">3</div><div class="step-txt"><strong>Interview</strong> — if shortlisted, we\'ll invite you to book an interview slot.</div></div>'+
+    '</div>'+
+    '<p style="margin-top:24px;font-size:13px;color:var(--text3)">Keep an eye on your email and WhatsApp.</p>'+
+  '</div>';
+  document.getElementById('container').innerHTML=html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── HELPERS ──
+function val(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+function fail(fk,ek){var f=document.getElementById('f'+fk),e=document.getElementById(ek);if(f)f.classList.add('error');if(e)e.classList.add('show');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+loadRole();
+</script>
+</body>
+</html>

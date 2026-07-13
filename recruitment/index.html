@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Recruitment Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy-dark:#121212;
+  --green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--slate:#4A5568;
+  --border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --red:#c0392b;--amber:#f39c12;--amber-light:#fff3cd;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── LOGIN GATE ── */
+#login-gate{position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center}
+.login-label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px;text-align:left}
+.login-input{width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px}
+.login-input:focus{border-color:rgba(74,253,14,.4)}
+.login-btn{width:100%;padding:13px;background:#4AFD0E;color:#111;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.login-btn:hover{background:#5fff1a}
+.login-err{margin-top:12px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none}
+
+/* ── NAV ── */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 4px}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-link{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-decoration:none;letter-spacing:.04em}
+.nav-link:hover{color:#fff}
+.nav-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);font-family:'Montserrat',sans-serif}
+
+/* ── HERO ── */
+.hero{background:var(--navy);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem;letter-spacing:-.02em}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:500px;line-height:1.7}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.stat{border-left:2px solid var(--green);padding-left:1rem}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1}
+.stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+
+/* ── PIPELINE BAR ── */
+.pipeline-bar{background:#2a2a2a;border-bottom:1px solid rgba(255,255,255,.08);padding:1.25rem 2rem}
+.pipeline-bar-inner{max-width:1100px;margin:0 auto}
+.pipeline-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.875rem}
+.pipeline-steps{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.pipe-step{display:flex;align-items:center;gap:0}
+.pipe-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;line-height:1;min-width:36px}
+.pipe-lbl{font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap;margin-left:6px;margin-right:4px}
+.pipe-arrow{font-size:16px;color:var(--green);margin:0 10px;font-weight:700}
+.pipe-step.last .pipe-num{color:var(--green)}
+
+/* ── SHELL ── */
+.shell{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.section-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--border)}
+.section-tag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'Montserrat',sans-serif;white-space:nowrap}
+.section-action{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--green-dark);text-decoration:none}
+.section-action:hover{opacity:.8}
+
+/* ── MODULE GRID ── */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2.5rem}
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;transition:all .18s;position:relative;overflow:hidden;text-decoration:none;display:block;cursor:pointer}
+.module-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .18s}
+.module-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.08);transform:translateY(-2px)}
+.module-card:hover::after{transform:scaleX(1)}
+.module-card.live::after{transform:scaleX(1)}
+.module-card.live{border-color:#515151}
+.module-card.disabled{opacity:.45;pointer-events:none}
+.mc-icon{width:38px;height:38px;background:var(--offwhite);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.875rem}
+.mc-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.mc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:.5rem;font-family:'Montserrat',sans-serif}
+.badge-live{background:var(--green-light);color:var(--green-dark)}
+.badge-soon{background:var(--surface2);color:var(--text3)}
+.mc-count{position:absolute;top:12px;right:12px;background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px}
+.mc-count.alert{background:var(--red)}
+.mc-count.amber{background:var(--amber)}
+
+/* ── TWO COLUMN LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem}
+
+/* ── CAMPAIGN CARDS ── */
+.camp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem}
+.camp-card:last-child{margin-bottom:0}
+.camp-lob{width:42px;height:42px;background:var(--navy);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--green);font-family:'Montserrat',sans-serif;flex-shrink:0}
+.camp-info{flex:1;min-width:0}
+.camp-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.camp-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.camp-bar-wrap{margin-top:8px}
+.camp-bar-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.camp-bar-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.camp-bar-label{font-size:10px;color:var(--text3);margin-top:3px;display:flex;justify-content:space-between}
+.camp-apps{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--text);text-align:right;flex-shrink:0}
+.camp-apps span{display:block;font-size:10px;color:var(--text3);font-weight:400;font-family:'Wix Madefor Text',sans-serif}
+
+/* ── ACTIVITY FEED ── */
+.feed-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden}
+.feed-header{background:var(--navy);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.feed-header h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff}
+.feed-body{padding:0}
+.feed-item{display:flex;align-items:flex-start;gap:12px;padding:12px 1.25rem;border-bottom:1px solid var(--border)}
+.feed-item:last-child{border-bottom:none}
+.feed-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.fd-green{background:var(--green)}
+.fd-amber{background:var(--amber)}
+.fd-red{background:var(--red)}
+.fd-navy{background:var(--navy)}
+.feed-text{flex:1}
+.feed-name{font-weight:600;color:var(--text);font-size:13px}
+.feed-status{font-size:12px;color:var(--text3);margin-top:1px}
+.feed-time{font-size:11px;color:var(--text3);white-space:nowrap;margin-top:4px}
+.feed-empty{padding:2rem;text-align:center;color:var(--text3);font-size:13px}
+
+/* ── STATUS PILLS ── */
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;white-space:nowrap}
+.pill-applied{background:#f2f1ed;color:var(--text2)}
+.pill-shortlisted{background:#cce5ff;color:#004085}
+.pill-interview{background:#d1ecf1;color:#0c5460}
+.pill-offer{background:#d4edda;color:#155724}
+.pill-handover{background:var(--green-light);color:var(--green-dark)}
+.pill-regret{background:#fdf0ef;color:var(--red)}
+.pill-bgv{background:var(--amber-light);color:#856404}
+
+/* ── ATTENTION CARDS ── */
+.attention-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:2.5rem}
+.att-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none}
+.att-card:hover{border-color:#bbbab6;box-shadow:0 4px 18px rgba(27,42,74,.08)}
+.att-icon{width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.att-icon.red{background:#fdf0ef}
+.att-icon.amber{background:var(--amber-light)}
+.att-icon.green{background:var(--green-light)}
+.att-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:var(--text);line-height:1}
+.att-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ── FOOTER ── */
+.footer{background:var(--navy);padding:1.25rem 2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-note{font-size:11px;color:rgba(255,255,255,.2)}
+
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.attention-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.attention-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr 1fr}.shell{padding:1.5rem 1rem 4rem}.hero-title{font-size:22px}}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN GATE ── -->
+<div id="login-gate">
+  <div class="login-box">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:36px;margin-bottom:24px">
+    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">Recruitment Portal</div>
+    <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised staff only</div>
+    <div style="margin-bottom:14px;text-align:left">
+      <label class="login-label">Username</label>
+      <input id="usr" type="text" class="login-input" placeholder="Username" autocomplete="username"
+        onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()">
+    </div>
+    <div style="margin-bottom:22px;text-align:left">
+      <label class="login-label">Password</label>
+      <input id="pwd" type="password" class="login-input" placeholder="Password" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div id="login-err" class="login-err">Incorrect username or password.</div>
+    <div style="margin-top:28px;color:rgba(255,255,255,.15);font-size:11px">Trilogy CX (Pty) Ltd · Internal use only</div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-left">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Recruitment Portal</div>
+  </div>
+  <div class="nav-right">
+    <a href="https://home.trilogybpo.com" class="nav-link">← HomeBase</a>
+    <div class="nav-divider"></div>
+    <div class="nav-avatar">R</div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO</div>
+    <h1 class="hero-title">Recruitment<br><span>Central.</span></h1>
+    <p class="hero-sub">Full pipeline from job posting to onboarding handover — every candidate, every stage, one place.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total applications</div></div>
+      <div class="stat"><div class="stat-num" id="statActive">—</div><div class="stat-label">Active campaigns</div></div>
+      <div class="stat"><div class="stat-num" id="statHandedOver">—</div><div class="stat-label">Handed over this month</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PIPELINE BAR ── -->
+<div class="pipeline-bar">
+  <div class="pipeline-bar-inner">
+    <div class="pipeline-label">Live recruitment pipeline</div>
+    <div class="pipeline-steps">
+      <div class="pipe-step"><div class="pipe-num" id="pApplied">—</div><div class="pipe-lbl">Applied</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pShortlisted">—</div><div class="pipe-lbl">Shortlisted</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pInterview">—</div><div class="pipe-lbl">Interview</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pOffer">—</div><div class="pipe-lbl">Verbal offer</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pBGV">—</div><div class="pipe-lbl">BGV / docs</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pContract">—</div><div class="pipe-lbl">Contract</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step last"><div class="pipe-num" id="pHandover">—</div><div class="pipe-lbl">Handed over</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ── ATTENTION ITEMS ── -->
+  <div class="section-head" style="margin-bottom:1rem">
+    <h2>Needs attention</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Action required</div>
+  </div>
+  <div class="attention-grid" id="attentionGrid">
+    <a href="candidates.html?filter=bgv-flagged" class="att-card">
+      <div class="att-icon red">🚩</div>
+      <div><div class="att-num" id="attBGV">—</div><div class="att-lbl">BGV results flagged — HR review required</div></div>
+    </a>
+    <a href="candidates.html?filter=hr-approval" class="att-card">
+      <div class="att-icon amber">✅</div>
+      <div><div class="att-num" id="attApproval">—</div><div class="att-lbl">Files ready for HR approval</div></div>
+    </a>
+    <a href="candidates.html?filter=docs-outstanding" class="att-card">
+      <div class="att-icon green">📋</div>
+      <div><div class="att-num" id="attDocs">—</div><div class="att-lbl">Candidates with outstanding documents</div></div>
+    </a>
+  </div>
+
+  <!-- ── MODULES ── -->
+  <div class="section-head">
+    <h2>Recruitment modules</h2>
+    <div class="section-line"></div>
+    <div class="section-tag">Select a module</div>
+  </div>
+  <div class="module-grid" style="margin-bottom:2.5rem">
+
+    <a href="oldcampaigns.html" class="module-card live">
+      <div class="mc-icon">📣</div>
+      <div class="mc-title">Campaign Manager</div>
+      <div class="mc-desc">Create campaigns, generate application URLs and QR codes per LOB</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+
+    <a href="candidates.html" class="module-card live">
+      <div class="mc-icon">👥</div>
+      <div class="mc-title">Candidate Pipeline</div>
+      <div class="mc-desc">Full candidate list — filter by stage, campaign, or status</div>
+      <div class="mc-badge badge-live">Live</div>
+      <div class="mc-count" id="modCandidates">—</div>
+    </a>
+
+    <a href="interviews.html" class="module-card live">
+      <div class="mc-icon">🗓️</div>
+      <div class="mc-title">Interview Schedule</div>
+      <div class="mc-desc">Manage interview slots, panel assignments and feedback</div>
+      <div class="mc-badge badge-live">Live</div>
+      <div class="mc-count amber" id="modInterviews">—</div>
+    </a>
+
+    <a href="bgv.html" class="module-card live">
+      <div class="mc-icon">🔍</div>
+      <div class="mc-title">BGV Review</div>
+      <div class="mc-desc">iFacts background check results — flagged cases for HR decision</div>
+      <div class="mc-badge badge-live">Live</div>
+      <div class="mc-count alert" id="modBGV">—</div>
+    </a>
+
+    <a href="approvals.html" class="module-card live">
+      <div class="mc-icon">✅</div>
+      <div class="mc-title">HR Approvals</div>
+      <div class="mc-desc">Review complete files and trigger Stage 7 handover to HR portal</div>
+      <div class="mc-badge badge-live">Live</div>
+      <div class="mc-count amber" id="modApprovals">—</div>
+    </a>
+
+    <a href="ee-report.html" class="module-card live">
+      <div class="mc-icon">📊</div>
+      <div class="mc-title">EE Report</div>
+      <div class="mc-desc">Employment Equity breakdown by campaign — EEA Act 55 categories</div>
+      <div class="mc-badge badge-live">Live</div>
+    </a>
+
+    <div class="module-card disabled">
+      <div class="mc-icon">⚡</div>
+      <div class="mc-title">Pivotal Talent</div>
+      <div class="mc-desc">Assessment trigger and score ingestion — pending API credentials</div>
+      <div class="mc-badge badge-soon">Pending credentials</div>
+    </div>
+
+    <div class="module-card disabled">
+      <div class="mc-icon">💬</div>
+      <div class="mc-title">WhatsApp Comms</div>
+      <div class="mc-desc">Parallel WhatsApp delivery — pending Meta Business API approval</div>
+      <div class="mc-badge badge-soon">Pending approval</div>
+    </div>
+
+  </div>
+
+  <!-- ── TWO COL: CAMPAIGNS + ACTIVITY ── -->
+  <div class="two-col">
+
+    <!-- Active campaigns -->
+    <div>
+      <div class="section-head">
+        <h2>Active campaigns</h2>
+        <div class="section-line"></div>
+        <a href="oldcampaigns.html" class="section-action">Manage →</a>
+      </div>
+      <div id="campaignsList">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center;color:var(--text3);font-size:13px">
+          Loading campaigns…
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div>
+      <div class="section-head">
+        <h2>Recent activity</h2>
+        <div class="section-line"></div>
+        <a href="candidates.html" class="section-action">View all →</a>
+      </div>
+      <div class="feed-card">
+        <div class="feed-header">
+          <h3>Latest pipeline movements</h3>
+        </div>
+        <div id="activityFeed">
+          <div class="feed-empty">Loading activity…</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <div class="footer-inner">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:20px;opacity:.85">
+    <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG — replace with real Power Automate flow URLs
+// ══════════════════════════════════════════════════════════
+var FLOW = {
+  getDashboard: 'PASTE_GET_DASHBOARD_FLOW_URL_HERE'
+};
+
+// ── AUTH ──────────────────────────────────────────────────
+var AUTH_KEY = 'recruit_auth';
+var AUTH_TOK = 'trilogy_recruit_2026';
+// HomeBase SSO bridge
+(function(){
+  var hbs=sessionStorage.getItem('homebase_session');
+  if(hbs){try{var session=JSON.parse(hbs);var mods=(session.modules||'').split(',').map(function(m){return m.trim();});if(session.role==='admin'||mods.indexOf('recruitment')>-1){sessionStorage.setItem(AUTH_KEY,AUTH_TOK);}}catch(e){}}
+})();
+
+
+function doLogin() {
+  var u = document.getElementById('usr').value.trim();
+  var p = document.getElementById('pwd').value;
+  if (u === 'hradmin' && p === 'YouAreNotWelcome') {
+    sessionStorage.setItem(AUTH_KEY, AUTH_TOK);
+    var gate = document.getElementById('login-gate');
+    gate.style.opacity = '0'; gate.style.transition = 'opacity .3s';
+    setTimeout(function(){ gate.style.display = 'none'; }, 300);
+    loadDashboard();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+}
+
+(function(){
+  if (sessionStorage.getItem(AUTH_KEY) === AUTH_TOK) {
+    document.getElementById('login-gate').style.display = 'none';
+    loadDashboard();
+  }
+})();
+
+// ── LOAD DASHBOARD ────────────────────────────────────────
+function loadDashboard() {
+  if (FLOW.getDashboard.indexOf('PASTE') !== -1) {
+    renderStub();
+    return;
+  }
+  fetch(FLOW.getDashboard, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({action:'get_dashboard'})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var body = d.body ? (typeof d.body==='string' ? JSON.parse(d.body) : d.body) : d;
+    renderDashboard(body);
+  })
+  .catch(function(){ renderStub(); });
+}
+
+// ── RENDER LIVE DATA ──────────────────────────────────────
+function renderDashboard(data) {
+  var s = data.stats || {};
+  var campaigns = data.campaigns || [];
+  var activity  = data.activity  || [];
+
+  // Hero stats
+  document.getElementById('statTotal').textContent       = s.total_applications || 0;
+  document.getElementById('statActive').textContent      = s.active_campaigns   || 0;
+  document.getElementById('statHandedOver').textContent  = s.handed_over_month  || 0;
+
+  // Pipeline bar
+  document.getElementById('pApplied').textContent     = s.applied      || 0;
+  document.getElementById('pShortlisted').textContent  = s.shortlisted  || 0;
+  document.getElementById('pInterview').textContent    = s.interview    || 0;
+  document.getElementById('pOffer').textContent        = s.verbal_offer || 0;
+  document.getElementById('pBGV').textContent          = s.bgv          || 0;
+  document.getElementById('pContract').textContent     = s.contract     || 0;
+  document.getElementById('pHandover').textContent     = s.handed_over  || 0;
+
+  // Attention cards
+  document.getElementById('attBGV').textContent      = s.bgv_flagged    || 0;
+  document.getElementById('attApproval').textContent = s.hr_approval    || 0;
+  document.getElementById('attDocs').textContent     = s.docs_outstanding|| 0;
+
+  // Module badges
+  document.getElementById('modCandidates').textContent = s.total_applications || 0;
+  document.getElementById('modInterviews').textContent = s.interview           || 0;
+  document.getElementById('modBGV').textContent        = s.bgv_flagged         || 0;
+  document.getElementById('modApprovals').textContent  = s.hr_approval         || 0;
+
+  renderCampaigns(campaigns);
+  renderActivity(activity);
+}
+
+// ── RENDER CAMPAIGNS ──────────────────────────────────────
+function renderCampaigns(campaigns) {
+  var el = document.getElementById('campaignsList');
+  if (!campaigns.length) {
+    el.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center;color:var(--text3);font-size:13px">No active campaigns yet. <a href="campaigns.html" style="color:var(--green-dark);font-weight:600">Create one →</a></div>';
+    return;
+  }
+  el.innerHTML = campaigns.slice(0,5).map(function(c){
+    var pct = c.TargetHeadcount ? Math.min(100, Math.round((c.CountHandedOver||0) / c.TargetHeadcount * 100)) : 0;
+    var lob = (c.LOB||'').replace(/[^A-Za-z]/g,'').substring(0,2).toUpperCase() || '??';
+    return '<div class="camp-card">' +
+      '<div class="camp-lob">' + esc(lob) + '</div>' +
+      '<div class="camp-info">' +
+        '<div class="camp-title">' + esc(c.Title||'') + '</div>' +
+        '<div class="camp-meta">' + esc(c.CampaignCode||'') + ' · ' + esc(c.LOB||'') + '</div>' +
+        '<div class="camp-bar-wrap">' +
+          '<div class="camp-bar-bg"><div class="camp-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="camp-bar-label"><span>' + (c.CountHandedOver||0) + ' handed over</span><span>' + (c.TargetHeadcount||'—') + ' target</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="camp-apps">' + (c.TotalApplications||0) + '<span>applications</span></div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── RENDER ACTIVITY ───────────────────────────────────────
+var STATUS_PILL = {
+  'Applied':           'pill-applied',
+  'Shortlisted':       'pill-shortlisted',
+  'Interview Scheduled':'pill-interview',
+  'Interview Complete':'pill-interview',
+  'Verbal Offer Made': 'pill-offer',
+  'BGV In Progress':   'pill-bgv',
+  'BGV Complete':      'pill-bgv',
+  'Contract Sent':     'pill-offer',
+  'Contract Signed':   'pill-offer',
+  'HR Approved':       'pill-handover',
+  'Handed Over':       'pill-handover',
+  'Regret':            'pill-regret'
+};
+var STATUS_DOT = {
+  'Handed Over':'fd-green','HR Approved':'fd-green','Verbal Offer Made':'fd-navy',
+  'Regret':'fd-red','BGV In Progress':'fd-amber','BGV Complete':'fd-amber'
+};
+
+function renderActivity(items) {
+  var el = document.getElementById('activityFeed');
+  if (!items.length) {
+    el.innerHTML = '<div class="feed-empty">No recent activity. Applications will appear here as candidates move through the pipeline.</div>';
+    return;
+  }
+  el.innerHTML = items.slice(0,10).map(function(a){
+    var dotClass = STATUS_DOT[a.NewStatus] || 'fd-navy';
+    var pillClass = STATUS_PILL[a.NewStatus] || 'pill-applied';
+    return '<div class="feed-item">' +
+      '<div class="feed-dot ' + dotClass + '"></div>' +
+      '<div class="feed-text">' +
+        '<div class="feed-name">' + esc(a.FirstName||'') + ' ' + esc(a.LastName||'') + '</div>' +
+        '<div class="feed-status"><span class="pill ' + pillClass + '">' + esc(a.NewStatus||'') + '</span> · ' + esc(a.CampaignCode||'') + '</div>' +
+      '</div>' +
+      '<div class="feed-time">' + timeAgo(a.TriggeredAt) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── STUB MODE (no flow URLs yet) ──────────────────────────
+function renderStub() {
+  // Zero out stats — real numbers come from flow
+  ['statTotal','statActive','statHandedOver',
+   'pApplied','pShortlisted','pInterview','pOffer','pBGV','pContract','pHandover',
+   'attBGV','attApproval','attDocs',
+   'modCandidates','modInterviews','modBGV','modApprovals'
+  ].forEach(function(id){ document.getElementById(id).textContent = '0'; });
+
+  renderCampaigns([]);
+  renderActivity([]);
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeAgo(ts) {
+  if (!ts) return '';
+  var d = new Date(ts), now = new Date();
+  var diff = Math.floor((now - d) / 1000);
+  if (diff < 60)   return diff + 's ago';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Advert Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* LOGIN */
+#login-gate{position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center}
+.login-label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px;text-align:left}
+.login-input{width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px}
+.login-input:focus{border-color:rgba(74,253,14,.4)}
+.login-btn{width:100%;padding:13px;background:#4AFD0E;color:#111;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.login-err{margin-top:12px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-back{color:rgba(255,255,255,.5);text-decoration:none;font-size:20px;font-weight:700;line-height:1;padding:4px 8px;border-radius:6px}
+.nav-back:hover{color:var(--green);background:rgba(255,255,255,.06)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 4px}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+
+/* LAYOUT */
+.wrap{max-width:1280px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:360px 1fr;gap:2rem;align-items:start}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:sticky;top:88px}
+.panel-head{background:var(--navy);padding:1rem 1.25rem}
+.panel-head h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff}
+.panel-head p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.panel-body{padding:1.25rem;max-height:calc(100vh - 200px);overflow-y:auto}
+
+/* ACCORDION SECTIONS */
+.acc{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.acc-head{background:var(--offwhite);padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:between;gap:8px}
+.acc-head:hover{background:var(--surface2)}
+.acc-head .chev{margin-left:auto;transition:transform .2s;color:var(--text3)}
+.acc.open .chev{transform:rotate(90deg)}
+.acc-body{padding:14px;display:none}
+.acc.open .acc-body{display:block}
+
+.ctl-group{margin-bottom:1rem}
+.ctl-group:last-child{margin-bottom:0}
+.ctl-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;display:block}
+.ctl-input,.ctl-textarea{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);background:var(--offwhite)}
+.ctl-input:focus,.ctl-textarea:focus{outline:none;border-color:var(--navy);background:#fff}
+.ctl-textarea{resize:vertical;min-height:60px}
+.ctl-hint{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* TILE TOGGLES */
+.tile-row{display:flex;gap:6px;flex-wrap:wrap}
+.tile-btn{flex:1;min-width:0;padding:8px 6px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--offwhite);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;text-align:center;transition:all .15s}
+.tile-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tile-btn span{display:block;font-size:9px;font-weight:400;opacity:.6;margin-top:2px}
+
+/* THEME SWATCHES */
+.theme-row{display:flex;gap:8px}
+.theme-sw{width:36px;height:36px;border-radius:var(--radius);cursor:pointer;border:2px solid transparent}
+.theme-sw.active{border-color:var(--green)}
+.theme-dark{background:#1e1e1e}
+.theme-light{background:#F7F6F2;border:1px solid var(--border2)}
+
+/* IMAGE ZONE CONTROL */
+.imgzone{border:1px solid var(--border);border-radius:var(--radius);padding:10px;background:var(--offwhite);margin-bottom:10px}
+.imgzone-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.imgzone-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--text)}
+.imgzone-thumb{width:100%;height:70px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:none;background:#ddd}
+.imgzone-thumb.show{display:block}
+.imgzone-btns{display:flex;gap:6px}
+.mini-btn{flex:1;padding:7px 6px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;color:var(--text2);cursor:pointer;text-align:center}
+.mini-btn:hover{border-color:var(--navy);color:var(--text)}
+.mini-btn input{display:none}
+.mini-btn.clear{color:var(--red);border-color:#f0c8c4}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type=range]{flex:1}
+.slider-val{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--text2);min-width:36px;text-align:right}
+
+/* EXPORT */
+.export-row{display:flex;flex-direction:column;gap:8px;margin-top:1rem}
+.btn{padding:11px 18px;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;width:100%}
+.btn-primary{background:var(--green);color:#111}
+.btn-primary:hover{background:#5fff1a}
+.btn-ghost{background:var(--offwhite);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{background:#dddcda}
+.btn:disabled{opacity:.5;pointer-events:none}
+
+/* PREVIEW */
+.stage{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.stage-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.preview-frame{background:repeating-conic-gradient(#dddcd8 0% 25%,#e8e7e3 0% 50%) 50%/24px 24px;border-radius:var(--radius-lg);padding:1.5rem;display:flex;justify-content:center;overflow:auto;max-width:100%}
+
+/* ════════ THE ADVERT ════════ */
+#advert{width:1080px;background:var(--navy);color:#fff;position:relative;overflow:hidden;font-family:'Wix Madefor Text',sans-serif;flex-shrink:0;transform-origin:top left}
+#advert.fmt-square{height:1080px}
+#advert.fmt-portrait{height:1350px}
+#advert.fmt-story{height:1920px}
+#advert.fmt-a4{height:1527px}
+#advert.theme-light-v{background:var(--offwhite);color:var(--navy)}
+
+/* Background image layer */
+.ad-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0;display:none}
+.ad-bg.show{display:block}
+.ad-bg-overlay{position:absolute;inset:0;z-index:1;display:none}
+.ad-bg-overlay.show{display:block}
+
+.ad-glow{position:absolute;top:-200px;right:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(74,253,14,.14) 0%,transparent 70%);pointer-events:none;z-index:1}
+#advert.theme-light-v .ad-glow{background:radial-gradient(circle,rgba(74,253,14,.22) 0%,transparent 70%)}
+
+.ad-inner{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;padding:80px}
+
+.ad-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
+.ad-logo{height:54px}
+.ad-eyebrow{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:14px}
+.ad-eyebrow::before{content:'';width:40px;height:3px;background:var(--green)}
+
+/* Hero image band */
+.ad-hero-img{width:100%;height:360px;object-fit:cover;border-radius:18px;margin-bottom:44px;display:none}
+.ad-hero-img.show{display:block}
+
+.ad-title{font-family:'Montserrat',sans-serif;font-weight:900;line-height:1.02;letter-spacing:-.02em;font-size:104px;margin-bottom:24px}
+#advert.fmt-square .ad-title{font-size:84px}
+.ad-title .accent{color:var(--green)}
+.ad-tagline{font-size:30px;line-height:1.4;color:rgba(255,255,255,.72);max-width:800px;margin-bottom:auto}
+#advert.theme-light-v .ad-tagline{color:var(--text2)}
+
+.ad-facts{display:flex;gap:56px;margin:44px 0;flex-wrap:wrap}
+.ad-fact{border-left:4px solid var(--green);padding-left:20px}
+.ad-fact-label{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px}
+#advert.theme-light-v .ad-fact-label{color:var(--text3)}
+.ad-fact-value{font-family:'Montserrat',sans-serif;font-size:34px;font-weight:800}
+
+.ad-bullets{list-style:none;margin:28px 0}
+.ad-bullet{font-size:27px;line-height:1.5;padding-left:46px;position:relative;margin-bottom:16px}
+.ad-bullet::before{content:'';position:absolute;left:0;top:14px;width:22px;height:22px;background:var(--green);border-radius:5px}
+
+.ad-footer{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:auto;padding-top:44px;border-top:2px solid rgba(255,255,255,.14)}
+#advert.theme-light-v .ad-footer{border-top-color:var(--border)}
+.ad-apply{flex:1}
+.ad-apply-label{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.ad-apply-url{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;word-break:break-all;line-height:1.2}
+.ad-qr{width:160px;height:160px;background:#fff;border-radius:14px;padding:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ad-qr canvas{display:block;width:100%!important;height:100%!important}
+
+/* ── SPLIT LAYOUT ── */
+#advert.layout-split .ad-split-top{display:block;position:absolute;top:0;left:0;right:0;height:40%;background-size:cover;background-position:center;z-index:1}
+#advert.layout-split .ad-split-top::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(30,30,30,.15) 0%,transparent 35%,rgba(30,30,30,.85) 100%)}
+#advert.layout-split.theme-light-v .ad-split-top::after{background:linear-gradient(to bottom,rgba(247,246,242,.1) 0%,transparent 35%,rgba(247,246,242,.96) 100%)}
+#advert.layout-split .ad-inner{justify-content:flex-end;padding-top:0}
+#advert.layout-split .ad-classic-header{position:absolute;top:0;left:0;right:0;padding:80px 80px 0;z-index:4}
+#advert.layout-split .ad-hero-img{display:none!important}
+#advert.layout-split .ad-tagline{margin-bottom:32px}
+#advert.layout-split .ad-footer{margin-top:32px}
+
+/* default: split top hidden */
+.ad-split-top{display:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.3);border-left:4px solid var(--green);transform:translateY(20px);opacity:0;transition:all .25s;z-index:9998}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-left-color:var(--red)}
+
+/* LIBRARY MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9997;display:none;align-items:center;justify-content:center;padding:2rem}
+.modal.show{display:flex}
+.modal-box{background:var(--surface);border-radius:var(--radius-xl);width:100%;max-width:680px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{background:var(--navy);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer}
+.modal-body{padding:1.25rem;overflow-y:auto}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.lib-item{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .15s;background:var(--offwhite)}
+.lib-item:hover{border-color:var(--navy);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.lib-item img{width:100%;height:90px;object-fit:cover;display:block}
+.lib-item-name{padding:6px 8px;font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-empty{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+
+.empty-note{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--radius-lg);padding:3rem;text-align:center;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-gate">
+  <div class="login-box">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" style="height:36px;margin-bottom:24px">
+    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">Recruitment Portal</div>
+    <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Trilogy CX (Pty) Ltd · Authorised staff only</div>
+    <div style="margin-bottom:14px;text-align:left"><label class="login-label">Username</label>
+      <input id="usr" type="text" class="login-input" placeholder="Username" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()"></div>
+    <div style="margin-bottom:22px;text-align:left"><label class="login-label">Password</label>
+      <input id="pwd" type="password" class="login-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div id="login-err" class="login-err">Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-left">
+    <a href="campaigns.html" class="nav-back" title="Back to Campaign Manager">←</a>
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div><div class="nav-section">Recruitment Portal</div>
+    <div class="nav-divider"></div><div class="nav-section" style="color:rgba(255,255,255,.6)">Advert Generator</div>
+  </div>
+</nav>
+
+<div class="wrap" id="mainWrap">
+
+  <!-- CONTROL PANEL -->
+  <div class="panel">
+    <div class="panel-head"><h2>Advert settings</h2><p>Style, images, copy — then export</p></div>
+    <div class="panel-body">
+
+      <!-- LAYOUT & FORMAT -->
+      <div class="acc open">
+        <div class="acc-head" onclick="toggleAcc(this)">Layout &amp; format <span class="chev">›</span></div>
+        <div class="acc-body">
+          <div class="ctl-group">
+            <span class="ctl-label">Layout</span>
+            <div class="tile-row">
+              <button class="tile-btn active" data-layout="classic" onclick="setLayout('classic',this)">Classic</button>
+              <button class="tile-btn" data-layout="fullbleed" onclick="setLayout('fullbleed',this)">Full-bleed</button>
+              <button class="tile-btn" data-layout="split" onclick="setLayout('split',this)">Split</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Format</span>
+            <div class="tile-row">
+              <button class="tile-btn active" data-fmt="portrait" onclick="setFormat('portrait',this)">Portrait<span>1080×1350</span></button>
+              <button class="tile-btn" data-fmt="square" onclick="setFormat('square',this)">Square<span>1080×1080</span></button>
+            </div>
+            <div class="tile-row" style="margin-top:6px">
+              <button class="tile-btn" data-fmt="story" onclick="setFormat('story',this)">Story<span>1080×1920</span></button>
+              <button class="tile-btn" data-fmt="a4" onclick="setFormat('a4',this)">A4 PDF<span>print</span></button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-label">Theme</span>
+            <div class="theme-row">
+              <div class="theme-sw theme-dark active" data-theme="dark" onclick="setTheme('dark',this)"></div>
+              <div class="theme-sw theme-light" data-theme="light" onclick="setTheme('light',this)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGES -->
+      <div class="acc open">
+        <div class="acc-head" onclick="toggleAcc(this)">Images <span class="chev">›</span></div>
+        <div class="acc-body">
+
+          <!-- Background -->
+          <div class="imgzone">
+            <div class="imgzone-head"><span class="imgzone-title">Background image</span></div>
+            <img class="imgzone-thumb" id="thumbBg">
+            <div class="imgzone-btns">
+              <label class="mini-btn">Upload<input type="file" accept="image/*" onchange="uploadImage(event,'bg')"></label>
+              <button class="mini-btn" onclick="openLibrary('bg')">Library</button>
+              <button class="mini-btn clear" onclick="clearImage('bg')">Clear</button>
+            </div>
+            <div class="ctl-group" style="margin-top:10px">
+              <span class="ctl-label">Dark overlay</span>
+              <div class="slider-row">
+                <input type="range" min="0" max="90" value="55" id="bgOverlay" oninput="render()">
+                <span class="slider-val" id="bgOverlayVal">55%</span>
+              </div>
+              <span class="ctl-hint">Darkens the photo so text stays readable</span>
+            </div>
+          </div>
+
+          <!-- Hero -->
+          <div class="imgzone">
+            <div class="imgzone-head"><span class="imgzone-title">Hero image (Classic / Split)</span></div>
+            <img class="imgzone-thumb" id="thumbHero">
+            <div class="imgzone-btns">
+              <label class="mini-btn">Upload<input type="file" accept="image/*" onchange="uploadImage(event,'hero')"></label>
+              <button class="mini-btn" onclick="openLibrary('hero')">Library</button>
+              <button class="mini-btn clear" onclick="clearImage('hero')">Clear</button>
+            </div>
+          </div>
+
+          <div class="ctl-hint" style="margin-top:4px">Uploads are compressed and can be saved to the shared library for reuse.</div>
+        </div>
+      </div>
+
+      <!-- COPY -->
+      <div class="acc">
+        <div class="acc-head" onclick="toggleAcc(this)">Copy <span class="chev">›</span></div>
+        <div class="acc-body">
+          <div class="ctl-group"><span class="ctl-label">Eyebrow</span><input class="ctl-input" id="iEyebrow" value="We're hiring" oninput="render()"></div>
+          <div class="ctl-group"><span class="ctl-label">Role title</span><input class="ctl-input" id="iTitle" oninput="render()"></div>
+          <div class="ctl-group"><span class="ctl-label">Tagline</span><textarea class="ctl-textarea" id="iTagline" oninput="render()"></textarea></div>
+          <div class="ctl-group"><span class="ctl-label">Key selling points</span><textarea class="ctl-textarea" id="iBullets" oninput="render()" style="min-height:100px"></textarea><span class="ctl-hint">One per line — max 4 shown</span></div>
+          <div class="ctl-group"><span class="ctl-label">Salary / fact</span><input class="ctl-input" id="iSalary" oninput="render()"></div>
+          <div class="ctl-group"><span class="ctl-label">Location / LOB</span><input class="ctl-input" id="iLocation" oninput="render()"></div>
+          <div class="ctl-group"><span class="ctl-label">Apply URL</span><input class="ctl-input" id="iApply" oninput="render()"></div>
+        </div>
+      </div>
+
+      <div class="export-row">
+        <button class="btn btn-primary" id="pngBtn" onclick="exportPNG()">Download PNG</button>
+        <button class="btn btn-ghost" id="pdfBtn" onclick="exportPDF()">Download PDF</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="stage">
+    <div class="stage-label" id="stageLabel">Portrait · 1080 × 1350</div>
+    <div class="preview-frame">
+      <div id="advert" class="fmt-portrait layout-classic">
+        <div class="ad-bg" id="adBg"></div>
+        <div class="ad-bg-overlay" id="adBgOverlay"></div>
+        <div class="ad-glow"></div>
+
+        <!-- split-only top image -->
+        <div class="ad-split-top" id="adSplitTop"></div>
+
+        <div class="ad-inner">
+          <div class="ad-header ad-classic-header">
+            <img src="../trilogy-logo.png" alt="Trilogy BPO" class="ad-logo" id="adLogo" crossorigin="anonymous">
+            <div class="ad-eyebrow" id="adEyebrow">We're hiring</div>
+          </div>
+
+          <!-- split wraps content in a bottom panel -->
+          <div class="ad-split-bottom-wrapper" id="adContentWrap" style="display:contents">
+            <img class="ad-hero-img" id="adHero" alt="">
+            <h1 class="ad-title" id="adTitle">Role Title</h1>
+            <p class="ad-tagline" id="adTagline"></p>
+            <div class="ad-facts" id="adFacts"></div>
+            <ul class="ad-bullets" id="adBullets"></ul>
+            <div class="ad-footer">
+              <div class="ad-apply">
+                <div class="ad-apply-label">Apply now</div>
+                <div class="ad-apply-url" id="adApply">home.trilogybpo.com/recruitment</div>
+              </div>
+              <div class="ad-qr"><div id="adQR"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LIBRARY MODAL -->
+<div class="modal" id="libModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Image library</h3>
+      <button class="modal-close" onclick="closeLibrary()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="lib-grid" id="libGrid"><div class="lib-empty">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG — image library flow URLs
+// ══════════════════════════════════════════════════════════
+var FLOW = {
+  saveAsset: 'PASTE_SAVE_ADVERT_ASSET_FLOW_URL_HERE',
+  getAssets: 'PASTE_GET_ADVERT_ASSETS_FLOW_URL_HERE',
+  getAsset:  'PASTE_GET_ADVERT_ASSET_FLOW_URL_HERE'
+};
+
+// ── AUTH ──
+var AUTH_KEY='recruit_auth', AUTH_TOK='trilogy_recruit_2026';
+// HomeBase SSO bridge
+(function(){
+  var hbs=sessionStorage.getItem('homebase_session');
+  if(hbs){try{var session=JSON.parse(hbs);var mods=(session.modules||'').split(',').map(function(m){return m.trim();});if(session.role==='admin'||mods.indexOf('recruitment')>-1){sessionStorage.setItem(AUTH_KEY,AUTH_TOK);}}catch(e){}}
+})();
+
+function doLogin(){
+  var u=document.getElementById('usr').value.trim(), p=document.getElementById('pwd').value;
+  if(u==='hradmin'&&p==='YouAreNotWelcome'){ sessionStorage.setItem(AUTH_KEY,AUTH_TOK);
+    var g=document.getElementById('login-gate'); g.style.opacity='0'; g.style.transition='opacity .3s';
+    setTimeout(function(){g.style.display='none';},300); init();
+  } else { document.getElementById('login-err').style.display='block'; document.getElementById('pwd').value=''; }
+}
+(function(){ /* auto-init moved to end of script, after state + functions are defined */ })();
+
+// ── STATE ──
+var fmt='portrait', layout='classic', role=null;
+var images={ bg:null, hero:null };  // data URLs
+var FORMATS={ portrait:{w:1080,h:1350,lbl:'Portrait · 1080 × 1350'}, square:{w:1080,h:1080,lbl:'Square · 1080 × 1080'},
+              story:{w:1080,h:1920,lbl:'Story · 1080 × 1920'}, a4:{w:1080,h:1527,lbl:'A4 · print size'} };
+
+function init(){
+  var raw=sessionStorage.getItem('advert_role');
+  if(raw){ try{ role=JSON.parse(raw); }catch(e){ role=null; } }
+  if(!role){
+    document.getElementById('mainWrap').innerHTML='<div class="empty-note" style="grid-column:1/-1"><h3 style="font-family:Montserrat;margin-bottom:8px">No role selected</h3><p>Open the Campaign Manager, find a role, and click <strong>Advert</strong>.</p><p style="margin-top:16px"><a href="campaigns.html" style="color:var(--green-dark);font-weight:700">← Back to Campaign Manager</a></p></div>';
+    return;
+  }
+  document.getElementById('iTitle').value = role.RoleTitle||'Role Title';
+  document.getElementById('iTagline').value = role.RoleDescription || ('Join the '+(role.CampaignTitle||'Trilogy')+' team as a '+(role.RoleTitle||'team member')+'.');
+  var resp=(role.KeyResponsibilities||'').split(/\n|;/).map(function(s){return s.trim();}).filter(Boolean);
+  if(!resp.length && role.Requirements){ resp=role.Requirements.split(/\n|;/).map(function(s){return s.trim();}).filter(Boolean); }
+  document.getElementById('iBullets').value=resp.slice(0,4).join('\n');
+  var sal='';
+  if(role.SalaryMin||role.SalaryMax){
+    var mn=role.SalaryMin?'R'+Number(role.SalaryMin).toLocaleString('en-ZA'):'';
+    var mx=(role.SalaryMax&&role.SalaryMax!==role.SalaryMin)?' – R'+Number(role.SalaryMax).toLocaleString('en-ZA'):'';
+    sal=mn+mx+' / month';
+  }
+  document.getElementById('iSalary').value=sal;
+  document.getElementById('iLocation').value=(role.LOB||role.RoleCategory||'');
+  document.getElementById('iApply').value='home.trilogybpo.com/recruitment/apply.html?role='+(role.URLSlug||'').toLowerCase();
+  render();
+}
+
+// ── ACCORDION ──
+function toggleAcc(head){ head.parentElement.classList.toggle('open'); }
+
+// ── LAYOUT / FORMAT / THEME ──
+function setLayout(l,btn){
+  layout=l;
+  document.querySelectorAll('[data-layout]').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active');
+  var ad=document.getElementById('advert');
+  ad.className=ad.className.replace(/layout-\w+/g,'').trim()+' layout-'+l;
+  render(); scalePreview();
+}
+function setFormat(f,btn){
+  fmt=f;
+  document.querySelectorAll('[data-fmt]').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active');
+  var ad=document.getElementById('advert');
+  ad.className=ad.className.replace(/fmt-\w+/g,'').trim()+' fmt-'+f;
+  document.getElementById('stageLabel').textContent=FORMATS[f].lbl;
+  scalePreview();
+}
+function setTheme(t,el){
+  document.querySelectorAll('.theme-sw').forEach(function(s){s.classList.remove('active');}); el.classList.add('active');
+  document.getElementById('advert').classList.toggle('theme-light-v',t==='light');
+}
+
+// ── IMAGE UPLOAD (with compression) ──
+var pendingZone=null;
+function uploadImage(ev,zone){
+  var file=ev.target.files[0]; if(!file) return;
+  compressImage(file, 1600, 0.82, function(full){
+    images[zone]=full;
+    setZoneThumb(zone,full);
+    // Auto-switch to a layout that actually uses this image, so it shows immediately
+    if(zone==='bg' && layout!=='fullbleed'){ switchLayout('fullbleed'); }
+    if(zone==='hero' && layout==='fullbleed'){ switchLayout('classic'); }
+    render();
+    // offer to save to library
+    if(FLOW.saveAsset.indexOf('PASTE')===-1){
+      if(confirm('Save this image to the shared library for reuse?')){
+        compressImage(file,240,0.7,function(thumb){ saveToLibrary(file.name,zone,full,thumb); });
+      }
+    }
+  });
+  ev.target.value='';
+}
+
+// switch layout programmatically (updates buttons + class)
+function switchLayout(l){
+  layout=l;
+  document.querySelectorAll('[data-layout]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-layout')===l); });
+  var ad=document.getElementById('advert');
+  ad.className=ad.className.replace(/layout-\w+/g,'').trim()+' layout-'+l;
+  scalePreview();
+}
+
+function compressImage(file,maxDim,quality,cb){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width,h=img.height;
+      if(w>h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; }
+      else if(h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+      var c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',quality));
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setZoneThumb(zone,data){
+  var t=document.getElementById(zone==='bg'?'thumbBg':'thumbHero');
+  t.src=data; t.classList.add('show');
+}
+function clearImage(zone){
+  images[zone]=null;
+  var t=document.getElementById(zone==='bg'?'thumbBg':'thumbHero');
+  t.src=''; t.classList.remove('show');
+  render();
+}
+
+// ── RENDER ──
+function render(){
+  document.getElementById('adEyebrow').textContent=document.getElementById('iEyebrow').value;
+  var title=document.getElementById('iTitle').value||'Role Title';
+  var words=title.split(' ');
+  if(words.length>1){ var last=words.pop(); document.getElementById('adTitle').innerHTML=esc(words.join(' '))+' <span class="accent">'+esc(last)+'</span>'; }
+  else { document.getElementById('adTitle').innerHTML='<span class="accent">'+esc(title)+'</span>'; }
+  document.getElementById('adTagline').textContent=document.getElementById('iTagline').value;
+
+  var facts=[];
+  var sal=document.getElementById('iSalary').value.trim();
+  var loc=document.getElementById('iLocation').value.trim();
+  if(sal) facts.push({l:'Salary',v:sal});
+  if(loc) facts.push({l:'Where',v:loc});
+  document.getElementById('adFacts').innerHTML=facts.map(function(f){return '<div class="ad-fact"><div class="ad-fact-label">'+esc(f.l)+'</div><div class="ad-fact-value">'+esc(f.v)+'</div></div>';}).join('');
+
+  var bl=document.getElementById('iBullets').value.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,4);
+  document.getElementById('adBullets').innerHTML=bl.map(function(b){return '<li class="ad-bullet">'+esc(b)+'</li>';}).join('');
+
+  var apply=document.getElementById('iApply').value.trim();
+  document.getElementById('adApply').textContent=apply;
+  renderQR(apply.indexOf('http')===0?apply:'https://'+apply);
+
+  // Images
+  var bg=document.getElementById('adBg'), bgOv=document.getElementById('adBgOverlay'), hero=document.getElementById('adHero'), splitTop=document.getElementById('adSplitTop');
+  // Background
+  if(images.bg && layout==='fullbleed'){
+    bg.style.backgroundImage='url('+images.bg+')'; bg.classList.add('show');
+    var op=document.getElementById('bgOverlay').value;
+    document.getElementById('bgOverlayVal').textContent=op+'%';
+    bgOv.style.background='rgba(20,20,20,'+(op/100)+')'; bgOv.classList.add('show');
+  } else { bg.classList.remove('show'); bgOv.classList.remove('show'); }
+
+  // Hero (classic only)
+  if(images.hero && layout==='classic'){ hero.src=images.hero; hero.classList.add('show'); }
+  else { hero.classList.remove('show'); }
+
+  // Split top
+  if(layout==='split'){ splitTop.style.backgroundImage=images.hero?'url('+images.hero+')':(images.bg?'url('+images.bg+')':'none'); }
+}
+
+var qr=null;
+function renderQR(url){
+  var box=document.getElementById('adQR'); box.innerHTML='';
+  try{ qr=new QRCode(box,{text:url,width:136,height:136,colorDark:'#1e1e1e',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){}
+}
+
+// ── LIBRARY ──
+function openLibrary(zone){
+  pendingZone=zone;
+  document.getElementById('libModal').classList.add('show');
+  var grid=document.getElementById('libGrid');
+  if(FLOW.getAssets.indexOf('PASTE')!==-1){ grid.innerHTML='<div class="lib-empty">Library not connected yet. Upload images directly for now — once the library flows are wired in, saved images appear here.</div>'; return; }
+  grid.innerHTML='<div class="lib-empty">Loading…</div>';
+  fetch(FLOW.getAssets,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var rows=parseFlow(txt).rows||[];
+    if(!rows.length){ grid.innerHTML='<div class="lib-empty">No saved images yet. Upload one and choose "save to library".</div>'; return; }
+    grid.innerHTML=rows.map(function(a){
+      return '<div class="lib-item" onclick="pickLibrary('+a.AssetID+')"><img src="'+(a.ThumbData||'')+'" alt=""><div class="lib-item-name">'+esc(a.AssetName||'')+'</div></div>';
+    }).join('');
+  }).catch(function(){ grid.innerHTML='<div class="lib-empty">Could not load library.</div>'; });
+}
+function closeLibrary(){ document.getElementById('libModal').classList.remove('show'); }
+
+function pickLibrary(assetID){
+  if(FLOW.getAsset.indexOf('PASTE')!==-1){ closeLibrary(); return; }
+  fetch(FLOW.getAsset,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({AssetID:assetID})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var row=parseFlow(txt).rows[0]||{};
+    if(row.ImageData){ images[pendingZone]=row.ImageData; setZoneThumb(pendingZone,row.ImageData);
+      if(pendingZone==='bg' && layout!=='fullbleed'){ switchLayout('fullbleed'); }
+      if(pendingZone==='hero' && layout==='fullbleed'){ switchLayout('classic'); }
+      render(); showToast('Image applied'); }
+    closeLibrary();
+  }).catch(function(){ showToast('Could not load image','error'); closeLibrary(); });
+}
+
+function saveToLibrary(name,zone,full,thumb){
+  var payload={ AssetName:name||'Advert image', AssetType:zone==='bg'?'background':'hero', MimeType:'image/jpeg', ImageData:full, ThumbData:thumb, UploadedBy:'recruiter' };
+  fetch(FLOW.saveAsset,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){return r.text();})
+  .then(function(txt){ var row=parseFlow(txt).rows[0]||{}; if(row.AssetID) showToast('Saved to library'); })
+  .catch(function(){ showToast('Could not save to library','error'); });
+}
+
+// ── PARSE ──
+function parseFlow(txt){
+  var data; try{ data=txt?JSON.parse(txt):{}; }catch(e){ console.error('Raw:',txt); return {rows:[]}; }
+  var rs=data.ResultSets||data; var table=rs.Table1||(Array.isArray(rs)?rs:null);
+  return { rows: table||(Array.isArray(data)?data:[data]) };
+}
+
+// ── PREVIEW SCALE ──
+function scalePreview(){
+  var ad=document.getElementById('advert'), frame=ad.parentElement;
+  var availW=frame.clientWidth-48;
+  var availH=window.innerHeight-200;            // leave room for nav + label + padding
+  var scale=Math.min(1, availW/1080, availH/FORMATS[fmt].h);
+  if(scale<0.1) scale=0.1;
+  ad.style.transform='scale('+scale+')';
+  // collapse the empty space the transform leaves behind
+  ad.style.marginBottom=(-(FORMATS[fmt].h*(1-scale)))+'px';
+  ad.style.marginRight=(-(1080*(1-scale)))+'px';
+}
+window.addEventListener('resize',scalePreview);
+
+// ── EXPORT ──
+function exportPNG(){
+  var btn=document.getElementById('pngBtn'); btn.disabled=true; btn.textContent='Rendering…';
+  captureCanvas(function(canvas){ var a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=advertFilename()+'.png'; a.click();
+    btn.disabled=false; btn.textContent='Download PNG'; showToast('PNG downloaded'); });
+}
+function exportPDF(){
+  var btn=document.getElementById('pdfBtn'); btn.disabled=true; btn.textContent='Rendering…';
+  captureCanvas(function(canvas){ var jsPDF=window.jspdf.jsPDF; var f=FORMATS[fmt];
+    var pdf=new jsPDF({orientation:f.h>=f.w?'portrait':'landscape',unit:'px',format:[f.w,f.h]});
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,f.w,f.h); pdf.save(advertFilename()+'.pdf');
+    btn.disabled=false; btn.textContent='Download PDF'; showToast('PDF downloaded'); });
+}
+function captureCanvas(cb){
+  var ad=document.getElementById('advert');
+  var pt=ad.style.transform, pm=ad.style.marginBottom;
+  ad.style.transform='none'; ad.style.marginBottom='0';
+  html2canvas(ad,{scale:2,useCORS:true,backgroundColor:null,width:FORMATS[fmt].w,height:FORMATS[fmt].h,windowWidth:FORMATS[fmt].w})
+    .then(function(canvas){ ad.style.transform=pt; ad.style.marginBottom=pm; cb(canvas); })
+    .catch(function(err){ ad.style.transform=pt; ad.style.marginBottom=pm; console.error(err); showToast('Render failed','error');
+      document.getElementById('pngBtn').disabled=false; document.getElementById('pngBtn').textContent='Download PNG';
+      document.getElementById('pdfBtn').disabled=false; document.getElementById('pdfBtn').textContent='Download PDF'; });
+}
+function advertFilename(){ var t=(document.getElementById('iTitle').value||'advert').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); return 'trilogy-'+t+'-'+fmt; }
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type==='error'?' error':'');void t.offsetWidth;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+setTimeout(scalePreview,300);
+
+// ── AUTO-INIT (runs last, after all state + functions defined) ──
+if(sessionStorage.getItem(AUTH_KEY)===AUTH_TOK){ document.getElementById('login-gate').style.display='none'; init(); }
+</script>
+</body>
+</html>
