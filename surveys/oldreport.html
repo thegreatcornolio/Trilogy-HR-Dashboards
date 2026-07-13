@@ -141,25 +141,14 @@ svg.trend{width:100%;height:100%}
 </style>
 </head>
 <body>
-<script>/* HomeBase auth gate */(function(){
-  var s=sessionStorage.getItem('homebase_session');
-  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
-  try{
-    var session=JSON.parse(s);
-    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
-    if(session.role!=='admin'&&mods.indexOf('hr')===-1&&mods.indexOf('vibecheck_reports')===-1){
-      window.location.replace('https://home.trilogybpo.com?denied=hr');
-    }
-  }catch(e){window.location.replace('https://home.trilogybpo.com');}
-})();</script>
 
 <nav class="nav">
   <div class="nav-left">
-    <img src="../../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
     <div class="nav-divider"></div>
     <div class="nav-title">#vibecheck Report</div>
   </div>
-  <a href="../" class="nav-back">← HR Hub</a>
+  <a href="../../trilogy-hr" class="nav-back">← HR Portal</a>
 </nav>
 
 <div class="hero">
@@ -230,12 +219,9 @@ function loadData(){
   document.getElementById('heroKpis').innerHTML = '<div class="kpi"><div class="loading-spinner" style="width:24px;height:24px;border-width:2px;margin:0 0 4px"></div><div class="kpi-label">Loading…</div></div>';
 
   fetch(DATA_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'})
-    .then(function(r){ return r.text(); })
-    .then(function(txt){
-      var d; try{ d=JSON.parse(txt); }catch(e){ d={}; }
-      var body = d.body||d;
-      if(typeof body==='string') try{ body=JSON.parse(body); }catch(e){}
-      var items = (body.ResultSets&&body.ResultSets.Table1) || body.value || [];
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var items = d.value || [];
       allData = items.map(function(item){
         return {
           week: item.WeekNumber || 0,
