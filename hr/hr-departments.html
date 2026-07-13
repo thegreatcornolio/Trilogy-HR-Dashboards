@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy HomeBase — Departments</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy3:#333;
+  --green:#4AFD0E;--green-dark:#2a8a00;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --text:#fff;--text2:rgba(255,255,255,.6);--text3:rgba(255,255,255,.35);
+  --radius:10px;--radius-lg:14px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;font-size:14px}
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{height:24px}
+.nav-divider{width:1px;height:18px;background:var(--border2)}
+.nav-brand{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;color:#fff}
+.nav-brand span{color:var(--green)}
+.nav-back{font-size:11px;color:var(--text3);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.shell{max-width:800px;margin:0 auto;padding:2.5rem 1.5rem}
+.page-title{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;margin-bottom:.5rem}
+.page-title span{color:var(--green)}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:2rem}
+.card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem}
+.card-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem}
+.dept-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.dept-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--navy3);border-radius:var(--radius)}
+.dept-name{flex:1;font-size:13px;color:#fff}
+.dept-rm{background:transparent;border:1px solid rgba(231,76,60,.4);color:#e74c3c;font-size:11px;font-family:'Montserrat',sans-serif;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
+.dept-rm:hover{background:rgba(231,76,60,.15)}
+.add-row{display:flex;gap:8px}
+.add-input{flex:1;padding:10px 14px;background:var(--navy3);border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;color:#fff}
+.add-input::placeholder{color:var(--text3)}
+.add-input:focus{outline:none;border-color:var(--green)}
+.btn-add{padding:10px 18px;background:var(--green);color:#111;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.btn-add:hover{background:#5fff1a}
+.btn-save{width:100%;padding:12px;background:var(--navy3);border:1px solid var(--border2);color:#fff;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:1rem;transition:all .15s}
+.btn-save:hover{border-color:var(--green);color:var(--green)}
+.btn-save.saving{opacity:.6;cursor:not-allowed}
+.token-input{width:100%;padding:10px 14px;background:var(--navy3);border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:monospace;color:#fff;margin-top:.5rem}
+.token-input::placeholder{color:var(--text3)}
+.token-input:focus{outline:none;border-color:var(--green)}
+.result{font-size:12px;margin-top:.75rem;min-height:16px;text-align:center}
+.result.ok{color:var(--green)}
+.result.err{color:#e74c3c}
+.empty{font-size:12px;color:var(--text3);font-style:italic;padding:.5rem 0}
+</style>
+</head>
+<body>
+
+<script>/* HomeBase auth gate */(function(){
+  var s=sessionStorage.getItem('homebase_session');
+  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
+  try{
+    var session=JSON.parse(s);
+    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
+    if(session.role!=='admin'&&mods.indexOf('hr')===-1){
+      window.location.replace('https://home.trilogybpo.com?denied=hr');
+    }
+  }catch(e){window.location.replace('https://home.trilogybpo.com');}
+})();</script>
+
+<nav class="nav">
+  <div class="nav-left">
+    <img src="../../trilogy-logo.png" alt="Trilogy" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-brand">Trilogy <span>HomeBase</span></div>
+  </div>
+  <a href="../" class="nav-back">← HR Hub</a>
+</nav>
+
+<div class="shell">
+  <div class="page-title">Departments <span>&</span> Campaigns</div>
+  <div class="page-sub">These lists power the #vibecheck survey campaign dropdown and the employee records campaign field. Changes go live instantly after saving to GitHub.</div>
+
+  <!-- DEPARTMENTS -->
+  <div class="card">
+    <div class="card-title">Departments (vibecheck survey)</div>
+    <div class="dept-list" id="deptList"><div class="empty">Loading…</div></div>
+    <div class="add-row">
+      <input type="text" class="add-input" id="newDept" placeholder="Department name">
+      <button class="btn-add" onclick="addDept()">+ Add</button>
+    </div>
+    <button class="btn-save" id="saveDeptBtn" onclick="saveToGitHub('departments')">☁ Save departments.json to GitHub</button>
+    <div class="result" id="deptResult"></div>
+  </div>
+
+  <!-- CAMPAIGNS -->
+  <div class="card">
+    <div class="card-title">Campaigns (employee records)</div>
+    <div class="dept-list" id="campList"><div class="empty">Loading…</div></div>
+    <div class="add-row">
+      <input type="text" class="add-input" id="newCamp" placeholder="Campaign name">
+      <button class="btn-add" onclick="addCamp()">+ Add</button>
+    </div>
+    <button class="btn-save" id="saveCampBtn" onclick="saveToGitHub('campaigns')">☁ Save campaigns.json to GitHub</button>
+    <div class="result" id="campResult"></div>
+  </div>
+
+  <!-- GITHUB TOKEN -->
+  <div class="card">
+    <div class="card-title">GitHub settings</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:.5rem">Personal Access Token with <strong>repo</strong> scope. Stored in your browser only.</div>
+    <input type="password" class="token-input" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <div style="font-size:11px;color:var(--text3);margin-top:.4rem">
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=Trilogy+HomeBase" target="_blank" style="color:var(--green)">Generate one here →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var REPO   = 'thegreatcornolio/Trilogy-HR-Dashboards';
+var BRANCH = 'main';
+var BASE   = 'https://home.trilogybpo.com';
+
+var deptData = [];
+var campData = [];
+
+function loadJSON(filename, callback){
+  fetch(BASE + '/' + filename + '.json?v=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(callback)
+    .catch(function(){ callback([]); });
+}
+
+function renderList(data, containerId, removeCallback){
+  var list = document.getElementById(containerId);
+  list.innerHTML = '';
+  if(!data.length){ list.innerHTML = '<div class="empty">No items yet</div>'; return; }
+  data.forEach(function(item, i){
+    var row = document.createElement('div');
+    row.className = 'dept-row';
+    row.innerHTML = '<div class="dept-name">'+item.name+'</div>'+
+      '<button class="dept-rm" onclick="'+removeCallback+'('+i+')">Remove</button>';
+    list.appendChild(row);
+  });
+}
+
+function addDept(){
+  var n = document.getElementById('newDept').value.trim();
+  if(!n) return;
+  deptData.push({name:n});
+  document.getElementById('newDept').value = '';
+  renderList(deptData, 'deptList', 'removeDept');
+}
+
+function removeDept(i){
+  if(!confirm('Remove "'+deptData[i].name+'"? This is permanent.')) return;
+  deptData.splice(i,1);
+  renderList(deptData, 'deptList', 'removeDept');
+}
+
+function addCamp(){
+  var n = document.getElementById('newCamp').value.trim();
+  if(!n) return;
+  campData.push({name:n});
+  document.getElementById('newCamp').value = '';
+  renderList(campData, 'campList', 'removeCamp');
+}
+
+function removeCamp(i){
+  if(!confirm('Remove "'+campData[i].name+'"? This is permanent.')) return;
+  campData.splice(i,1);
+  renderList(campData, 'campList', 'removeCamp');
+}
+
+function saveToGitHub(which){
+  var token = document.getElementById('ghToken').value.trim();
+  if(!token){ alert('Please enter your GitHub Personal Access Token first.'); return; }
+  var data = which === 'departments' ? deptData : campData;
+  var btnId = which === 'departments' ? 'saveDeptBtn' : 'saveCampBtn';
+  var resultId = which === 'departments' ? 'deptResult' : 'campResult';
+  var filename = which + '.json';
+  var btn = document.getElementById(btnId);
+  var result = document.getElementById(resultId);
+  btn.classList.add('saving');
+  btn.textContent = 'Saving…';
+  result.textContent = '';
+  result.className = 'result';
+
+  // Get current SHA first
+  fetch('https://api.github.com/repos/'+REPO+'/contents/'+filename+'?ref='+BRANCH, {
+    headers: { Authorization: 'token '+token, Accept: 'application/vnd.github.v3+json' }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(fileData){
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    return fetch('https://api.github.com/repos/'+REPO+'/contents/'+filename, {
+      method: 'PUT',
+      headers: { Authorization: 'token '+token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Update '+filename+' via HR hub', content: content, sha: fileData.sha, branch: BRANCH })
+    });
+  })
+  .then(function(r){
+    btn.classList.remove('saving');
+    btn.textContent = '☁ Save '+filename+' to GitHub';
+    if(r.ok){
+      result.textContent = '✓ Saved successfully';
+      result.className = 'result ok';
+    } else {
+      result.textContent = '✗ Save failed — check your token';
+      result.className = 'result err';
+    }
+    setTimeout(function(){ result.textContent = ''; }, 4000);
+  })
+  .catch(function(){
+    btn.classList.remove('saving');
+    btn.textContent = '☁ Save '+filename+' to GitHub';
+    result.textContent = '✗ Network error';
+    result.className = 'result err';
+  });
+}
+
+// Load both on page load
+loadJSON('departments', function(d){ deptData = d; renderList(deptData, 'deptList', 'removeDept'); });
+loadJSON('campaigns',   function(d){ campData = d; renderList(campData, 'campList', 'removeCamp'); });
+
+// Restore saved token
+var savedToken = localStorage.getItem('gh_token');
+if(savedToken) document.getElementById('ghToken').value = savedToken;
+document.getElementById('ghToken').addEventListener('input', function(){
+  localStorage.setItem('gh_token', this.value);
+});
+</script>
+</body>
+</html>
