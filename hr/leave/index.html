@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.HR_REQUIRED_MODULE='leave';</script>
-<script src="/hr-guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trilogy BPO — Leave Management</title>
@@ -166,15 +164,15 @@ tr.selected td{background:var(--green-light)}
 </head>
 <body>
 <script>/* HomeBase auth gate */(function(){
-  var s = sessionStorage.getItem('homebase_session');
-  if(!s){ window.location.replace('https://home.trilogybpo.com'); return; }
+  var s=sessionStorage.getItem('homebase_session');
+  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
   try{
-    var session = JSON.parse(s);
-    var mods = (session.modules||'').split(',').map(function(m){return m.trim();});
-    if(session.role !== 'admin' && mods.indexOf('hr') === -1 && mods.indexOf('leave') === -1){
+    var session=JSON.parse(s);
+    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
+    if(session.role!=='admin'&&mods.indexOf('hr')===-1&&mods.indexOf('leave')===-1){
       window.location.replace('https://home.trilogybpo.com?denied=hr');
     }
-  }catch(e){ window.location.replace('https://home.trilogybpo.com'); }
+  }catch(e){window.location.replace('https://home.trilogybpo.com');}
 })();</script>
 
 <nav class="nav">
@@ -334,7 +332,7 @@ tr.selected td{background:var(--green-light)}
 
         <!-- Action buttons -->
         <button class="btn btn-primary btn-block" onclick="openLeaveModal()">＋ Log / request leave</button>
-        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees/" style="text-decoration:none">↗ Open full employee record</a>
+        <a class="btn btn-outline btn-block" id="empRecordLink" href="../employees" style="text-decoration:none">↗ Open full employee record</a>
 
         <!-- BCEA reference -->
         <div class="detail-section">BCEA reference</div>
@@ -398,7 +396,7 @@ tr.selected td{background:var(--green-light)}
 
 <div class="footer">
   <div class="footer-inner">
-    <img src="../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
+    <img src="../../trilogy-logo-dark.png" alt="Trilogy BPO" class="footer-logo">
     <div class="footer-note">Trilogy CX (Pty) Ltd · Confidential · Internal use only</div>
   </div>
 </div>
