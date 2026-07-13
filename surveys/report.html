@@ -235,7 +235,11 @@ function loadData(){
       var d; try{ d=JSON.parse(txt); }catch(e){ d={}; }
       var body = d.body||d;
       if(typeof body==='string') try{ body=JSON.parse(body); }catch(e){}
-      var items = (body.ResultSets&&body.ResultSets.Table1) || body.value || [];
+      var items = [];
+      if(Array.isArray(body)) items = body;
+      else if(Array.isArray(d)) items = d;
+      else if(body.ResultSets&&body.ResultSets.Table1) items = body.ResultSets.Table1;
+      else if(body.value) items = body.value;
       allData = items.map(function(item){
         return {
           week: item.WeekNumber || 0,
