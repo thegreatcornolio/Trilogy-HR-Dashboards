@@ -233,6 +233,7 @@ function loadData(){
     .then(function(r){ return r.text(); })
     .then(function(txt){
       var d; try{ d=JSON.parse(txt); }catch(e){ d={}; }
+      console.log('RAW PARSED:', JSON.stringify(d).substring(0,100));
       var body = d.body||d;
       if(typeof body==='string') try{ body=JSON.parse(body); }catch(e){}
       var items = [];
@@ -240,6 +241,7 @@ function loadData(){
       else if(Array.isArray(d)) items = d;
       else if(body.ResultSets&&body.ResultSets.Table1) items = body.ResultSets.Table1;
       else if(body.value) items = body.value;
+      console.log('ITEMS COUNT:', items.length);
       allData = items.map(function(item){
         return {
           week: item.WeekNumber || 0,
