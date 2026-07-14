@@ -396,11 +396,22 @@ function fetchStageCount(stage) {
   })
   .then(function(r){ return r.json(); })
   .then(function(data){
-    var body = data.body || data;
+    var body = data;
     if (typeof body === 'string') body = JSON.parse(body);
-    return (body.ResultSets && body.ResultSets.Table1) || [];
+    // Response may come back as a plain array, or wrapped in {body: ...},
+    // or wrapped in {ResultSets: {Table1: [...]}} — handle all three shapes.
+    if (Array.isArray(body)) return body;
+    if (body && body.body !== undefined) {
+      var inner = body.body;
+      if (typeof inner === 'string') inner = JSON.parse(inner);
+      if (Array.isArray(inner)) return inner;
+      if (inner && inner.ResultSets && inner.ResultSets.Table1) return inner.ResultSets.Table1;
+    }
+    if (body && body.ResultSets && body.ResultSets.Table1) return body.ResultSets.Table1;
+    return [];
   })
   .catch(function(){ return []; });
+
 }
 
 function loadPipelineCounts() {
