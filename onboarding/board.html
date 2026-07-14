@@ -63,12 +63,8 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 </head>
 <body>
 
-<script>
-(function(){
-  var s=sessionStorage.getItem('homebase_session');
-  if(!s){window.location.replace('/');}
-})();
-</script>
+<script>window.HR_REQUIRED_MODULE='onboarding';</script>
+<script src="/hr-guard.js"></script>
 
 <nav class="nav">
   <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
