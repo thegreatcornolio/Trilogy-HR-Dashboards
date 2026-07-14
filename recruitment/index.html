@@ -218,10 +218,13 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
       <div class="pipe-step"><div class="pipe-num" id="pApplied">—</div><div class="pipe-lbl">Applied</div><div class="pipe-arrow">→</div></div>
       <div class="pipe-step"><div class="pipe-num" id="pShortlisted">—</div><div class="pipe-lbl">Shortlisted</div><div class="pipe-arrow">→</div></div>
       <div class="pipe-step"><div class="pipe-num" id="pInterview">—</div><div class="pipe-lbl">Interview</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="pOffer">—</div><div class="pipe-lbl">Verbal offer</div><div class="pipe-arrow">→</div></div>
       <div class="pipe-step"><div class="pipe-num" id="pBGV">—</div><div class="pipe-lbl">BGV / docs</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step"><div class="pipe-num" id="pContract">—</div><div class="pipe-lbl">Contract</div><div class="pipe-arrow">→</div></div>
-      <div class="pipe-step last"><div class="pipe-num" id="pHandover">—</div><div class="pipe-lbl">Handed over</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pOfferSent">—</div><div class="pipe-lbl">Offer Sent</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pOfferSigned">—</div><div class="pipe-lbl">Offer Signed</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pContractSent">—</div><div class="pipe-lbl">Contract Sent</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pContractSigned">—</div><div class="pipe-lbl">Contract Signed</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step"><div class="pipe-num" id="pNeedsOnboarding">—</div><div class="pipe-lbl">Needs Onboarding</div><div class="pipe-arrow">→</div></div>
+      <div class="pipe-step last"><div class="pipe-num" id="pOnboarded">—</div><div class="pipe-lbl">Employee Onboarded</div></div>
     </div>
   </div>
 </div>
@@ -380,6 +383,48 @@ var FLOW = {
   getDashboard: 'PASTE_GET_DASHBOARD_FLOW_URL_HERE'
 };
 
+// ── PIPELINE BAR — REAL STAGE COUNTS ──────────────────────
+// Reuses the same GET_BY_STAGE flow board.html already calls.
+// Read-only: fetches each stage's records and takes the count.
+var GET_BY_STAGE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/db11b8eac0354ee7858c757a389e0df9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=O90-xwESi103DgYTRmgYo_TdiKfvLW6BqbL-Flwl-0U';
+
+function fetchStageCount(stage) {
+  return fetch(GET_BY_STAGE_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({stage: stage})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var body = data.body || data;
+    if (typeof body === 'string') body = JSON.parse(body);
+    return (body.ResultSets && body.ResultSets.Table1) || [];
+  })
+  .catch(function(){ return []; });
+}
+
+function loadPipelineCounts() {
+  var stagePairs = [
+    ['offer_sent', 'pOfferSent'],
+    ['offer_signed', 'pOfferSigned'],
+    ['contract_sent', 'pContractSent'],
+    ['contract_signed', 'pContractSigned'],
+    ['onboarding_needed', 'pNeedsOnboarding']
+  ];
+
+  stagePairs.forEach(function(pair){
+    fetchStageCount(pair[0]).then(function(rows){
+      document.getElementById(pair[1]).textContent = rows.length;
+    });
+  });
+
+  // Employee Onboarded = Status 'Active' AND OnboardingComplete = 'yes'
+  fetchStageCount('active').then(function(rows){
+    var onboarded = rows.filter(function(r){ return r.OnboardingComplete === 'yes'; });
+    document.getElementById('pOnboarded').textContent = onboarded.length;
+  });
+}
+
 // ── AUTH ──────────────────────────────────────────────────
 var AUTH_KEY = 'recruit_auth';
 var AUTH_TOK = 'trilogy_recruit_2026';
@@ -399,6 +444,7 @@ function doLogin() {
     gate.style.opacity = '0'; gate.style.transition = 'opacity .3s';
     setTimeout(function(){ gate.style.display = 'none'; }, 300);
     loadDashboard();
+    loadPipelineCounts();
   } else {
     document.getElementById('login-err').style.display = 'block';
     document.getElementById('pwd').value = '';
@@ -410,6 +456,7 @@ function doLogin() {
   if (sessionStorage.getItem(AUTH_KEY) === AUTH_TOK) {
     document.getElementById('login-gate').style.display = 'none';
     loadDashboard();
+    loadPipelineCounts();
   }
 })();
 
@@ -443,14 +490,13 @@ function renderDashboard(data) {
   document.getElementById('statActive').textContent      = s.active_campaigns   || 0;
   document.getElementById('statHandedOver').textContent  = s.handed_over_month  || 0;
 
-  // Pipeline bar
+  // Pipeline bar — Applied/Shortlisted/Interview/BGV have no data source yet, left as placeholders
   document.getElementById('pApplied').textContent     = s.applied      || 0;
   document.getElementById('pShortlisted').textContent  = s.shortlisted  || 0;
   document.getElementById('pInterview').textContent    = s.interview    || 0;
-  document.getElementById('pOffer').textContent        = s.verbal_offer || 0;
   document.getElementById('pBGV').textContent          = s.bgv          || 0;
-  document.getElementById('pContract').textContent     = s.contract     || 0;
-  document.getElementById('pHandover').textContent     = s.handed_over  || 0;
+  // pOfferSent/pOfferSigned/pContractSent/pContractSigned/pNeedsOnboarding/pOnboarded
+  // are populated by loadPipelineCounts() below, not by the dashboard stub.
 
   // Attention cards
   document.getElementById('attBGV').textContent      = s.bgv_flagged    || 0;
@@ -536,7 +582,7 @@ function renderActivity(items) {
 function renderStub() {
   // Zero out stats — real numbers come from flow
   ['statTotal','statActive','statHandedOver',
-   'pApplied','pShortlisted','pInterview','pOffer','pBGV','pContract','pHandover',
+   'pApplied','pShortlisted','pInterview','pBGV',
    'attBGV','attApproval','attDocs',
    'modCandidates','modInterviews','modBGV','modApprovals'
   ].forEach(function(id){ document.getElementById(id).textContent = '0'; });
