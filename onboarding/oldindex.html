@@ -112,8 +112,8 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     <div class="brand-sub">Onboarding Portal</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <a href="oldboard.html" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">📋 Pipeline board</a>
-    <a href="../../trilogy-hr" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
+    <a href="board.html" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">📋 Pipeline board</a>
+    <a href="../" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
     <div class="badge-hop">Head of People</div>
   </div>
 </div>
@@ -474,16 +474,49 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
       return '<tr><td style="font-weight:600;color:var(--text2);padding:6px 10px;white-space:nowrap">'+r[0]+'</td><td style="padding:6px 10px;color:var(--text)">'+r[1]+'</td></tr>';
     }).join('');
     modal.style.display = 'flex';
+    var CHECK_ID_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b9951897db1b437c97addcbc5d80b65e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=pGzGfWtGvN_gm79wEfYOPAJGJWS06AdYNpCtlJqQozw';
+
     gi('verifyConfirmBtn').onclick = function(){
-      modal.style.display = 'none';
-      gi('sendBtn').textContent='Sending…';
-      postToZapier(payload, function(){
-        gi('formCard').style.display='none';
-        gi('successCard').style.display='block';
-        gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
-        gi('sendBtn').disabled=false;
-        gi('sendBtn').textContent='Send letter of offer to candidate';
-      });
+      // Check if IDNumber already exists in system
+      gi('verifyConfirmBtn').disabled = true;
+      gi('verifyConfirmBtn').textContent = 'Checking…';
+      fetch(CHECK_ID_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id_number:d.idno})})
+        .then(function(r){return r.json();})
+        .then(function(data){
+          var body = data.body||data;
+          if(typeof body==='string') body=JSON.parse(body);
+          var resultSet = body.ResultSets ? body.ResultSets : (body.body && body.body.ResultSets ? body.body.ResultSets : null);
+          var existing = resultSet && resultSet.Table1 && resultSet.Table1[0];
+          gi('verifyConfirmBtn').disabled = false;
+          gi('verifyConfirmBtn').textContent = '✅ Confirm & send offer';
+          if(existing && existing.FullName){
+            var proceed = confirm('⚠️ WARNING: This ID number already exists in the system as:\n\n'+existing.FullName+' — '+existing.Status+'\n\nSending this offer will overwrite their record. Are you sure you want to proceed?');
+            if(!proceed) return;
+          }
+          modal.style.display = 'none';
+          gi('sendBtn').textContent='Sending…';
+          postToZapier(payload, function(){
+            gi('formCard').style.display='none';
+            gi('successCard').style.display='block';
+            gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
+            gi('sendBtn').disabled=false;
+            gi('sendBtn').textContent='Send letter of offer to candidate';
+          });
+        })
+        .catch(function(){
+          // If check fails, allow sending anyway
+          gi('verifyConfirmBtn').disabled = false;
+          gi('verifyConfirmBtn').textContent = '✅ Confirm & send offer';
+          modal.style.display = 'none';
+          gi('sendBtn').textContent='Sending…';
+          postToZapier(payload, function(){
+            gi('formCard').style.display='none';
+            gi('successCard').style.display='block';
+            gi('successMsg').textContent='Offer sent to '+cap(d.fn)+' '+cap(d.ln)+' ('+d.em+'). Ref: '+tr.ref+'.';
+            gi('sendBtn').disabled=false;
+            gi('sendBtn').textContent='Send letter of offer to candidate';
+          });
+        });
     };
     gi('verifyCancelBtn').onclick = function(){
       modal.style.display = 'none';

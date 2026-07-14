@@ -48,7 +48,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',san
 <div class="nav">
   <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
   <div class="nav-right">
-    <a href="../../trilogy-hr" class="nav-back">← Portal</a>
+    <a href="/recruitment/index.html" class="nav-back">← Portal</a>
     <div class="nav-badge">Head of People</div>
   </div>
 </div>
@@ -121,7 +121,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',san
         <span id="sendBtnLabel">Send contract to candidate</span>
         <div class="spinner" id="sendSpinner"></div>
       </button>
-      <a href="../../trilogy-hr" class="btn">← Back to portal</a>
+      <a href="/recruitment/index.html" class="btn">← Back to portal</a>
     </div>
   </div>
 </div>
@@ -130,7 +130,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',san
   <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
   <div style="font-size:18px;font-weight:700;margin-bottom:.5rem;font-family:'Montserrat',sans-serif;color:var(--navy)">Contract sent successfully</div>
   <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto 1.5rem" id="successMsg"></p>
-  <a href="../../trilogy-hr" class="btn btn-primary">← Back to portal</a>
+  <a href="/recruitment/index.html" class="btn btn-primary">← Back to portal</a>
 </div>
 
 </div>
@@ -139,7 +139,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',san
 (function(){
   var ZAPIER_SEND_CONTRACT = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eed90d597d004cad97570f17e610aa91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xZh2zrYasZlEQiPL81QUOtuwUzK1epgeFoBha8sGSK8';
   var BASE = '';
-  var SITE_URL = 'https://hr.trilogybpo.com';
+  var SITE_URL = 'https://home.trilogybpo.com';
 
   function gi(id){ return document.getElementById(id); }
   function gp(key){ return decodeURIComponent((new URLSearchParams(window.location.search)).get(key)||''); }

@@ -112,8 +112,8 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     <div class="brand-sub">Onboarding Portal</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <a href="board.html" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">📋 Pipeline board</a>
-    <a href="../" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
+    <a href="oldboard.html" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">📋 Pipeline board</a>
+    <a href="../../../Company%20Dashbaords" style="font-size:11px;color:rgba(255,255,255,.5);text-decoration:none;font-family:Montserrat,sans-serif">← Portal</a>
     <div class="badge-hop">Head of People</div>
   </div>
 </div>
@@ -298,7 +298,7 @@ html{overflow-x:hidden}body{overflow-x:hidden;font-family:'Wix Madefor Text',-ap
     return {token:t, ref:'TBP-'+new Date().getFullYear()+'-'+t.slice(0,6).toUpperCase()};
   }
 
-  var SITE_URL = 'https://hr.trilogybpo.com';
+  var SITE_URL = 'https://home.trilogybpo.com';
 
   function buildSigningUrl(d, token, ref){
     return SITE_URL+'/onboarding/offer.html?'+[
