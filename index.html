@@ -456,7 +456,7 @@ function saveModules(){
   var checked = Array.from(document.querySelectorAll('#moduleToggles input:checked')).map(function(i){return i.value;});
   var modules = checked.join(',');
   document.getElementById('modalResult').textContent = 'Saving…';
-  fetch(MANAGE_ACCESS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'update', user_id:editingUserId, modules:modules})})
+  fetch(MANAGE_ACCESS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'update', user_id:String(editingUserId), modules:modules})})
     .then(function(r){if(!r.ok&&r.status!==202) throw new Error();
       document.getElementById('modalResult').textContent = '✓ Saved';
       var user = allUsers.find(function(u){return u.UserID===editingUserId;});
