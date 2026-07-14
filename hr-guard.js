@@ -12,7 +12,7 @@
    (admins always pass; everyone else needs the key in their Modules list)
    ════════════════════════════════════════════════════════════════ */
 (function () {
-  var SESSION_KEY = 'hrportal_session';
+  var SESSION_KEY = 'homebase_session';
   var PORTAL_HOME = '/index.html';
   var required    = (window.HR_REQUIRED_MODULE || '').toLowerCase();
 
@@ -44,10 +44,20 @@
   try { session = JSON.parse(raw); }
   catch (e) { window.location.replace(PORTAL_HOME); return; }
 
-  var role    = (session.role || '').toLowerCase();
-  var modules = Array.isArray(session.modules)
-    ? session.modules.map(function (m) { return String(m).toLowerCase(); })
-    : [];
+  var role = (session.role || '').toLowerCase();
+
+  // modules may arrive as a comma-separated string (homebase_session format)
+  // or, defensively, as an actual array — support both.
+  var rawModules = session.modules;
+  var modules;
+  if (Array.isArray(rawModules)) {
+    modules = rawModules.map(function (m) { return String(m).toLowerCase().trim(); });
+  } else {
+    modules = String(rawModules || '')
+      .split(',')
+      .map(function (m) { return m.toLowerCase().trim(); })
+      .filter(function (m) { return m.length > 0; });
+  }
 
   // Admins pass everything
   if (role === 'admin') return;
