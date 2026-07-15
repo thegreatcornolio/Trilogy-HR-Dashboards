@@ -131,7 +131,7 @@ function renderColumn(stage, people){
   var days = people.map(function(p){
     var d = daysSince(p.UpdatedAt||p.StartDate);
     return '<div class="person-card">'+
-      '<div class="person-name">'+p.FullName+'</div>'+
+      '<div class="person-name">'+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'</div>'+
       '<div class="person-role">'+p.JobTitle+(p.Campaign?' · '+p.Campaign:'')+'</div>'+
       '<div class="person-days">'+daysBadge(d)+'</div>'+
       actionsFor(stage.key, p)+
@@ -201,7 +201,7 @@ function setBtn(id,fn,text,disabled){
 window.resendOffer=function(id){
   var p=findPerson(id);
   if(!p) return;
-  if(!confirm('Resend offer email to '+p.FullName+'?')) return;
+  if(!confirm('Resend offer email to '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?')) return;
   setBtn(id,'resendOffer','Sending…',true);
   fetch(SEND_OFFER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
@@ -220,7 +220,7 @@ window.resendOffer=function(id){
 window.resendContract=function(id){
   var p=findPerson(id);
   if(!p) return;
-  if(!confirm('Resend contract email to '+p.FullName+'?')) return;
+  if(!confirm('Resend contract email to '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?')) return;
   setBtn(id,'resendContract','Sending…',true);
   fetch(SEND_CONTRACT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
@@ -238,7 +238,7 @@ window.resendContract=function(id){
 window.sendForm=function(id){
   var p=findPerson(id);
   if(!p) return;
-  if(!confirm('Send onboarding form to '+p.FullName+'?')) return;
+  if(!confirm('Send onboarding form to '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?')) return;
   setBtn(id,'sendForm','Sending…',true);
   fetch(SEND_FORM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     employee_id:p.EmployeeID, ref:p.OfferReference||p.EmployeeID,
@@ -253,7 +253,7 @@ window.sendForm=function(id){
 window.markActive=function(id){
   var p=findPerson(id);
   if(!p) return;
-  if(!confirm('Mark '+p.FullName+' as Active? Make sure banking details are captured first.')) return;
+  if(!confirm('Mark '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+' as Active? Make sure banking details are captured first.')) return;
   setBtn(id,'markActive','Saving…',true);
   fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     employee_id:id, field:'Status', value:'Active'
@@ -268,7 +268,7 @@ window.markActive=function(id){
 window.revokeOffer=function(id){
   var p=findPerson(id);
   if(!p) return;
-  if(!confirm('Revoke offer for '+p.FullName+'?\n\nThis will mark the offer as revoked and block all signing links. This cannot be undone from here.')) return;
+  if(!confirm('Revoke offer for '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?\n\nThis will mark the offer as revoked and block all signing links. This cannot be undone from here.')) return;
   setBtn(id,'revokeOffer','Revoking…',true);
   fetch(UPDATE_EMPLOYEE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     employee_id:id, field:'Status', value:'Revoked'
