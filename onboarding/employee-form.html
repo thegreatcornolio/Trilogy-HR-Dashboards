@@ -150,24 +150,77 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
     <!-- POLICY ACKNOWLEDGEMENT -->
     <div class="card" id="sec-policies">
       <div class="section-label">Company policies</div>
-      <div style="font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:1rem">The following four documents are attached to the email you received. Please open and read each one, then tick to confirm you have read and agree to it. All four must be acknowledged before you can submit.</div>
+      <div style="font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:1rem">The following four documents are attached to the email you received. Please open and read each one in full, then tick to confirm you have read and agree to it. A summary of each is shown below — the summary does not replace the full document. All four must be acknowledged before you can submit.</div>
 
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:.75rem;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--offwhite)">
-        <input type="checkbox" class="policy-check" id="pol1" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
-        <span style="font-size:13px;color:var(--text)">I have read and agree to the <strong>Employee Handbook</strong>.</span>
-      </label>
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:.75rem;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--offwhite)">
-        <input type="checkbox" class="policy-check" id="pol2" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
-        <span style="font-size:13px;color:var(--text)">I have read and agree to the <strong>Disciplinary Code of Conduct</strong>.</span>
-      </label>
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:.75rem;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--offwhite)">
-        <input type="checkbox" class="policy-check" id="pol3" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
-        <span style="font-size:13px;color:var(--text)">I have read and agree to the <strong>IT Acceptable Use Policy</strong>.</span>
-      </label>
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--offwhite)">
-        <input type="checkbox" class="policy-check" id="pol4" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
-        <span style="font-size:13px;color:var(--text)">I have read and agree to the <strong>Remote Working Policy</strong>.</span>
-      </label>
+      <div style="border:1px solid var(--border2);border-radius:8px;background:var(--offwhite);margin-bottom:.75rem;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border2)">
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--navy);margin-bottom:6px">Employee Handbook</div>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:var(--text2);line-height:1.6">
+            <li>Equal opportunities, anti-discrimination and anti-harassment (EEA-aligned)</li>
+            <li>Leave: annual, sick, family responsibility, maternity/parental (BCEA)</li>
+            <li>POPIA data protection obligations and your rights as a data subject</li>
+            <li>Anti-corruption, whistleblowing, substance misuse and no-smoking rules</li>
+            <li>IT/email/internet/social media acceptable use</li>
+            <li>Disciplinary and grievance procedures</li>
+          </ul>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;margin:0">
+          <input type="checkbox" class="policy-check" id="pol1" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
+          <span style="font-size:13px;color:var(--text)">I have read the full <strong>Employee Handbook</strong> attached to my email and agree to it.</span>
+        </label>
+      </div>
+
+      <div style="border:1px solid var(--border2);border-radius:8px;background:var(--offwhite);margin-bottom:.75rem;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border2)">
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--navy);margin-bottom:6px">Disciplinary Code of Conduct</div>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:var(--text2);line-height:1.6">
+            <li>Progressive discipline: Verbal Warning → Written Warning → Final Written Warning → Dismissal</li>
+            <li>Gross misconduct (theft, assault, fraud, harassment, serious POPIA/IT breaches) can mean immediate Disciplinary Enquiry and summary dismissal</li>
+            <li>Written notice of at least 48 hours before any Disciplinary Enquiry</li>
+            <li>Right to representation, to call witnesses, and to appeal any sanction</li>
+          </ul>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;margin:0">
+          <input type="checkbox" class="policy-check" id="pol2" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
+          <span style="font-size:13px;color:var(--text)">I have read the full <strong>Disciplinary Code of Conduct</strong> attached to my email and agree to it.</span>
+        </label>
+      </div>
+
+      <div style="border:1px solid var(--border2);border-radius:8px;background:var(--offwhite);margin-bottom:.75rem;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border2)">
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--navy);margin-bottom:6px">IT Acceptable Use Policy</div>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:var(--text2);line-height:1.6">
+            <li>Multi-Factor Authentication is mandatory; never share passwords or accounts</li>
+            <li>Save Company documents to SharePoint/OneDrive only — no personal cloud storage</li>
+            <li>Company devices are Intune-managed; do not disable security controls or install unauthorised software</li>
+            <li>Use the approved VPN for any remote or public Wi-Fi access</li>
+            <li>Report lost devices, phishing attempts or security incidents to IT/CISO immediately</li>
+            <li>All Company systems may be monitored and audited; no expectation of privacy</li>
+          </ul>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;margin:0">
+          <input type="checkbox" class="policy-check" id="pol3" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
+          <span style="font-size:13px;color:var(--text)">I have read the full <strong>IT Acceptable Use Policy</strong> attached to my email and agree to it.</span>
+        </label>
+      </div>
+
+      <div style="border:1px solid var(--border2);border-radius:8px;background:var(--offwhite);overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border2)">
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--navy);margin-bottom:6px">Remote Working Policy</div>
+          <ul style="margin:0;padding-left:18px;font-size:12px;color:var(--text2);line-height:1.6">
+            <li>Remote working must be approved by your manager and HR</li>
+            <li>Connect to Company systems via the approved VPN only — never on unsecured public Wi-Fi</li>
+            <li>You are responsible for the physical security of your device and workspace (clear desk, screen not visible to others)</li>
+            <li>Report lost or stolen equipment immediately</li>
+            <li>Equipment must be returned when it's no longer needed or when you leave the Company</li>
+          </ul>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px 14px;margin:0">
+          <input type="checkbox" class="policy-check" id="pol4" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)">
+          <span style="font-size:13px;color:var(--text)">I have read the full <strong>Remote Working Policy</strong> attached to my email and agree to it.</span>
+        </label>
+      </div>
+
       <div id="policyError" style="font-size:11px;color:var(--red);margin-top:.75rem;display:none">Please confirm you have read and agree to all four policies before submitting.</div>
     </div>
 
@@ -181,6 +234,16 @@ canvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none}
           <div>
             <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#c0392b;margin-bottom:.4rem">Please check every detail carefully before signing</div>
             <div style="font-size:12.5px;color:#7a2e26;line-height:1.6">Your banking details, ID number and tax number are used to pay your salary and meet statutory requirements. <strong>Incorrect information may result in your salary being paid late, paid to the wrong account, or payroll and tax errors.</strong> Once you sign and submit, you are confirming that everything above is 100% correct.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#F7F6F2;border:2px solid var(--navy);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="font-size:22px;line-height:1;flex-shrink:0">📄</div>
+          <div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:.4rem">Policy acknowledgement</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.6">By ticking and selecting the four policy documents above, I am confirming — in writing — that I have indeed read and accept the policies that were shared with me by email. I recognise that I will be expected to follow these policies, and that failing to do so can result in disciplinary action being taken against me.</div>
           </div>
         </div>
       </div>
