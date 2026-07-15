@@ -403,7 +403,8 @@ if(D.ref){
     try {
       var data = JSON.parse(txt);
       if(data.body){ data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; }
-      var v = (data.form_used || '').toString().toLowerCase();
+      var row = Array.isArray(data) ? (data[0] || {}) : data;
+      var v = (row.EmployeeFormUsed || '').toString().toLowerCase();
       used = (v === 'used' || v === 'true');
     } catch(e){ console.error(e); }
     if(used){ gi('expiredScreen').style.display = 'block'; }
