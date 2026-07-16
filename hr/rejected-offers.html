@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy HomeBase — Rejected Offers</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--navy3:#333;
+  --green:#4AFD0E;--red:#e74c3c;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --text:#fff;--text2:rgba(255,255,255,.6);--text3:rgba(255,255,255,.35);
+  --radius:10px;--radius-lg:14px;--radius-xl:20px;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;font-size:14px}
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{height:24px}
+.nav-divider{width:1px;height:18px;background:var(--border2)}
+.nav-brand{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;color:#fff}
+.nav-brand span{color:var(--green)}
+.nav-back{font-size:11px;color:var(--text3);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{padding:2.5rem 2rem 1.5rem;max-width:1100px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;margin-bottom:.25rem}
+.hero-title span{color:var(--red)}
+.hero-sub{font-size:13px;color:var(--text2)}
+.shell{max-width:1100px;margin:0 auto;padding:1.5rem 2rem 4rem}
+.loading{text-align:center;padding:4rem;color:var(--text3)}
+.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:4rem;color:var(--text3);font-size:13px}
+.stats-row{display:flex;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap}
+.stat{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;min-width:120px}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:var(--red);line-height:1}
+.stat-label{font-size:11px;color:var(--text3);margin-top:4px;font-family:'Montserrat',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.table-wrap{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden}
+.table-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+.table-actions{display:flex;gap:8px;align-items:center}
+.btn-delete-selected{padding:6px 14px;background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;border-radius:6px;cursor:pointer;display:none}
+.btn-delete-selected:hover{background:rgba(231,76,60,.25)}
+.btn-delete-selected.show{display:inline-block}
+.select-count{font-size:11px;color:var(--text3);display:none}
+.select-count.show{display:inline}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--navy3)}
+th{padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+th.chk{width:40px}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.emp-name{font-weight:600;color:#fff;margin-bottom:2px}
+.emp-meta{font-size:11px;color:var(--text3)}
+.reason-chip{display:inline-block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(231,76,60,.15);color:var(--red);text-transform:uppercase;letter-spacing:.04em}
+.note-text{font-size:12px;color:var(--text2);line-height:1.5;max-width:300px}
+.date-text{font-size:12px;color:var(--text3);white-space:nowrap}
+.btn-del-row{background:transparent;border:1px solid rgba(231,76,60,.3);color:var(--red);font-size:11px;font-family:'Montserrat',sans-serif;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.btn-del-row:hover{background:rgba(231,76,60,.15)}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--red);cursor:pointer}
+.refresh-btn{padding:6px 14px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;border-radius:6px;cursor:pointer}
+.refresh-btn:hover{border-color:var(--green);color:var(--green)}
+</style>
+</head>
+<body>
+
+<script>/* HomeBase auth gate */(function(){
+  var s=sessionStorage.getItem('homebase_session');
+  if(!s){window.location.replace('https://home.trilogybpo.com');return;}
+  try{
+    var session=JSON.parse(s);
+    var mods=(session.modules||'').split(',').map(function(m){return m.trim();});
+    if(session.role!=='admin'&&mods.indexOf('hr')===-1){
+      window.location.replace('https://home.trilogybpo.com?denied=hr');
+    }
+  }catch(e){window.location.replace('https://home.trilogybpo.com');}
+})();</script>
+
+<nav class="nav">
+  <div class="nav-left">
+    <img src="../trilogy-logo.png" alt="Trilogy" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-brand">Trilogy <span>HomeBase</span></div>
+  </div>
+  <a href="./" class="nav-back">← HR Hub</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Recruitment Intelligence</div>
+  <div class="hero-title">Rejected <span>Offers</span></div>
+  <div class="hero-sub">Candidates who declined their offer — reasons and notes.</div>
+</div>
+
+<div class="shell">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">All rejected offers</span>
+      <div class="table-actions">
+        <span class="select-count" id="selectCount"></span>
+        <button class="btn-delete-selected" id="deleteSelectedBtn" onclick="deleteSelected()">🗑 Delete selected</button>
+        <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+      </div>
+    </div>
+    <div id="tableBody">
+      <div class="loading"><div class="spinner"></div>Loading…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var GET_URL    = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/01/workflows/cd6b89ab8a8343dcb8cfad88f7b30622/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tyn_5GTC1Hr3k1atcnrAxNApdWYYm88r_lb2hQMVLuk';
+var DELETE_URL = 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/12/workflows/1e03ab5aaa674149be649f5dbf74dbfb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=VAhigNUbM6sv8wWx7lsexuoHV6xy3OaXMEouiTgdgLE';
+
+var records = [];
+
+function loadData(){
+  document.getElementById('tableBody').innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  document.getElementById('statsRow').innerHTML = '';
+  fetch(GET_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      var d; try{d=JSON.parse(txt);}catch(e){d={};}
+      var body=d.body||d;
+      if(typeof body==='string') try{body=JSON.parse(body);}catch(e){}
+      records=(body.ResultSets&&body.ResultSets.Table1)||body.value||[];
+      if(Array.isArray(body)) records=body;
+      renderStats();
+      renderTable();
+    })
+    .catch(function(err){
+      document.getElementById('tableBody').innerHTML='<div class="empty">⚠️ Failed to load. '+err.message+'</div>';
+    });
+}
+
+function renderStats(){
+  var reasons={};
+  records.forEach(function(r){
+    var k=r.DeclineReason||'Unknown';
+    reasons[k]=(reasons[k]||0)+1;
+  });
+  var html='<div class="stat"><div class="stat-num">'+records.length+'</div><div class="stat-label">Total rejected</div></div>';
+  Object.keys(reasons).forEach(function(k){
+    html+='<div class="stat"><div class="stat-num">'+reasons[k]+'</div><div class="stat-label">'+k+'</div></div>';
+  });
+  document.getElementById('statsRow').innerHTML=html;
+}
+
+function renderTable(){
+  if(!records.length){
+    document.getElementById('tableBody').innerHTML='<div class="empty">No rejected offers found.</div>';
+    return;
+  }
+  var html='<table><thead><tr>'+
+    '<th class="chk"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>'+
+    '<th>Candidate</th><th>Role</th><th>Manager</th><th>Reason</th><th>Note</th><th>Date</th><th></th>'+
+    '</tr></thead><tbody>';
+  records.forEach(function(r,i){
+    var date=r.UpdatedAt?r.UpdatedAt.substring(0,10):'—';
+    html+='<tr>'+
+      '<td><input type="checkbox" class="row-chk" data-id="'+r.EmployeeID+'" onchange="updateSelectCount()"></td>'+
+      '<td><div class="emp-name">'+esc(r.FullName||'—')+'</div><div class="emp-meta">'+esc(r.EmployeeID)+'</div></td>'+
+      '<td><div class="emp-name">'+esc(r.JobTitle||'—')+'</div><div class="emp-meta">'+esc(r.Campaign||'—')+'</div></td>'+
+      '<td class="emp-meta">'+esc(r.ReportsTo||'—')+'</td>'+
+      '<td>'+(r.DeclineReason?'<span class="reason-chip">'+esc(r.DeclineReason)+'</span>':'<span style="color:var(--text3)">—</span>')+'</td>'+
+      '<td><div class="note-text">'+esc(r.DeclineNote||'—')+'</div></td>'+
+      '<td><div class="date-text">'+date+'</div></td>'+
+      '<td><button class="btn-del-row" onclick="deleteOne(\''+r.EmployeeID+'\',\''+esc(r.FullName||'')+'\')">Delete</button></td>'+
+    '</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('tableBody').innerHTML=html;
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toggleAll(chk){
+  document.querySelectorAll('.row-chk').forEach(function(c){c.checked=chk.checked;});
+  updateSelectCount();
+}
+
+function updateSelectCount(){
+  var checked=document.querySelectorAll('.row-chk:checked').length;
+  var countEl=document.getElementById('selectCount');
+  var delBtn=document.getElementById('deleteSelectedBtn');
+  if(checked>0){
+    countEl.textContent=checked+' selected';
+    countEl.classList.add('show');
+    delBtn.classList.add('show');
+  } else {
+    countEl.classList.remove('show');
+    delBtn.classList.remove('show');
+  }
+}
+
+function deleteOne(id, name){
+  if(!confirm('Delete rejected offer for '+name+'?\n\nThis permanently removes them from the system.')) return;
+  fetch(DELETE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:id})})
+    .then(function(){
+      records=records.filter(function(r){return r.EmployeeID!==id;});
+      renderStats(); renderTable(); updateSelectCount();
+    })
+    .catch(function(){alert('Failed to delete. Please try again.');});
+}
+
+function deleteSelected(){
+  var checked=Array.from(document.querySelectorAll('.row-chk:checked')).map(function(c){return c.dataset.id;});
+  if(!checked.length) return;
+  if(!confirm('Delete '+checked.length+' selected record'+(checked.length>1?'s':'')+' permanently?')) return;
+  var promises=checked.map(function(id){
+    return fetch(DELETE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_id:id})});
+  });
+  Promise.all(promises).then(function(){
+    records=records.filter(function(r){return checked.indexOf(r.EmployeeID)===-1;});
+    renderStats(); renderTable(); updateSelectCount();
+  }).catch(function(){alert('Some deletions may have failed. Refreshing…'); loadData();});
+}
+
+loadData();
+</script>
+</body>
+</html>
