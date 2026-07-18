@@ -242,14 +242,19 @@
 
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">Conversations in range</div>
+        <div class="kpi-label">Unique customers</div>
         <div class="kpi-value" id="kpi-total">—</div>
-        <div class="kpi-delta">with an AI summary</div>
+        <div class="kpi-delta" id="kpi-total-sub">with an AI summary</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Negative sentiment</div>
-        <div class="kpi-value" id="kpi-neg" style="color:var(--red)">—</div>
-        <div class="kpi-delta" id="kpi-neg-pct">&nbsp;</div>
+      <div class="kpi-card" style="display:flex; align-items:center; gap:14px;">
+        <div style="width:56px; height:56px; flex-shrink:0; position:relative;">
+          <canvas id="chart-balance"></canvas>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div class="kpi-label">Sentiment balance</div>
+          <div class="kpi-value" id="kpi-balance" style="font-size:18px">—</div>
+          <div class="kpi-delta" id="kpi-balance-sub">&nbsp;</div>
+        </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Average CSAT</div>
@@ -429,7 +434,9 @@ function mockConversations() {
       else if (csatRoll < 0.022) csat = 3;
       else if (csatRoll < 0.026) csat = 4;
       else if (csatRoll < 0.045) csat = 5;
-      rows.push({ conversation_id:id, report_date:dateStr, agent_name:agent, ai_sentiment:sentiment, csat, ai_summary:t[1], topic:t[0] });
+      const sameCustomer = Math.random() < 0.25 && id > 26380000001;
+      const contactId = sameCustomer ? id - 1 + 90000000000 : id + 90000000000;
+      rows.push({ conversation_id:id, contact_id:contactId, report_date:dateStr, agent_name:agent, ai_sentiment:sentiment, csat, ai_summary:t[1], topic:t[0] });
     }
   }
   return rows;
@@ -493,19 +500,46 @@ function filteredRows() {
   return ALL_ROWS.filter(r => r.report_date >= from && r.report_date <= to && (agent === '' || r.agent_name === agent));
 }
 
+function uniqueCustomerCount(rows) {
+  const seen = new Set();
+  rows.forEach(r => {
+    const key = r.contact_id ? ('c'+r.contact_id) : ('x'+r.conversation_id);
+    seen.add(key);
+  });
+  return seen.size;
+}
+
+let balanceChart = null;
+
 function render() {
   const rows = filteredRows();
 
-  document.getElementById('kpi-total').textContent = rows.length.toLocaleString('en-GB');
+  const uniqueCustomers = uniqueCustomerCount(rows);
+  document.getElementById('kpi-total').textContent = uniqueCustomers.toLocaleString('en-GB');
+  document.getElementById('kpi-total-sub').textContent = `across ${rows.length.toLocaleString('en-GB')} conversations`;
   document.getElementById('kpi-range').textContent = `${document.getElementById('f-from').value} – ${document.getElementById('f-to').value}`;
 
   const neg = rows.filter(r=>r.ai_sentiment===-1).length;
   const neu = rows.filter(r=>r.ai_sentiment===0).length;
   const pos = rows.filter(r=>r.ai_sentiment===1).length;
   const totalS = neg+neu+pos || 1;
+  const posNegTotal = (pos+neg) || 1;
+  const posPct = Math.round(pos/posNegTotal*100);
+  const negPct = 100 - posPct;
 
-  document.getElementById('kpi-neg').textContent = neg.toLocaleString('en-GB');
-  document.getElementById('kpi-neg-pct').textContent = `${Math.round(neg/totalS*100)}% of scored conversations`;
+  document.getElementById('kpi-balance').textContent = `${posPct}% positive`;
+  document.getElementById('kpi-balance-sub').textContent = `${negPct}% negative · excludes ${neu.toLocaleString('en-GB')} neutral`;
+
+  const balCtx = document.getElementById('chart-balance');
+  if (balanceChart) balanceChart.destroy();
+  balanceChart = new Chart(balCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Positive','Negative'],
+      datasets: [{ data: [pos, neg], backgroundColor: ['#2a8a00','#c0392b'], borderWidth: 0 }]
+    },
+    options: { cutout: '65%', plugins: { legend: { display:false }, tooltip: { enabled:true } } }
+  });
 
   const csatRows = rows.filter(r=>r.csat);
   const avgCsat = csatRows.length ? (csatRows.reduce((a,r)=>a+r.csat,0)/csatRows.length).toFixed(1) : '—';
