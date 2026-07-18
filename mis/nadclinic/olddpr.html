@@ -61,9 +61,6 @@
     .filter-btn { background:transparent; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.65); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; padding:8px 16px; border-radius:20px; cursor:pointer; transition:all 0.15s; }
     .filter-btn:hover { border-color:rgba(255,255,255,0.4); color:#fff; }
     .filter-btn.active { background:var(--green); border-color:var(--green); color:var(--navy); font-weight:800; }
-    .month-select { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; padding:8px 12px; border-radius:20px; cursor:pointer; }
-    .month-select:focus { outline:none; border-color:var(--green); }
-    .month-select option { color:var(--text); }
     .filter-asof { margin-left:auto; color:rgba(255,255,255,0.35); font-size:12px; }
     .filter-asof strong { color:rgba(255,255,255,0.65); }
 
@@ -164,9 +161,6 @@
     <button class="filter-btn" data-period="wtd" onclick="setPeriod('wtd')">Week to Date</button>
     <button class="filter-btn" data-period="mtd" onclick="setPeriod('mtd')">Month to Date</button>
     <button class="filter-btn" data-period="full_month" onclick="setPeriod('full_month')">Full Month</button>
-    <div style="width:1px;height:20px;background:rgba(255,255,255,0.15);margin:0 4px"></div>
-    <span class="filter-label">Or pick a month</span>
-    <select id="month-select" class="month-select" onchange="setSpecificMonth()"></select>
     <span class="filter-asof" id="filter-asof"></span>
   </div>
 </div>
@@ -254,29 +248,7 @@ const CAMPAIGN = new URLSearchParams(location.search).get('campaign') || 'NADCli
 const NATHANIEL_ID = 25841702797;
 const NATHANIEL_MONTHLY_RATE = 135; // hours, flat monthly
 
-let S = { session: null, period: 'previous_day', specificMonth: null, chartCompare: null, chartSplit: null };
-
-/* ── month picker ── */
-function populateMonthSelect() {
-  const sel = document.getElementById('month-select');
-  const now = new Date();
-  let html = '<option value="">— Select —</option>';
-  for (let i = 0; i < 14; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const y = d.getFullYear(), m = d.getMonth() + 1;
-    const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    html += `<option value="${y}-${m}">${label}</option>`;
-  }
-  sel.innerHTML = html;
-}
-function setSpecificMonth() {
-  const val = document.getElementById('month-select').value;
-  if (!val) { S.specificMonth = null; return; }
-  const [year, month] = val.split('-');
-  S.specificMonth = { year, month };
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  loadData();
-}
+let S = { session: null, period: 'previous_day', chartCompare: null, chartSplit: null };
 
 /* ── helpers ── */
 function unwrap(d) {
@@ -330,8 +302,6 @@ function nathanielBilling(workingDaysInPeriod, workingDaysInMonth) {
 /* ── main load ── */
 async function setPeriod(period) {
   S.period = period;
-  S.specificMonth = null;
-  document.getElementById('month-select').value = '';
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.period === period));
   await loadData();
 }
@@ -340,9 +310,7 @@ async function loadData() {
   document.getElementById('load-txt').textContent = 'Loading report…';
   document.getElementById('loading-overlay').style.display = 'flex';
   try {
-    const payload = { period: S.period, campaign: CAMPAIGN };
-    if (S.specificMonth) { payload.year = S.specificMonth.year; payload.month = S.specificMonth.month; }
-    const data = await callFlow(FLOWS.GET_DPR, payload);
+    const data = await callFlow(FLOWS.GET_DPR, { period: S.period, campaign: CAMPAIGN });
     render(data);
   } catch(err) {
     console.error('loadData:', err);
@@ -386,29 +354,26 @@ function render(data) {
   document.getElementById('kpi-billing').textContent = fmtMoney(totalBilling);
   document.getElementById('kpi-days').textContent = maxWorkingDays;
   document.getElementById('kpi-range').textContent = fmtDate(data.periodStart)+' – '+fmtDate(data.periodEnd);
-  document.getElementById('kpi-range-sub').textContent = data.isSpecificMonth
-    ? new Date(data.periodStart+'T00:00:00').toLocaleDateString('en-GB', {month:'long', year:'numeric'})
-    : (PERIOD_LABELS[S.period] || '');
+  document.getElementById('kpi-range-sub').textContent = PERIOD_LABELS[S.period] || '';
 
-  renderDelta('kpi-ph-delta', totalPHSec, priorPHSec, prior.length>0, 'h', data.isSpecificMonth);
-  renderDelta('kpi-billing-delta', totalBilling, priorBilling, prior.length>0, '£', data.isSpecificMonth);
+  renderDelta('kpi-ph-delta', totalPHSec, priorPHSec, prior.length>0, 'h');
+  renderDelta('kpi-billing-delta', totalBilling, priorBilling, prior.length>0, '£');
 
   // Table
   renderTable(currentCalc);
 
   // Charts
-  renderCompareChart(currentCalc, priorCalc, prior.length>0, data.isSpecificMonth);
+  renderCompareChart(currentCalc, priorCalc, prior.length>0);
   renderSplitChart(currentCalc);
 }
 
-function renderDelta(elId, current, prior, hasPrior, unit, isSpecificMonth) {
+function renderDelta(elId, current, prior, hasPrior, unit) {
   const el = document.getElementById(elId);
   if (!hasPrior || !prior) { el.textContent = 'No prior-period data'; el.className='kpi-delta flat'; return; }
   const diff = current - prior;
   const pct = prior !== 0 ? (diff/prior*100) : 0;
   const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '—';
-  const label = isSpecificMonth ? 'previous month' : (PRIOR_LABELS[S.period]||'prior period');
-  el.textContent = arrow+' '+Math.abs(pct).toFixed(1)+'% vs '+label;
+  el.textContent = arrow+' '+Math.abs(pct).toFixed(1)+'% vs '+(PRIOR_LABELS[S.period]||'prior period');
   el.className = 'kpi-delta '+(diff>0?'up':diff<0?'down':'flat');
 }
 
@@ -439,7 +404,7 @@ function renderTable(rows) {
   tbody.innerHTML = html;
 }
 
-function renderCompareChart(current, prior, hasPrior, isSpecificMonth) {
+function renderCompareChart(current, prior, hasPrior) {
   const ctx = document.getElementById('chart-compare');
   const sub = document.getElementById('chart-compare-sub');
   if (S.chartCompare) { S.chartCompare.destroy(); S.chartCompare = null; }
@@ -448,7 +413,7 @@ function renderCompareChart(current, prior, hasPrior, isSpecificMonth) {
     sub.textContent = 'No comparable data exists for the prior period yet.';
     return;
   }
-  sub.textContent = isSpecificMonth ? 'Selected month vs previous month' : (PERIOD_LABELS[S.period]+' vs '+PRIOR_LABELS[S.period]);
+  sub.textContent = PERIOD_LABELS[S.period]+' vs '+PRIOR_LABELS[S.period];
 
   const names = current.map(r => r.agent_name.split(' ')[0]);
   const currentHours = current.map(r => +(r.TotalPHSeconds/3600).toFixed(1));
@@ -509,7 +474,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('nav-av').textContent = initials(S.session.displayName);
   document.getElementById('nav-name').textContent = S.session.displayName.split(' ')[0];
   document.querySelector('[data-period="previous_day"]').classList.add('active');
-  populateMonthSelect();
   loadData();
 });
 </script>

@@ -232,34 +232,10 @@
 const CONFIG = {
   azureClientId: '4b515ddf-72b9-43eb-b36b-82fc69296a7c',
   azureTenantId: '77cde95f-930f-495e-89c6-4d2c30f6df21',
-  redirectUri:   'https://home.trilogybpo.com/mis/',
+  redirectUri:   'https://mis.trilogybpo.com',
   adminUser:     'admin',
   adminPass:     'YouCantComeIn',
 };
-
-// ── HomeBase SSO bridge ──
-// If user already has a valid homebase_session with 'mis' access,
-// check if mis_session already exists — if so skip login entirely.
-(function(){
-  try{
-    var hbs = sessionStorage.getItem('homebase_session');
-    var mis = sessionStorage.getItem('mis_session');
-    if(hbs && !mis){
-      var session = JSON.parse(hbs);
-      var mods = (session.modules||'').split(',').map(function(m){return m.trim();});
-      if(session.role==='admin' || mods.indexOf('mis')>-1){
-        // Set a basic mis_session so sub-pages don't redirect
-        sessionStorage.setItem('mis_session', JSON.stringify({
-          email: session.email,
-          name: session.displayName,
-          role: session.role,
-          campaigns: ['NADClinic'],
-          billing_access: session.role==='admin' ? 1 : 0
-        }));
-      }
-    }
-  }catch(e){}
-})();
 
 const FLOWS = {
   VALIDATE_USER: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7c9e3ad348f3419da97081e29723d328/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tBva4A3Khf41AIgPZYuZyt8SKCSX9y7wBONYSF-HteE',
@@ -398,6 +374,13 @@ function renderDashboard(session) {
           <div class="rc-icon" style="background:#e8f5e9">💷</div>
           <div class="rc-title">Daily Profit Report</div>
           <div class="rc-sub">Productive hours and billing by agent — previous day, week, month, or full month to date.</div>
+          <div class="rc-arrow">View report →</div>
+        </a>` : ''}
+        ${session.billing_access ? `
+        <a class="report-card" href="nadclinic/conversation-insights.html?campaign=${encodeURIComponent(campaign)}">
+          <div class="rc-icon teal">💬</div>
+          <div class="rc-title">Conversation Insights</div>
+          <div class="rc-sub">AI sentiment, CSAT and topic signal across every conversation. Ask questions in plain English.</div>
           <div class="rc-arrow">View report →</div>
         </a>` : ''}
         ${isAdmin ? `
