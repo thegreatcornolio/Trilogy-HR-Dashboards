@@ -71,7 +71,7 @@ tbody tr:hover td{background:#f7f6f2}
 <body>
 <script>/* HR Portal auth gate — reads the MSAL session the portal sets */
 (function () {
-  var KEY = 'hrportal_session';
+  var KEY = 'homebase_session';
   var MODULE = 'payroll';
   var raw = sessionStorage.getItem(KEY);
   if (!raw) { window.location.replace('../index.html'); return; }
