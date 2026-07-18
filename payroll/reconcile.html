@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Reconcile · SimplePay ↔ HR</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1e1e1e;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;--offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;--surface:#fff;--bg:#e8e7e3;--text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;--radius:8px;--radius-lg:12px;--red:#c0392b;--amber:#b9770e}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 24px rgba(0,0,0,.35)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 1rem}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-back{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'Montserrat',sans-serif}
+.nav-back:hover{color:var(--green)}
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.4rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4);max-width:680px}
+.shell{max-width:1100px;margin:0 auto;padding:2rem 2rem 5rem}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.asat{font-size:12px;color:var(--text3)}
+.btn{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover:not(:disabled){background:var(--green);color:#111}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.75rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;box-shadow:0 1px 8px rgba(27,42,74,.08)}
+.card-label{font-size:11px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
+.card-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:var(--text);line-height:1}
+.card-sub{font-size:12px;color:var(--text3);margin-top:.3rem}
+.card.ok{border-left:3px solid var(--green-dark)}
+.card.ok .card-num{color:var(--green-dark)}
+.card.amber{border-left:3px solid var(--amber)}
+.card.amber .card-num{color:var(--amber)}
+.card.red{border-left:3px solid var(--red)}
+.card.red .card-num{color:var(--red)}
+.section{margin-bottom:1.75rem}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
+.section-title{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.pill{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+.pill.red{background:#fcefe9;color:var(--red)}
+.pill.amber{background:#fdf6e9;color:var(--amber)}
+.pill.ok{background:var(--green-light);color:var(--green-dark)}
+.section-note{font-size:12px;color:var(--text3);margin-bottom:.75rem}
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);box-shadow:0 1px 8px rgba(27,42,74,.08)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+th{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f7f6f2}
+.name{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text)}
+.mono{font-family:'Montserrat',sans-serif;font-weight:700}
+.sub{font-size:11px;color:var(--text3)}
+.mism{color:var(--amber);font-weight:700}
+.empty-ok{padding:1rem 1.25rem;background:var(--green-light);border:1px solid var(--green-dark);border-radius:var(--radius);color:var(--green-dark);font-size:13px;font-family:'Montserrat',sans-serif;font-weight:700}
+.panel{border-radius:var(--radius);padding:1rem 1.25rem;font-size:13px;margin-bottom:1.5rem}
+.panel-warn{background:#fcefe9;border:1px solid var(--red);color:var(--red)}
+.panel-title{font-family:'Montserrat',sans-serif;font-weight:800;margin-bottom:.25rem}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.center{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.foot-note{font-size:12px;color:var(--text3);margin-top:1rem;text-align:center;line-height:1.7}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<script>/* HR Portal auth gate — reads the MSAL session the portal sets */
+(function () {
+  var KEY = 'hrportal_session';
+  var MODULE = 'payroll';
+  var raw = sessionStorage.getItem(KEY);
+  if (!raw) { window.location.replace('../index.html'); return; }
+  try {
+    var s = JSON.parse(raw);
+    var isAdmin = (s.role || '').toLowerCase() === 'admin';
+    var mods = Array.isArray(s.modules) ? s.modules.map(function (m) { return String(m).toLowerCase(); }) : [];
+    if (!isAdmin && mods.indexOf(MODULE) < 0) { window.location.replace('../index.html'); }
+  } catch (e) { sessionStorage.removeItem(KEY); window.location.replace('../index.html'); }
+})();
+</script>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div>
+    <div class="nav-section">Payroll · Reconcile</div>
+  </div>
+  <a href="index.html" class="nav-back">← Payroll</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Finance</div>
+    <div class="hero-title">Reconcile · SimplePay ↔ HR</div>
+    <div class="hero-sub">Matches SimplePay's live payroll roster against Active employees in the HR system, on ID number. Flags anyone on payroll without an HR record, and anyone active in HR who isn't yet on payroll.</div>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="bar">
+    <div class="asat" id="asat">Loading…</div>
+    <button class="btn" id="refreshBtn" onclick="load()"><span id="refreshTxt">↻ Re-check</span></button>
+  </div>
+
+  <div id="loadErr" class="panel panel-warn hidden"></div>
+
+  <div id="content" class="hidden">
+    <div class="cards" id="cards"></div>
+
+    <div class="section">
+      <div class="section-head"><div class="section-title">On payroll, not in HR system</div><span class="pill red" id="pillSp">0</span></div>
+      <div class="section-note">These people are paid in SimplePay but have no matching Active HR record. Every person on payroll should exist in the HR system — investigate each one.</div>
+      <div id="spOnlyBox"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><div class="section-title">In HR, not yet on payroll</div><span class="pill amber" id="pillSql">0</span></div>
+      <div class="section-note">Active employees in the HR system with no SimplePay record — these need loading into payroll.</div>
+      <div id="sqlOnlyBox"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><div class="section-title">Matched</div><span class="pill ok" id="pillMatched">0</span></div>
+      <div class="section-note">In both systems. Name mismatches are highlighted — SimplePay sometimes carries title prefixes (Mr/Mrs) that the HR record doesn't.</div>
+      <div id="matchedBox"></div>
+    </div>
+
+    <div class="foot-note">Read-only. This page reviews and flags — it does not change SimplePay or the HR database.</div>
+  </div>
+
+  <div id="loading" class="center"><span class="spinner" style="border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Reconciling SimplePay against HR…</div>
+</div>
+
+<script>
+/* ── Reconcile flow endpoint (RECONCILE_SIMPLEPAY) — paste the trigger URL here ── */
+const RECON_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/34420a4033244533a5acdc2eb4829c3b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fpFcvnn1Ha3c0ppHJh2G8tU7rPTbvHrC_liXOAUanOQ";
+
+const norm = v => String(v == null ? '' : v).trim();
+const normName = v => norm(v).toLowerCase().replace(/^(mr|mrs|ms|miss|dr|prof)\s+/i, '').replace(/\s+/g, ' ');
+
+async function load() {
+  const btn = document.getElementById('refreshBtn'), txt = document.getElementById('refreshTxt');
+  btn.disabled = true; txt.innerHTML = '<span class="spinner"></span> Checking…';
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('content').classList.add('hidden');
+  document.getElementById('loadErr').classList.add('hidden');
+  try {
+    const res = await fetch(RECON_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if (!res.ok) throw new Error('The reconcile flow returned status ' + res.status + '.');
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* empty */ }
+    render(data);
+  } catch (err) {
+    const el = document.getElementById('loadErr');
+    el.innerHTML = '<div class="panel-title">⚠ Couldn\'t reconcile</div>' + escapeHtml(String(err.message || err));
+    el.classList.remove('hidden');
+    document.getElementById('loading').classList.add('hidden');
+  } finally {
+    btn.disabled = false; txt.textContent = '↻ Re-check';
+  }
+}
+
+function asArray(v) {
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string') { try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch (e) { return []; } }
+  return [];
+}
+
+function render(data) {
+  const spRaw = asArray(data.simplepay);
+  const sqlRaw = asArray(data.sql);
+
+  // SimplePay: unwrap { employee: {...} }
+  const sp = spRaw.map(x => x.employee || x).filter(e => e && norm(e.id_number));
+  const spById = {};
+  sp.forEach(e => { spById[norm(e.id_number)] = e; });
+
+  const sqlById = {};
+  sqlRaw.forEach(r => { if (norm(r.IDNumber)) sqlById[norm(r.IDNumber)] = r; });
+
+  const spOnly = sp.filter(e => !sqlById[norm(e.id_number)]);
+  const sqlOnly = sqlRaw.filter(r => !spById[norm(r.IDNumber)]);
+  const matched = sqlRaw.filter(r => spById[norm(r.IDNumber)]).map(r => ({ sql: r, sp: spById[norm(r.IDNumber)] }));
+
+  document.getElementById('asat').innerHTML = 'SimplePay: <b>' + sp.length + '</b> · HR active: <b>' + sqlRaw.length + '</b> · checked just now';
+
+  const cards = [
+    { label: 'Matched', num: matched.length, sub: 'in both systems', cls: 'ok' },
+    { label: 'In HR, not on payroll', num: sqlOnly.length, sub: sqlOnly.length ? 'need loading' : 'all loaded', cls: sqlOnly.length ? 'amber' : 'ok' },
+    { label: 'On payroll, not in HR', num: spOnly.length, sub: spOnly.length ? 'investigate' : 'none', cls: spOnly.length ? 'red' : 'ok' }
+  ];
+  document.getElementById('cards').innerHTML = cards.map(c =>
+    '<div class="card ' + c.cls + '"><div class="card-label">' + c.label + '</div><div class="card-num">' + c.num + '</div><div class="card-sub">' + c.sub + '</div></div>'
+  ).join('');
+
+  document.getElementById('pillSp').textContent = spOnly.length;
+  document.getElementById('pillSql').textContent = sqlOnly.length;
+  document.getElementById('pillMatched').textContent = matched.length;
+
+  // On payroll, not in HR
+  document.getElementById('spOnlyBox').innerHTML = spOnly.length
+    ? tableHtml(['SP number', 'Name (SimplePay)', 'ID number'],
+        spOnly.map(e => ['<span class="mono">' + escapeHtml(norm(e.number) || '—') + '</span>',
+          '<span class="name">' + escapeHtml((norm(e.first_name) + ' ' + norm(e.last_name)).trim() || '—') + '</span>',
+          '<span class="mono">' + escapeHtml(norm(e.id_number)) + '</span>']))
+    : '<div class="empty-ok">✓ Everyone on payroll has a matching HR record.</div>';
+
+  // In HR, not on payroll
+  document.getElementById('sqlOnlyBox').innerHTML = sqlOnly.length
+    ? tableHtml(['Name (HR)', 'ID number', 'Job title'],
+        sqlOnly.map(r => ['<span class="name">' + escapeHtml(norm(r.FullName) || '—') + '</span>',
+          '<span class="mono">' + escapeHtml(norm(r.IDNumber)) + '</span>',
+          escapeHtml(norm(r.JobTitle) || norm(r.Department) || '—')]))
+    : '<div class="empty-ok">✓ Every Active HR employee is on payroll.</div>';
+
+  // Matched
+  document.getElementById('matchedBox').innerHTML = matched.length
+    ? tableHtml(['Name (HR)', 'ID number', 'SP number', 'Name check'],
+        matched.map(m => {
+          const hrName = norm(m.sql.FullName);
+          const spName = (norm(m.sp.first_name) + ' ' + norm(m.sp.last_name)).trim();
+          const same = normName(hrName) === normName(spName);
+          return ['<span class="name">' + escapeHtml(hrName || '—') + '</span>',
+            '<span class="mono">' + escapeHtml(norm(m.sql.IDNumber)) + '</span>',
+            '<span class="mono">' + escapeHtml(norm(m.sp.number) || '—') + '</span>',
+            same ? '<span class="sub">✓ match</span>' : '<span class="mism">SP: ' + escapeHtml(spName) + '</span>'];
+        }))
+    : '<div class="center">No matches.</div>';
+
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('content').classList.remove('hidden');
+}
+
+function tableHtml(headers, rows) {
+  return '<div class="tbl-wrap"><table><thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') +
+    '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table></div>';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+load();
+</script>
+</body>
+</html>
