@@ -66,6 +66,25 @@ tbody tr:hover td{background:#f7f6f2}
 .center{text-align:center;padding:3rem 1rem;color:var(--text3)}
 .foot-note{font-size:12px;color:var(--text3);margin-top:1rem;text-align:center;line-height:1.7}
 .hidden{display:none}
+.dbtns{display:flex;gap:6px}
+.dbtn{padding:5px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .12s}
+.dbtn:hover:not(:disabled){background:var(--offwhite)}
+.dbtn:disabled{opacity:.35;cursor:not-allowed}
+.dbtn-sp:hover:not(:disabled),.dbtn-both:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.dbtn-danger{background:var(--red);color:#fff;border-color:var(--red)}
+.dbtn-danger:hover:not(:disabled){background:#a5301f}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,20,30,.55);display:none;align-items:center;justify-content:center;z-index:500;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--surface);border-radius:var(--radius-lg);max-width:460px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal-title{font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:var(--red);margin-bottom:.75rem}
+.modal-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:1rem}
+.modal-input{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:'Montserrat',sans-serif;margin-bottom:1rem}
+.modal-input:focus{outline:none;border-color:var(--red)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-result{font-size:13px;margin-bottom:.5rem}
+.r-ok{background:var(--green-light);border:1px solid var(--green-dark);color:var(--green-dark);padding:.6rem .8rem;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-weight:700;margin-bottom:.4rem}
+.r-block{background:#fcefe9;border:1px solid var(--red);color:var(--red);padding:.6rem .8rem;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-weight:700;margin-bottom:.4rem}
+.r-uncertain{background:#fdf6e9;border:1px solid var(--amber);color:var(--amber);padding:.6rem .8rem;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-weight:700;margin-bottom:.4rem}
 </style>
 </head>
 <body>
@@ -136,9 +155,29 @@ tbody tr:hover td{background:#f7f6f2}
   <div id="loading" class="center"><span class="spinner" style="border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Reconciling SimplePay against HR…</div>
 </div>
 
+<div id="modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="mdlTitle">Delete</div>
+    <div class="modal-body" id="mdlBody"></div>
+    <input type="text" id="mdlInput" class="modal-input" placeholder="Type the full name" oninput="mdlCheck()" autocomplete="off">
+    <div id="mdlResult" class="modal-result"></div>
+    <div class="modal-actions">
+      <button class="dbtn" onclick="closeModal()">Cancel</button>
+      <button class="dbtn dbtn-danger hidden" id="mdlConfirm" disabled onclick="mdlConfirm()">Delete permanently</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ── Reconcile flow endpoint (RECONCILE_SIMPLEPAY) — paste the trigger URL here ── */
 const RECON_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/34420a4033244533a5acdc2eb4829c3b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fpFcvnn1Ha3c0ppHJh2G8tU7rPTbvHrC_liXOAUanOQ";
+
+/* ── Delete flows (guarded server-side: override secret + IsTest/payslip checks) ── */
+const DELETE_SQL_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/26/workflows/d1a9519f52b64db2aa83a2b01c150b35/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DHB4iO3WGcheWhaEKoBsTiy-IrXiFpv2GpydtAOOGRU";
+const DELETE_SP_URL = "https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/c573da39fadc434f9a37654c3916bee9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zAgEkqyj9m1jnMIU2ENyT1FDbmuF0-C07cH04M66cwk";
+const OVERRIDE = "trilogy-override-2026";
+
+const RECON = { spOnly: [], sqlOnly: [] };
 
 const norm = v => String(v == null ? '' : v).trim();
 const normName = v => norm(v).toLowerCase().replace(/^(mr|mrs|ms|miss|dr|prof)\s+/i, '').replace(/\s+/g, ' ');
@@ -202,20 +241,26 @@ function render(data) {
   document.getElementById('pillSql').textContent = sqlOnly.length;
   document.getElementById('pillMatched').textContent = matched.length;
 
-  // On payroll, not in HR
+  // store for delete-button lookup
+  RECON.spOnly = spOnly;
+  RECON.sqlOnly = sqlOnly;
+
+  // On payroll, not in HR — has SimplePay id AND id number → all three buttons live
   document.getElementById('spOnlyBox').innerHTML = spOnly.length
-    ? tableHtml(['SP number', 'Name (SimplePay)', 'ID number'],
-        spOnly.map(e => ['<span class="mono">' + escapeHtml(norm(e.number) || '—') + '</span>',
+    ? tableHtml(['SP number', 'Name (SimplePay)', 'ID number', 'Cleanup'],
+        spOnly.map((e, i) => ['<span class="mono">' + escapeHtml(norm(e.number) || '—') + '</span>',
           '<span class="name">' + escapeHtml((norm(e.first_name) + ' ' + norm(e.last_name)).trim() || '—') + '</span>',
-          '<span class="mono">' + escapeHtml(norm(e.id_number)) + '</span>']))
+          '<span class="mono">' + escapeHtml(norm(e.id_number)) + '</span>',
+          delButtons('spOnly', i, true, true)]))
     : '<div class="empty-ok">✓ Everyone on payroll has a matching HR record.</div>';
 
-  // In HR, not on payroll
+  // In HR, not on payroll — has id number but NO SimplePay id → only SQL delete can act
   document.getElementById('sqlOnlyBox').innerHTML = sqlOnly.length
-    ? tableHtml(['Name (HR)', 'ID number', 'Job title'],
-        sqlOnly.map(r => ['<span class="name">' + escapeHtml(norm(r.FullName) || '—') + '</span>',
+    ? tableHtml(['Name (HR)', 'ID number', 'Job title', 'Cleanup'],
+        sqlOnly.map((r, i) => ['<span class="name">' + escapeHtml(norm(r.FullName) || '—') + '</span>',
           '<span class="mono">' + escapeHtml(norm(r.IDNumber)) + '</span>',
-          escapeHtml(norm(r.JobTitle) || norm(r.Department) || '—')]))
+          escapeHtml(norm(r.JobTitle) || norm(r.Department) || '—'),
+          delButtons('sqlOnly', i, true, false)]))
     : '<div class="empty-ok">✓ Every Active HR employee is on payroll.</div>';
 
   // Matched
@@ -240,6 +285,117 @@ function tableHtml(headers, rows) {
   return '<div class="tbl-wrap"><table><thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') +
     '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') +
     '</tbody></table></div>';
+}
+
+function delButtons(bucket, idx, hasSql, hasSp) {
+  var b = '';
+  b += '<button class="dbtn dbtn-sql"' + (hasSql ? '' : ' disabled title="no HR record"') + ' onclick="askDelete(\'' + bucket + '\',' + idx + ',\'sql\')">SQL</button>';
+  b += '<button class="dbtn dbtn-sp"' + (hasSp ? '' : ' disabled title="no SimplePay record"') + ' onclick="askDelete(\'' + bucket + '\',' + idx + ',\'sp\')">SimplePay</button>';
+  b += '<button class="dbtn dbtn-both"' + (hasSql && hasSp ? '' : ' disabled title="needs both records"') + ' onclick="askDelete(\'' + bucket + '\',' + idx + ',\'both\')">Both</button>';
+  return '<div class="dbtns">' + b + '</div>';
+}
+
+function rowInfo(bucket, idx) {
+  if (bucket === 'spOnly') {
+    var e = RECON.spOnly[idx];
+    return { name: (norm(e.first_name) + ' ' + norm(e.last_name)).trim(), idNumber: norm(e.id_number), spId: String(e.id || '') };
+  } else {
+    var r = RECON.sqlOnly[idx];
+    return { name: norm(r.FullName), idNumber: norm(r.IDNumber), spId: '' };
+  }
+}
+
+let PENDING = null;
+
+function askDelete(bucket, idx, target) {
+  const info = rowInfo(bucket, idx);
+  PENDING = { info: info, target: target };
+  const scope = target === 'sql' ? 'the HR database (SQL)' : target === 'sp' ? 'SimplePay' : 'BOTH SimplePay and the HR database';
+  document.getElementById('mdlTitle').textContent = 'Delete ' + info.name;
+  document.getElementById('mdlBody').innerHTML =
+    'You are about to permanently delete <b>' + escapeHtml(info.name) + '</b> from <b>' + scope + '</b>.<br><br>' +
+    'This cannot be undone. It will only proceed if the record is a flagged test with no payroll history — real employees are refused automatically.<br><br>' +
+    'Type the person\'s name exactly to confirm:';
+  document.getElementById('mdlInput').value = '';
+  document.getElementById('mdlConfirm').disabled = true;
+  document.getElementById('mdlResult').innerHTML = '';
+  document.getElementById('mdlConfirm').classList.remove('hidden');
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('mdlInput').focus();
+}
+
+function mdlCheck() {
+  const typed = document.getElementById('mdlInput').value.trim().toLowerCase();
+  const target = PENDING ? PENDING.info.name.trim().toLowerCase() : '__';
+  document.getElementById('mdlConfirm').disabled = (typed !== target || !target);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); PENDING = null; }
+
+async function callFlow(url, body) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 40000);
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal });
+    clearTimeout(timer);
+    let data = {};
+    try { data = await res.json(); } catch (e) { }
+    if (data && data.error) return 'uncertain';
+    if (data && data.result) return data.result;
+    return 'uncertain';
+  } catch (e) { clearTimeout(timer); return 'uncertain'; }
+}
+
+async function mdlConfirm() {
+  if (!PENDING) return;
+  const { info, target } = PENDING;
+  const btn = document.getElementById('mdlConfirm');
+  const out = document.getElementById('mdlResult');
+  btn.disabled = true; btn.classList.add('hidden');
+  out.innerHTML = '<span class="spinner" style="border-color:#c8c7c3;border-top-color:#1B2A4A"></span> Working…';
+
+  let msg = '';
+  try {
+    if (target === 'sql') {
+      const r = await callFlow(DELETE_SQL_URL, { idNumber: info.idNumber, override: OVERRIDE });
+      msg = sqlMsg(r);
+    } else if (target === 'sp') {
+      const r = await callFlow(DELETE_SP_URL, { simplePayId: info.spId, override: OVERRIDE });
+      msg = spMsg(r);
+    } else { // both: SimplePay first, only touch SQL if SP resolved cleanly
+      const sp = await callFlow(DELETE_SP_URL, { simplePayId: info.spId, override: OVERRIDE });
+      if (sp === 'uncertain') {
+        msg = uncertain('SimplePay delete') + ' SQL was NOT attempted. Re-check before retrying.';
+      } else if (sp === 'blocked_has_payslips') {
+        msg = '<div class="r-block">⛔ Blocked — has finalised payslips in SimplePay. Nothing was deleted.</div>';
+      } else if (sp === 'unauthorized') {
+        msg = '<div class="r-block">⛔ Unauthorized. Nothing was deleted.</div>';
+      } else { // deleted from SP → now SQL
+        const sq = await callFlow(DELETE_SQL_URL, { idNumber: info.idNumber, override: OVERRIDE });
+        msg = '<div class="r-ok">✓ SimplePay: ' + sp + '</div>' + sqlMsg(sq);
+      }
+    }
+  } catch (e) { msg = uncertain('the request'); }
+
+  out.innerHTML = msg;
+  const reloadBtn = '<button class="dbtn" style="margin-top:10px" onclick="closeModal();load();">Close &amp; re-check</button>';
+  out.innerHTML += reloadBtn;
+}
+
+function sqlMsg(r) {
+  if (r === 'deleted') return '<div class="r-ok">✓ HR database: deleted.</div>';
+  if (r === 'blocked') return '<div class="r-block">⛔ HR database: blocked — not a flagged test record (real employees are protected).</div>';
+  if (r === 'unauthorized') return '<div class="r-block">⛔ Unauthorized.</div>';
+  return uncertain('HR database delete');
+}
+function spMsg(r) {
+  if (r === 'deleted') return '<div class="r-ok">✓ SimplePay: deleted.</div>';
+  if (r === 'blocked_has_payslips') return '<div class="r-block">⛔ SimplePay: blocked — has finalised payslips (protected).</div>';
+  if (r === 'unauthorized') return '<div class="r-block">⛔ Unauthorized.</div>';
+  return uncertain('SimplePay delete');
+}
+function uncertain(what) {
+  return '<div class="r-uncertain">⚠ ' + what + ' timed out — outcome UNKNOWN. It may or may not have completed. Re-check the list before trying again; do not assume it failed.</div>';
 }
 
 function escapeHtml(s) {
