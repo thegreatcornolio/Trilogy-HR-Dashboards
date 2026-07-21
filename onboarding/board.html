@@ -208,13 +208,14 @@ window.resendOffer=function(id){
     candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
     candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
     candidate_mobile:p.Mobile, candidate_address:p.Address,
-    job_title:p.JobTitle, campaign:p.Campaign, salary:p.Salary,
+    job_title:p.JobTitle, campaign:p.Campaign, salary:String(p.Salary),
     start_date:p.StartDate, offer_date:p.OfferDate,
     reports_to:p.ReportsTo, reports_to_email:p.ReportsToEmail,
     annual_leave:p.AnnualLeaveEntitlement||15, rudi_email:'rudij@trilogybpo.com'
   })})
+  .then(function(r){ if(!r.ok) return r.text().then(function(t){throw new Error('HTTP '+r.status+': '+t);}); })
   .then(function(){setBtn(id,'resendOffer','✓ Sent',false);setTimeout(function(){setBtn(id,'resendOffer','↻ Resend offer',false);},3000);})
-  .catch(function(){setBtn(id,'resendOffer','✗ Failed',false);setTimeout(function(){setBtn(id,'resendOffer','↻ Resend offer',false);},3000);});
+  .catch(function(e){console.error('resendOffer failed:',e);setBtn(id,'resendOffer','✗ Failed',false);setTimeout(function(){setBtn(id,'resendOffer','↻ Resend offer',false);},3000);});
 };
 
 window.resendContract=function(id){
@@ -227,12 +228,13 @@ window.resendContract=function(id){
     candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
     candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
     candidate_mobile:p.Mobile, candidate_address:p.Address,
-    job_title:p.JobTitle, salary:p.Salary, start_date:p.StartDate,
+    job_title:p.JobTitle, salary:String(p.Salary), start_date:p.StartDate,
     offer_date:p.OfferDate, reports_to:p.ReportsTo, reports_to_email:p.ReportsToEmail,
     rudi_email:'rudij@trilogybpo.com'
   })})
+  .then(function(r){ if(!r.ok) return r.text().then(function(t){throw new Error('HTTP '+r.status+': '+t);}); })
   .then(function(){setBtn(id,'resendContract','✓ Sent',false);setTimeout(function(){setBtn(id,'resendContract','↻ Resend contract',false);},3000);})
-  .catch(function(){setBtn(id,'resendContract','✗ Failed',false);setTimeout(function(){setBtn(id,'resendContract','↻ Resend contract',false);},3000);});
+  .catch(function(e){console.error('resendContract failed:',e);setBtn(id,'resendContract','✗ Failed',false);setTimeout(function(){setBtn(id,'resendContract','↻ Resend contract',false);},3000);});
 };
 
 window.sendForm=function(id){
