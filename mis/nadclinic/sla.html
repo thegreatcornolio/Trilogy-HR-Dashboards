@@ -135,7 +135,7 @@
       <div class="sla-cadence">Weekly</div>
       <div class="sla-top"><div class="sla-label">📞 Voice</div><div class="sla-pill" id="pill-voice">—</div></div>
       <div class="sla-value" id="val-voice">—</div>
-      <div class="sla-target">Target: ≥80% within 15s (+~20s IVR allowance = 35s)</div>
+      <div class="sla-target">Target: ≥80% within 15s</div>
       <div class="sla-sub" id="sub-voice">—</div>
     </div>
     <div class="sla-card" id="card-whatsapp">
@@ -167,7 +167,7 @@
       <div class="sla-cadence">Weekly</div>
       <div class="sla-top"><div class="sla-label">✅ First Contact Resolution</div><div class="sla-pill" id="pill-fcr">—</div></div>
       <div class="sla-value" id="val-fcr">—</div>
-      <div class="sla-target">Target: ≥80% (no repeat within 5 working days)</div>
+      <div class="sla-target">Target: ≥80%</div>
       <div class="sla-sub" id="sub-fcr">—</div>
     </div>
     <div class="sla-card" id="card-csat">
@@ -179,10 +179,6 @@
     </div>
   </div>
 
-  <div class="pending-card">
-    <span class="pending-dot"></span>
-    <div class="pending-text"><b>AHT — Cancellation calls (≤7 min target)</b> and <b>Quality Score (≥80%, monthly)</b> are not yet tracked here. AHT's cancellation split needs per-conversation topic classification (separate task); Quality Score isn't currently captured in qContact at all.</div>
-  </div>
 
 </div>
 
@@ -315,42 +311,42 @@ function render(data, range) {
     value: voice.TotalAnswered ? `${voice.VoiceSLPercent}%` : '—',
     pass: (voice.VoiceSLPercent || 0) >= 80,
     noData: !voice.TotalAnswered,
-    sub: voice.TotalAnswered ? `${voice.AnsweredWithinSLA} of ${voice.TotalAnswered} answered calls within target · ${period}` : `No answered calls in this period · ${period}`
+    sub: voice.TotalAnswered ? `${voice.AnsweredWithinSLA} of ${voice.TotalAnswered} answered calls within target` : `No answered calls in this period`
   });
 
   setCard('whatsapp', {
     value: whatsapp.TotalAnswered ? `${whatsapp.WhatsAppSLPercent}%` : '—',
     pass: (whatsapp.WhatsAppSLPercent || 0) >= 80,
     noData: !whatsapp.TotalAnswered,
-    sub: whatsapp.TotalAnswered ? `${whatsapp.AnsweredWithinSLA} of ${whatsapp.TotalAnswered} replied conversations within target · ${period}` : `No replied conversations in this period · ${period}`
+    sub: whatsapp.TotalAnswered ? `${whatsapp.AnsweredWithinSLA} of ${whatsapp.TotalAnswered} replied conversations within target` : `No replied conversations in this period`
   });
 
   setCard('email', {
     value: email.TotalAnswered ? `${email.EmailSLPercent}%` : '—',
     pass: (email.EmailSLPercent || 0) >= 80,
     noData: !email.TotalAnswered,
-    sub: email.TotalAnswered ? `${email.AnsweredWithinSLA} of ${email.TotalAnswered} replied emails within target (${email.TotalOffered} total assigned to an agent) · ${period}` : `No agent-assigned emails in this period · ${period}`
+    sub: email.TotalAnswered ? `${email.AnsweredWithinSLA} of ${email.TotalAnswered} replied emails within target (${email.TotalOffered} total assigned to an agent)` : `No agent-assigned emails in this period`
   });
 
   setCard('aht', {
     value: aht.VoiceConvs ? fmtSec(aht.AvgVoiceAHTSec) : '—',
     pass: (aht.AvgVoiceAHTSec || 999) <= 240,
     noData: !aht.VoiceConvs,
-    sub: aht.VoiceConvs ? `${aht.AHTWithinTarget}% of ${aht.VoiceConvs} calls within 4 min · ${period}` : `No voice calls in this period · ${period}`
+    sub: aht.VoiceConvs ? `${aht.AHTWithinTarget}% of ${aht.VoiceConvs} calls within 4 min` : `No voice calls in this period`
   });
 
   setCard('fcr', {
     value: fcr.TotalContacts ? `${fcr.FCRPercent}%` : '—',
     pass: (fcr.FCRPercent || 0) >= 80,
     noData: !fcr.TotalContacts,
-    sub: fcr.TotalContacts ? `${fcr.ResolvedFirstContact} of ${fcr.TotalContacts} contacts resolved without repeat · ${period}` : `No contacts in this period · ${period}`
+    sub: fcr.TotalContacts ? `${fcr.ResolvedFirstContact} of ${fcr.TotalContacts} contacts resolved without repeat` : `No contacts in this period`
   });
 
   setCard('csat', {
     value: csat.CSATCount ? Number(csat.AvgCSAT).toFixed(1) : '—',
     pass: (csat.AvgCSAT || 0) >= 4.2,
     noData: !csat.CSATCount,
-    sub: csat.CSATCount ? `Based on ${csat.CSATCount} survey response${csat.CSATCount===1?'':'s'} · ${period}` : `No completed surveys in this period · ${period}`
+    sub: csat.CSATCount ? `Based on ${csat.CSATCount} survey response${csat.CSATCount===1?'':'s'}` : `No completed surveys in this period`
   });
 }
 
