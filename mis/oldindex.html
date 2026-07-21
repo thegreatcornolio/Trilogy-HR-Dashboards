@@ -390,13 +390,6 @@ function renderDashboard(session) {
           <div class="rc-sub">Top reasons for contact by channel, plus repeat and dissatisfaction drivers — refreshed daily.</div>
           <div class="rc-arrow">View report →</div>
         </a>` : ''}
-        ${session.billing_access ? `
-        <a class="report-card" href="nadclinic/sla.html?campaign=${encodeURIComponent(campaign)}">
-          <div class="rc-icon" style="background:#dbeafe">📊</div>
-          <div class="rc-title">SLA</div>
-          <div class="rc-sub">Speed of reply, handling time, CSAT and first contact resolution against Ops targets.</div>
-          <div class="rc-arrow">View report →</div>
-        </a>` : ''}
         ${isAdmin ? `
         <a class="report-card admin-card" href="admin.html">
           <div class="rc-icon dark">🔧</div>

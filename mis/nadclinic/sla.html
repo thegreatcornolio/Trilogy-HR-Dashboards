@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilogy · NADClinic · SLA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:#1e1e1e; --navy2:#2a2a2a; --green:#4AFD0E; --green-light:#edffd6; --green-dark:#2a8a00;
+      --offwhite:#F7F6F2; --border:#e2e1dd; --border2:#c8c7c3; --surface:#fff; --bg:#e8e7e3;
+      --text:#1B2A4A; --text2:#4A5568; --text3:#7a8499;
+      --radius:8px; --radius-lg:12px; --radius-xl:16px;
+      --red:#c0392b; --red-bg:#fbe9e7; --gold:#b8860b; --gold-bg:#fdf3dc;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'Wix Madefor Text',sans-serif; background:var(--bg); color:var(--text); font-size:14px; margin:0; }
+    * { box-sizing:border-box; }
+
+    .nav { background:var(--navy); height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 32px; position:sticky; top:0; z-index:100; }
+    .nav-left { display:flex; align-items:center; gap:12px; }
+    .nav-divider { width:1px; height:24px; background:rgba(255,255,255,0.15); }
+    .nav-section { color:rgba(255,255,255,0.65); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; }
+    .nav-badge { background:rgba(74,253,14,0.15); color:var(--green); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; padding:3px 10px; border-radius:4px; letter-spacing:0.06em; }
+    .nav-back { color:rgba(255,255,255,0.45); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; text-decoration:none; padding:6px 10px; border:1px solid rgba(255,255,255,0.12); border-radius:6px; }
+    .nav-back:hover { color:rgba(255,255,255,0.85); background:rgba(255,255,255,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .nav-avatar { width:34px; height:34px; border-radius:50%; background:var(--green); color:var(--navy); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid rgba(74,253,14,0.4); }
+    .nav-name { color:rgba(255,255,255,0.8); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; }
+    .btn-signout { background:transparent; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.55); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; padding:6px 12px; border-radius:6px; cursor:pointer; }
+    .btn-signout:hover { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.9); }
+
+    .hero { background:var(--navy); padding:28px 0 24px; border-bottom:1px solid rgba(255,255,255,0.08); }
+    .hero-inner { max-width:1200px; margin:0 auto; padding:0 32px; }
+    .hero-label { color:var(--green); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; margin-bottom:6px; }
+    .hero-title { color:#fff; font-family:'Montserrat',sans-serif; font-size:24px; font-weight:900; }
+    .hero-sub { color:rgba(255,255,255,0.38); font-size:13px; margin-top:4px; }
+
+    .filter-bar { background:var(--navy2); border-bottom:1px solid rgba(255,255,255,0.08); }
+    .filter-bar-inner { max-width:1200px; margin:0 auto; padding:14px 32px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .filter-label { color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-right:6px; }
+    .toggle-group { display:flex; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); border-radius:20px; padding:3px; }
+    .toggle-opt { font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; color:rgba(255,255,255,0.55); padding:6px 16px; border-radius:16px; cursor:pointer; }
+    .toggle-opt.active { background:var(--green); color:var(--navy); }
+    .filter-input { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; padding:8px 12px; border-radius:20px; }
+    .filter-input::-webkit-calendar-picker-indicator { filter:invert(1); opacity:0.6; }
+    .filter-go { margin-left:auto; }
+    .btn-apply { background:var(--green); border:none; color:var(--navy); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; padding:8px 18px; border-radius:20px; cursor:pointer; }
+
+    .container { max-width:1200px; margin:0 auto; padding:28px 32px 56px; }
+    .section-label { font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); margin-bottom:14px; margin-top:8px; }
+
+    .sla-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+    .sla-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:20px; position:relative; overflow:hidden; }
+    .sla-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--border2); }
+    .sla-card.pass::before { background:var(--green-dark); }
+    .sla-card.fail::before { background:var(--red); }
+    .sla-card.nodata::before { background:var(--gold); }
+    .sla-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+    .sla-label { font-family:'Montserrat',sans-serif; font-size:11.5px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; }
+    .sla-pill { font-family:'Montserrat',sans-serif; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius:20px; }
+    .sla-pill.pass { background:var(--green-light); color:var(--green-dark); }
+    .sla-pill.fail { background:var(--red-bg); color:var(--red); }
+    .sla-pill.nodata { background:var(--gold-bg); color:var(--gold); }
+    .sla-value { font-family:'Montserrat',sans-serif; font-size:32px; font-weight:800; color:var(--text); line-height:1; }
+    .sla-target { font-size:12px; color:var(--text3); margin-top:6px; }
+    .sla-sub { font-size:11.5px; color:var(--text3); margin-top:8px; padding-top:8px; border-top:1px solid var(--offwhite); }
+    .sla-cadence { font-family:'Montserrat',sans-serif; font-size:9.5px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; position:absolute; top:16px; right:20px; }
+
+    .pending-card { background:var(--offwhite); border:1px dashed var(--border2); border-radius:var(--radius-xl); padding:18px 20px; display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+    .pending-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+    .pending-text { font-size:12.5px; color:var(--text2); }
+    .pending-text b { color:var(--text); }
+
+    #loading-overlay { position:fixed; inset:0; background:rgba(232,231,227,0.85); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .load-spinner { width:36px; height:36px; border:3px solid rgba(30,30,30,0.12); border-top-color:var(--navy); border-radius:50%; animation:spin 0.75s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    @media(max-width:900px) { .sla-grid { grid-template-columns:1fr 1fr; } }
+    @media(max-width:640px) {
+      .nav,.hero-inner,.filter-bar-inner,.container { padding-left:16px; padding-right:16px; }
+      .filter-go { margin-left:0; width:100%; }
+      .sla-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay"><div class="load-spinner"></div></div>
+
+<nav class="nav">
+  <div class="nav-left">
+    <img src="/trilogy-logo.png" alt="Trilogy" style="height:28px">
+    <div class="nav-divider"></div>
+    <div class="nav-section">MIS Dashboard</div>
+    <div class="nav-divider"></div>
+    <span class="nav-badge">📊 SLA</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-back" href="../index.html">← Campaigns</a>
+    <div class="nav-avatar" id="nav-av"></div>
+    <span class="nav-name" id="nav-name"></span>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">NADClinic</div>
+    <div class="hero-title">Service Levels</div>
+    <div class="hero-sub">Speed of reply, handling time, satisfaction and first contact resolution against Ops targets</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <span class="filter-label">Period</span>
+    <div class="toggle-group">
+      <div class="toggle-opt active" data-period="week" onclick="setPeriod('week')">This Week</div>
+      <div class="toggle-opt" data-period="month" onclick="setPeriod('month')">This Month</div>
+    </div>
+    <span class="filter-label">As of</span>
+    <input type="date" id="f-asof" class="filter-input">
+    <div class="filter-go"><button class="btn-apply" onclick="loadData()">Refresh</button></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section-label">Speed of Initial Reply — Weekly</div>
+  <div class="sla-grid">
+    <div class="sla-card" id="card-voice">
+      <div class="sla-cadence">Weekly</div>
+      <div class="sla-top"><div class="sla-label">📞 Voice</div><div class="sla-pill" id="pill-voice">—</div></div>
+      <div class="sla-value" id="val-voice">—</div>
+      <div class="sla-target">Target: ≥80% within 15s (+~20s IVR allowance = 35s)</div>
+      <div class="sla-sub" id="sub-voice">—</div>
+    </div>
+    <div class="sla-card" id="card-whatsapp">
+      <div class="sla-cadence">Weekly</div>
+      <div class="sla-top"><div class="sla-label">💬 WhatsApp</div><div class="sla-pill" id="pill-whatsapp">—</div></div>
+      <div class="sla-value" id="val-whatsapp">—</div>
+      <div class="sla-target">Target: ≥80% within 15 minutes</div>
+      <div class="sla-sub" id="sub-whatsapp">—</div>
+    </div>
+    <div class="sla-card" id="card-email">
+      <div class="sla-cadence">Weekly</div>
+      <div class="sla-top"><div class="sla-label">✉️ Email</div><div class="sla-pill" id="pill-email">—</div></div>
+      <div class="sla-value" id="val-email">—</div>
+      <div class="sla-target">Target: ≥80% within 1 hour</div>
+      <div class="sla-sub" id="sub-email">—</div>
+    </div>
+  </div>
+
+  <div class="section-label">Handling Time &amp; Resolution</div>
+  <div class="sla-grid">
+    <div class="sla-card" id="card-aht">
+      <div class="sla-cadence">Weekly</div>
+      <div class="sla-top"><div class="sla-label">⏱ AHT — Voice (General)</div><div class="sla-pill" id="pill-aht">—</div></div>
+      <div class="sla-value" id="val-aht">—</div>
+      <div class="sla-target">Target: ≤4 min average</div>
+      <div class="sla-sub" id="sub-aht">—</div>
+    </div>
+    <div class="sla-card" id="card-fcr">
+      <div class="sla-cadence">Weekly</div>
+      <div class="sla-top"><div class="sla-label">✅ First Contact Resolution</div><div class="sla-pill" id="pill-fcr">—</div></div>
+      <div class="sla-value" id="val-fcr">—</div>
+      <div class="sla-target">Target: ≥80% (no repeat within 5 working days)</div>
+      <div class="sla-sub" id="sub-fcr">—</div>
+    </div>
+    <div class="sla-card" id="card-csat">
+      <div class="sla-cadence">Monthly</div>
+      <div class="sla-top"><div class="sla-label">⭐ CSAT</div><div class="sla-pill" id="pill-csat">—</div></div>
+      <div class="sla-value" id="val-csat">—</div>
+      <div class="sla-target">Target: ≥4.2 / 5.0</div>
+      <div class="sla-sub" id="sub-csat">—</div>
+    </div>
+  </div>
+
+  <div class="pending-card">
+    <span class="pending-dot"></span>
+    <div class="pending-text"><b>AHT — Cancellation calls (≤7 min target)</b> and <b>Quality Score (≥80%, monthly)</b> are not yet tracked here. AHT's cancellation split needs per-conversation topic classification (separate task); Quality Score isn't currently captured in qContact at all.</div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+const SESSION_KEY = 'mis_session';
+const FLOWS = { GET_SLA: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/22/workflows/9080aea1d8cf4683a9779f19a6dc876c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rrexKXxbLqkdbgnQdQfyE8h_a0bOzk6dDWq0UBN9W3k' };
+const CAMPAIGN = new URLSearchParams(location.search).get('campaign') || 'NADClinic';
+
+function checkSession() {
+  const raw = sessionStorage.getItem(SESSION_KEY);
+  if (!raw) { window.location.href = '../index.html'; return null; }
+  const session = JSON.parse(raw);
+  const billing = session.billing_access===1||session.billing_access===true||session.billing_access==='1'||session.billing_access==='true';
+  if (!billing) { window.location.href = '../index.html'; return null; }
+  return session;
+}
+function signOut() { sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem('mis_admin_unlocked'); window.location.href = '../index.html'; }
+function initials(name) { return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+
+function unwrap(d) {
+  if (!d) return {};
+  if (typeof d === 'string') { try { return unwrap(JSON.parse(d)); } catch { return {}; } }
+  if (d.body) return typeof d.body === 'string' ? unwrap(JSON.parse(d.body)) : unwrap(d.body);
+  return d;
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function callFlow(url, body = {}, attempt = 0) {
+  try {
+    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (!r.ok) { if (r.status >= 500 && attempt < 3) { await wait(1200*(attempt+1)); return callFlow(url,body,attempt+1); } throw new Error('Flow HTTP '+r.status); }
+    const text = await r.text();
+    if (!text || text === 'null') return {};
+    return unwrap(JSON.parse(text));
+  } catch(e) {
+    if (attempt < 3 && !e.message?.startsWith('Flow HTTP')) { await wait(1200*(attempt+1)); return callFlow(url,body,attempt+1); }
+    throw e;
+  }
+}
+
+let currentPeriod = 'week';
+
+function periodRange(asOf) {
+  const d = new Date(asOf);
+  if (currentPeriod === 'week') {
+    const day = d.getDay() || 7;
+    const monday = new Date(d); monday.setDate(d.getDate() - day + 1);
+    return { from: monday.toISOString().slice(0,10), to: d.toISOString().slice(0,10) };
+  }
+  const first = new Date(d.getFullYear(), d.getMonth(), 1);
+  return { from: first.toISOString().slice(0,10), to: d.toISOString().slice(0,10) };
+}
+
+function setPeriod(p) {
+  currentPeriod = p;
+  document.querySelectorAll('.toggle-opt').forEach(el => el.classList.toggle('active', el.dataset.period===p));
+  loadData();
+}
+
+function fmtSec(s) {
+  if (s === null || s === undefined) return '—';
+  if (s < 60) return `${Math.round(s)}s`;
+  return `${Math.floor(s/60)}m ${Math.round(s%60)}s`;
+}
+
+function setCard(prefix, { value, target, pass, sub, noData }) {
+  const card = document.getElementById(`card-${prefix}`);
+  const pill = document.getElementById(`pill-${prefix}`);
+  const val = document.getElementById(`val-${prefix}`);
+  const subEl = document.getElementById(`sub-${prefix}`);
+  card.classList.remove('pass','fail','nodata');
+  pill.classList.remove('pass','fail','nodata');
+  if (noData) {
+    card.classList.add('nodata'); pill.classList.add('nodata'); pill.textContent = 'No data';
+  } else if (pass) {
+    card.classList.add('pass'); pill.classList.add('pass'); pill.textContent = 'Met';
+  } else {
+    card.classList.add('fail'); pill.classList.add('fail'); pill.textContent = 'Not met';
+  }
+  val.textContent = value;
+  subEl.textContent = sub;
+}
+
+/* ============================================================
+   MOCK DATA — mirrors the real MIS-GetSLAReport response shape
+   validated live: Table1 Voice, Table2 WhatsApp, Table3 Email,
+   Table4 AHT, Table5 CSAT, Table6 FCR.
+   ============================================================ */
+function mockSLAResponse() {
+  return {
+    Table1: [{ TotalOffered: 7, TotalAnswered: 7, AnsweredWithinSLA: 6, VoiceSLPercent: 85.7 }],
+    Table2: [{ TotalOffered: 10, TotalAnswered: 10, AnsweredWithinSLA: 9, WhatsAppSLPercent: 90.0 }],
+    Table3: [{ TotalOffered: 230, TotalAnswered: 112, AnsweredWithinSLA: 93, EmailSLPercent: 83.0 }],
+    Table4: [{ VoiceConvs: 7, AvgVoiceAHTSec: 210.14, AHTWithinTarget: 42.9 }],
+    Table5: [{ AvgCSAT: null, CSATCount: 0 }],
+    Table6: [{ TotalContacts: 135, ResolvedFirstContact: 45, FCRPercent: 33.3 }]
+  };
+}
+
+async function loadData() {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  try {
+    const asOf = document.getElementById('f-asof').value;
+    const range = periodRange(asOf);
+    let data;
+    if (FLOWS.GET_SLA) {
+      data = await callFlow(FLOWS.GET_SLA, { campaignCode: CAMPAIGN, dateFrom: range.from, dateTo: range.to });
+    } else {
+      data = mockSLAResponse();
+    }
+    render(data, range);
+  } catch (e) {
+    console.error('loadData:', e);
+  } finally {
+    document.getElementById('loading-overlay').style.display = 'none';
+  }
+}
+
+function render(data, range) {
+  const voice = (data.Table1 || [])[0] || {};
+  const whatsapp = (data.Table2 || [])[0] || {};
+  const email = (data.Table3 || [])[0] || {};
+  const aht = (data.Table4 || [])[0] || {};
+  const csat = (data.Table5 || [])[0] || {};
+  const fcr = (data.Table6 || [])[0] || {};
+
+  const period = `${range.from} – ${range.to}`;
+
+  setCard('voice', {
+    value: voice.TotalAnswered ? `${voice.VoiceSLPercent}%` : '—',
+    pass: (voice.VoiceSLPercent || 0) >= 80,
+    noData: !voice.TotalAnswered,
+    sub: voice.TotalAnswered ? `${voice.AnsweredWithinSLA} of ${voice.TotalAnswered} answered calls within target · ${period}` : `No answered calls in this period · ${period}`
+  });
+
+  setCard('whatsapp', {
+    value: whatsapp.TotalAnswered ? `${whatsapp.WhatsAppSLPercent}%` : '—',
+    pass: (whatsapp.WhatsAppSLPercent || 0) >= 80,
+    noData: !whatsapp.TotalAnswered,
+    sub: whatsapp.TotalAnswered ? `${whatsapp.AnsweredWithinSLA} of ${whatsapp.TotalAnswered} replied conversations within target · ${period}` : `No replied conversations in this period · ${period}`
+  });
+
+  setCard('email', {
+    value: email.TotalAnswered ? `${email.EmailSLPercent}%` : '—',
+    pass: (email.EmailSLPercent || 0) >= 80,
+    noData: !email.TotalAnswered,
+    sub: email.TotalAnswered ? `${email.AnsweredWithinSLA} of ${email.TotalAnswered} replied emails within target (${email.TotalOffered} total assigned to an agent) · ${period}` : `No agent-assigned emails in this period · ${period}`
+  });
+
+  setCard('aht', {
+    value: aht.VoiceConvs ? fmtSec(aht.AvgVoiceAHTSec) : '—',
+    pass: (aht.AvgVoiceAHTSec || 999) <= 240,
+    noData: !aht.VoiceConvs,
+    sub: aht.VoiceConvs ? `${aht.AHTWithinTarget}% of ${aht.VoiceConvs} calls within 4 min · ${period}` : `No voice calls in this period · ${period}`
+  });
+
+  setCard('fcr', {
+    value: fcr.TotalContacts ? `${fcr.FCRPercent}%` : '—',
+    pass: (fcr.FCRPercent || 0) >= 80,
+    noData: !fcr.TotalContacts,
+    sub: fcr.TotalContacts ? `${fcr.ResolvedFirstContact} of ${fcr.TotalContacts} contacts resolved without repeat · ${period}` : `No contacts in this period · ${period}`
+  });
+
+  setCard('csat', {
+    value: csat.CSATCount ? Number(csat.AvgCSAT).toFixed(1) : '—',
+    pass: (csat.AvgCSAT || 0) >= 4.2,
+    noData: !csat.CSATCount,
+    sub: csat.CSATCount ? `Based on ${csat.CSATCount} survey response${csat.CSATCount===1?'':'s'} · ${period}` : `No completed surveys in this period · ${period}`
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const session = checkSession();
+  if (!session) return;
+  document.getElementById('nav-av').textContent = initials(session.displayName);
+  document.getElementById('nav-name').textContent = (session.displayName||'').split(' ')[0];
+  document.getElementById('f-asof').value = new Date().toISOString().slice(0,10);
+  loadData();
+});
+</script>
+</body>
+</html>
