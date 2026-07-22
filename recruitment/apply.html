@@ -223,7 +223,7 @@ function renderRole(){
       '<div class="field"><label>ID type <span class="req">*</span></label>'+
         '<div class="seg"><button type="button" class="seg-btn active" id="segSAID" onclick="setIDType(\'SA_ID\')">SA ID</button><button type="button" class="seg-btn" id="segPass" onclick="setIDType(\'Passport\')">Passport</button></div></div>'+
       '<div class="field"><label id="lblID">SA ID number <span class="req">*</span></label><input id="fID" type="text" inputmode="numeric" maxlength="13" oninput="onIDInput()"><div class="field-err" id="eID">Enter a valid 13-digit SA ID number</div></div>'+
-      '<div class="field" id="countryWrap" style="display:none"><label>Country of nationality <span class="req">*</span></label><input id="fCountry" type="text" placeholder="e.g. Zimbabwe" autocomplete="country-name"><div class="field-err" id="eCountry">Required for passport holders</div></div>'+
+      '<div class="field" id="countryWrap" style="display:none"><label>Nationality <span class="req">*</span></label><select id="fCountry"><option value="">Select…</option><option>Zimbabwean</option><option>Nigerian</option><option>Congolese (DRC)</option><option>Malawian</option><option>Mozambican</option><option>Zambian</option><option>Kenyan</option><option>Ghanaian</option><option>Cameroonian</option><option>Somali</option><option>Ethiopian</option><option>Indian</option><option>Pakistani</option><option>Bangladeshi</option><option>Other</option></select><div class="field-err" id="eCountry">Please select your nationality</div></div>'+
 
       '<div class="row2">'+
         '<div class="field"><label>Date of birth <span class="req">*</span></label><input id="fDOB" type="date"><div class="field-hint">Auto-filled from your ID</div><div class="field-err" id="eDOB">Required</div></div>'+
@@ -383,7 +383,6 @@ function submitApp(){
     IDType: isSA?'SA_ID':'Passport',
     IDNumber: isSA?idClean:'',
     PassportNumber: isSA?'':idClean,
-    IsSouthAfrican: isSA,
     Nationality: isSA?'South African':country,
     DateOfBirth:dob, Gender:gender,
     Mobile:mobile, PersonalEmail:email,
