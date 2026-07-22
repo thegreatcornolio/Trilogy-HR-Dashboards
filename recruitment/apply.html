@@ -59,6 +59,15 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 .field input:focus,.field select:focus{outline:none;border-color:var(--green-dark);background:#fff}
 .field input.error,.field select.error{border-color:var(--red);background:#fdf3f2}
 .field-hint{font-size:12px;color:var(--text3);margin-top:4px}
+/* FILE UPLOAD */
+.upload{border:1.5px dashed var(--border2);border-radius:var(--radius);background:var(--offwhite);padding:16px;text-align:center;cursor:pointer;transition:all .15s}
+.upload:hover{border-color:var(--green-dark);background:#fff}
+.upload.has-file{border-style:solid;border-color:var(--green-dark);background:#f3fce9}
+.upload input[type=file]{display:none}
+.upload-icon{font-size:22px;margin-bottom:4px}
+.upload-txt{font-size:13px;font-weight:600;font-family:'Montserrat',sans-serif;color:var(--text2)}
+.upload-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.upload.has-file .upload-txt{color:var(--green-dark)}
 .field-err{font-size:12px;color:var(--red);margin-top:4px;display:none}
 .field-err.show{display:block}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -201,40 +210,52 @@ function renderRole(){
   // FORM
   html+=''+
   '<div class="form-card">'+
-    '<div class="form-head"><h2>Apply now</h2><p>Takes about 3 minutes</p></div>'+
+    '<div class="form-head"><h2>Apply now</h2><p>Takes about 5 minutes · have your ID and CV ready</p></div>'+
     '<div class="form-body">'+
 
       '<div class="form-group-label">Your details</div>'+
+      '<div class="field"><label>Title <span class="req">*</span></label><select id="fTitle"><option value="">Select…</option><option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option><option>Dr</option><option>Prof</option><option>Adv</option></select><div class="field-err" id="eTitle">Required</div></div>'+
       '<div class="row2">'+
-        '<div class="field"><label>First name <span class="req">*</span></label><input id="fFirst" type="text" autocomplete="given-name"><div class="field-err" id="eFirst">Required</div></div>'+
-        '<div class="field"><label>Last name <span class="req">*</span></label><input id="fLast" type="text" autocomplete="family-name"><div class="field-err" id="eLast">Required</div></div>'+
+        '<div class="field"><label>First name (as per ID) <span class="req">*</span></label><input id="fFirst" type="text" autocomplete="given-name"><div class="field-err" id="eFirst">Required</div></div>'+
+        '<div class="field"><label>Surname (as per ID) <span class="req">*</span></label><input id="fLast" type="text" autocomplete="family-name"><div class="field-err" id="eLast">Required</div></div>'+
       '</div>'+
-      '<div class="field"><label>Preferred name</label><input id="fPreferred" type="text"><div class="field-hint">What you like to be called (optional)</div></div>'+
 
       '<div class="field"><label>ID type <span class="req">*</span></label>'+
         '<div class="seg"><button type="button" class="seg-btn active" id="segSAID" onclick="setIDType(\'SA_ID\')">SA ID</button><button type="button" class="seg-btn" id="segPass" onclick="setIDType(\'Passport\')">Passport</button></div></div>'+
-      '<div class="field"><label id="lblID">SA ID number <span class="req">*</span></label><input id="fID" type="text" inputmode="numeric" oninput="onIDInput()"><div class="field-err" id="eID">Required</div></div>'+
+      '<div class="field"><label id="lblID">SA ID number <span class="req">*</span></label><input id="fID" type="text" inputmode="numeric" maxlength="13" oninput="onIDInput()"><div class="field-err" id="eID">Enter a valid 13-digit SA ID number</div></div>'+
+      '<div class="field" id="countryWrap" style="display:none"><label>Country of nationality <span class="req">*</span></label><input id="fCountry" type="text" placeholder="e.g. Zimbabwe" autocomplete="country-name"><div class="field-err" id="eCountry">Required for passport holders</div></div>'+
 
       '<div class="row2">'+
-        '<div class="field"><label>Date of birth <span class="req">*</span></label><input id="fDOB" type="date"><div class="field-err" id="eDOB">Required</div></div>'+
+        '<div class="field"><label>Date of birth <span class="req">*</span></label><input id="fDOB" type="date"><div class="field-hint">Auto-filled from your ID</div><div class="field-err" id="eDOB">Required</div></div>'+
         '<div class="field"><label>Gender <span class="req">*</span></label><select id="fGender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select><div class="field-err" id="eGender">Required</div></div>'+
       '</div>'+
 
       '<div class="form-group-label">Contact</div>'+
-      '<div class="field"><label>Mobile number <span class="req">*</span></label><input id="fMobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="0__ ___ ____"><div class="field-err" id="eMobile">Required</div></div>'+
-      '<div class="field"><label>Email address <span class="req">*</span></label><input id="fEmail" type="email" inputmode="email" autocomplete="email"><div class="field-err" id="eEmail">Enter a valid email</div></div>'+
+      '<div class="field"><label>Cell number <span class="req">*</span></label><input id="fMobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="0__ ___ ____"><div class="field-err" id="eMobile">Required</div></div>'+
+      '<div class="field"><label>Personal email <span class="req">*</span></label><input id="fEmail" type="email" inputmode="email" autocomplete="email"><div class="field-err" id="eEmail">Enter a valid email</div></div>'+
 
-      '<div class="form-group-label">Background</div>'+
-      '<div class="field"><label>Highest qualification</label><select id="fQual"><option value="">Select…</option><option>Below Matric</option><option>Matric / Grade 12</option><option>Certificate</option><option>Diploma</option><option>Degree</option><option>Postgraduate</option></select></div>'+
+      '<div class="form-group-label">Experience &amp; background</div>'+
+      '<div class="field"><label>Months of experience <span class="req">*</span></label><select id="fExp"><option value="">Select…</option><option value="0-6">0 – 6 months</option><option value="6-12">6 – 12 months</option><option value="12-18">12 – 18 months</option><option value="18+">18+ months</option></select><div class="field-err" id="eExp">Required</div></div>'+
+      '<div class="field"><label>Highest qualification <span class="req">*</span></label><select id="fQual"><option value="">Select…</option><option>Below Matric</option><option>Matric / Grade 12</option><option>Certificate</option><option>Diploma</option><option>Degree</option><option>Postgraduate</option></select><div class="field-err" id="eQual">Required</div></div>'+
       '<div class="field"><label>Are you currently employed?</label>'+
         '<div class="seg"><button type="button" class="seg-btn" id="segEmpY" onclick="setEmployed(true)">Yes</button><button type="button" class="seg-btn" id="segEmpN" onclick="setEmployed(false)">No</button></div></div>'+
       '<div class="field" id="noticeWrap" style="display:none"><label>Notice period</label><select id="fNotice"><option value="">Select…</option><option>Immediately available</option><option>1 week</option><option>2 weeks</option><option>1 month</option><option>More than 1 month</option></select></div>'+
+
+      '<div class="form-group-label">Documents</div>'+
+      '<div class="field"><label>Upload your ID document <span class="req">*</span></label>'+
+        '<label class="upload" id="upID" for="fileID"><div class="upload-icon">🪪</div><div class="upload-txt" id="upIDtxt">Tap to upload your ID</div><div class="upload-sub">PDF, JPG or PNG · max 8MB</div>'+
+        '<input type="file" id="fileID" accept=".pdf,.jpg,.jpeg,.png" onchange="onFile(\'ID\')"></label>'+
+        '<div class="field-err" id="eFileID">Please upload your ID</div></div>'+
+      '<div class="field"><label>Upload your CV <span class="req">*</span></label>'+
+        '<label class="upload" id="upCV" for="fileCV"><div class="upload-icon">📄</div><div class="upload-txt" id="upCVtxt">Tap to upload your CV</div><div class="upload-sub">PDF, DOC or DOCX · max 8MB</div>'+
+        '<input type="file" id="fileCV" accept=".pdf,.doc,.docx" onchange="onFile(\'CV\')"></label>'+
+        '<div class="field-err" id="eFileCV">Please upload your CV</div></div>'+
 
       '<div class="form-group-label">Consent</div>'+
       '<div class="consent">'+
         '<div class="consent-row">'+
           '<input type="checkbox" id="fConsent">'+
-          '<label for="fConsent"><strong>I consent to Trilogy BPO processing my personal information</strong> for recruitment purposes, in line with POPIA. I understand my information will be used to assess my application and contact me about this and similar roles.</label>'+
+          '<label for="fConsent"><strong>I consent to Trilogy BPO processing my personal information</strong> for recruitment purposes, in line with POPIA. I understand my information and documents will be used to assess my application and contact me about this and similar roles.</label>'+
         '</div>'+
         '<div class="consent-more">You can withdraw consent at any time by contacting us. We keep your data secure and only share it as needed for your application.</div>'+
       '</div>'+
@@ -250,18 +271,58 @@ function renderRole(){
 }
 
 // ── FORM STATE ──
-var idType='SA_ID', employed=null;
+var employed=null;
+var idType='SA_ID';
+var files={ ID:null, CV:null };   // holds {name, type, base64} per doc
+var MAX_BYTES=8*1024*1024;        // 8MB
+
 function setIDType(t){
   idType=t;
-  document.getElementById('segSAID').classList.toggle('active',t==='SA_ID');
-  document.getElementById('segPass').classList.toggle('active',t==='Passport');
-  document.getElementById('lblID').innerHTML=(t==='SA_ID'?'SA ID number':'Passport number')+' <span class="req">*</span>';
+  var isSA=(t==='SA_ID');
+  document.getElementById('segSAID').classList.toggle('active',isSA);
+  document.getElementById('segPass').classList.toggle('active',!isSA);
+  document.getElementById('lblID').innerHTML=(isSA?'SA ID number':'Passport number')+' <span class="req">*</span>';
+  var idInput=document.getElementById('fID');
+  if(isSA){ idInput.setAttribute('inputmode','numeric'); idInput.setAttribute('maxlength','13'); }
+  else { idInput.setAttribute('inputmode','text'); idInput.removeAttribute('maxlength'); }
+  document.getElementById('eID').textContent=isSA?'Enter a valid 13-digit SA ID number':'Enter your passport number';
+  document.getElementById('countryWrap').style.display=isSA?'none':'block';
 }
+
 function setEmployed(v){
   employed=v;
   document.getElementById('segEmpY').classList.toggle('active',v===true);
   document.getElementById('segEmpN').classList.toggle('active',v===false);
   document.getElementById('noticeWrap').style.display=v===true?'block':'none';
+}
+
+// ── FILE HANDLING (read → base64) ──
+function onFile(which){
+  var input=document.getElementById('file'+which);
+  var f=input.files&&input.files[0];
+  if(!f){ files[which]=null; resetUpload(which); return; }
+  if(f.size>MAX_BYTES){
+    alert('That file is too large ('+(f.size/1048576).toFixed(1)+'MB). Please upload a file under 8MB.');
+    input.value=''; files[which]=null; resetUpload(which); return;
+  }
+  var reader=new FileReader();
+  reader.onload=function(){
+    // strip the "data:...;base64," prefix — the flow just needs the raw base64
+    var b64=String(reader.result).split(',')[1]||'';
+    files[which]={ name:f.name, type:f.type||'application/octet-stream', base64:b64 };
+    var box=document.getElementById('up'+which);
+    box.classList.add('has-file');
+    document.getElementById('up'+which+'txt').textContent='✓ '+f.name;
+    var err=document.getElementById('eFile'+which); if(err) err.classList.remove('show');
+  };
+  reader.onerror=function(){ alert('Could not read that file. Please try another.'); input.value=''; files[which]=null; resetUpload(which); };
+  reader.readAsDataURL(f);
+}
+function resetUpload(which){
+  var box=document.getElementById('up'+which);
+  if(box) box.classList.remove('has-file');
+  var txt=document.getElementById('up'+which+'txt');
+  if(txt) txt.textContent=which==='ID'?'Tap to upload your ID':'Tap to upload your CV';
 }
 
 // Auto-fill DOB + gender from SA ID
@@ -285,40 +346,60 @@ function onIDInput(){
 // ── SUBMIT ──
 function submitApp(){
   // clear errors
-  ['First','Last','ID','DOB','Gender','Mobile','Email','Consent'].forEach(function(k){
+  ['Title','First','Last','ID','Country','DOB','Gender','Mobile','Email','Exp','Qual','Consent','FileID','FileCV'].forEach(function(k){
     var e=document.getElementById('e'+k); if(e) e.classList.remove('show');
     var f=document.getElementById('f'+k); if(f) f.classList.remove('error');
   });
 
-  var first=val('fFirst'), last=val('fLast'), id=val('fID'), dob=val('fDOB'),
-      gender=val('fGender'), mobile=val('fMobile'), email=val('fEmail'),
+  var isSA=(idType==='SA_ID');
+  var title=val('fTitle'), first=val('fFirst'), last=val('fLast');
+  var idRaw=val('fID');
+  var idClean=isSA?idRaw.replace(/\D/g,''):idRaw.trim();
+  var country=val('fCountry');
+  var dob=val('fDOB'), gender=val('fGender'), mobile=val('fMobile'), email=val('fEmail'),
+      exp=val('fExp'), qual=val('fQual'),
       consent=document.getElementById('fConsent').checked;
 
   var ok=true;
+  if(!title){ fail('Title','eTitle'); ok=false; }
   if(!first){ fail('First','eFirst'); ok=false; }
   if(!last){ fail('Last','eLast'); ok=false; }
-  if(!id){ fail('ID','eID'); ok=false; }
+  if(isSA){ if(idClean.length!==13){ fail('ID','eID'); ok=false; } }
+  else { if(!idClean){ fail('ID','eID'); ok=false; } if(!country){ fail('Country','eCountry'); ok=false; } }
   if(!dob){ fail('DOB','eDOB'); ok=false; }
   if(!gender){ fail('Gender','eGender'); ok=false; }
   if(!mobile){ fail('Mobile','eMobile'); ok=false; }
   if(!email||email.indexOf('@')<1){ fail('Email','eEmail'); ok=false; }
+  if(!exp){ fail('Exp','eExp'); ok=false; }
+  if(!qual){ fail('Qual','eQual'); ok=false; }
+  if(!files.ID){ document.getElementById('eFileID').classList.add('show'); ok=false; }
+  if(!files.CV){ document.getElementById('eFileCV').classList.add('show'); ok=false; }
   if(!consent){ document.getElementById('eConsent').classList.add('show'); ok=false; }
-  if(!ok){ window.scrollTo({top:document.querySelector('.error,.field-err.show').offsetTop-120,behavior:'smooth'}); return; }
+  if(!ok){ var firstErr=document.querySelector('.error,.field-err.show'); if(firstErr) window.scrollTo({top:firstErr.offsetTop-120,behavior:'smooth'}); return; }
 
   var payload={
     RoleID: role.RoleID,
-    FirstName:first, LastName:last, PreferredName:val('fPreferred'),
-    IDType:idType, IDNumber:id, DateOfBirth:dob, Gender:gender,
+    Title:title, FirstName:first, LastName:last,
+    IDType: isSA?'SA_ID':'Passport',
+    IDNumber: isSA?idClean:'',
+    PassportNumber: isSA?'':idClean,
+    IsSouthAfrican: isSA,
+    Nationality: isSA?'South African':country,
+    DateOfBirth:dob, Gender:gender,
     Mobile:mobile, PersonalEmail:email,
+    MonthsExperience:exp, HighestQualification:qual,
     CurrentlyEmployed: employed===null?null:(employed?true:false),
-    HighestQualification:val('fQual'), NoticePeriod:val('fNotice'),
+    NoticePeriod:val('fNotice'),
+    // documents — raw base64 + filename + mime, for the SharePoint upload flow
+    IDFileName: files.ID.name, IDFileType: files.ID.type, IDFileBase64: files.ID.base64,
+    CVFileName: files.CV.name, CVFileType: files.CV.type, CVFileBase64: files.CV.base64,
     POPIAConsentIP:null
   };
 
-  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Uploading…';
 
   if(FLOW.submitApp.indexOf('PASTE')!==-1){
-    setTimeout(function(){ showSuccess(first); },700); return;
+    setTimeout(function(){ showSuccess(first); },900); return;
   }
 
   fetch(FLOW.submitApp,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
