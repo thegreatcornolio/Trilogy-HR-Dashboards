@@ -581,8 +581,8 @@ function saveCampaign(){
     setTimeout(function(){
       var fakeId=Date.now();
       btn.disabled=false; btn.textContent='Create campaign';
-      var c={CampaignID:fakeId,CampaignCode:code,Title:title,Client:payload.Client,LOB:lob};
-      campaignList.push(c); addCampaignOption(c);
+      var c={CampaignID:fakeId,CampaignCode:code,Title:title,Client:payload.Client,LOB:lob,IsActive:true};
+      campaignList.push(c); renderCampaignSelect();
       showToast('Campaign created (stub mode)'); setActiveCampaign(c);
     },500); return;
   }
@@ -592,8 +592,8 @@ function saveCampaign(){
   .then(function(txt){
     var row=parseFlow(txt).rows[0]||{};
     if(row.CampaignID){
-      var c={CampaignID:row.CampaignID,CampaignCode:code,Title:title,Client:payload.Client,LOB:lob};
-      campaignList.push(c); addCampaignOption(c);
+      var c={CampaignID:row.CampaignID,CampaignCode:code,Title:title,Client:payload.Client,LOB:lob,IsActive:true};
+      campaignList.push(c); renderCampaignSelect();
       showToast('Campaign created — '+code); setActiveCampaign(c);
     } else { throw new Error(row.Message||'Campaign not created'); }
     btn.disabled=false; btn.textContent='Create campaign';
@@ -622,7 +622,7 @@ function renderCampaignSelect(){
   filtered.forEach(function(c){
     var o=document.createElement('option');
     o.value=c.CampaignID;
-    o.textContent=(c.Title||'')+' ('+(c.CampaignCode||')'+(c.IsActive===false||c.IsActive===0||c.IsActive==='0'?' — INACTIVE':''));
+    o.textContent=(c.Title||'')+' ('+(c.CampaignCode||'')+')'+((c.IsActive===false||c.IsActive===0||c.IsActive==='0')?' — INACTIVE':'');
     sel.appendChild(o);
   });
   if(current) sel.value=current;
