@@ -198,22 +198,13 @@ function setBtn(id,fn,text,disabled){
   if(btn){btn.textContent=text;btn.disabled=disabled;}
 }
 
-function makeToken(){
-  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  return 'tok'+Date.now()+Math.random().toString(36).slice(2);
-}
-
 window.resendOffer=function(id){
   var p=findPerson(id);
   if(!p) return;
   if(!confirm('Resend offer email to '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?')) return;
   setBtn(id,'resendOffer','Sending…',true);
-  var ref=p.OfferReference||p.EmployeeID;
-  var token=makeToken();
-  var offer_url='https://home.trilogybpo.com/onboarding/offer.html?ref='+encodeURIComponent(ref)+'&token='+encodeURIComponent(token);
   fetch(SEND_OFFER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    ref:ref, token:token, offer_url:offer_url,
-    candidate_first:p.FirstName||p.FullName.split(' ')[0],
+    ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
     candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
     candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
     candidate_mobile:p.Mobile, candidate_address:p.Address,
@@ -232,12 +223,8 @@ window.resendContract=function(id){
   if(!p) return;
   if(!confirm('Resend contract email to '+((p.FirstName||'')+' '+(p.LastName||'')).trim()+'?')) return;
   setBtn(id,'resendContract','Sending…',true);
-  var ref=p.OfferReference||p.EmployeeID;
-  var token=makeToken();
-  var contract_url='https://home.trilogybpo.com/onboarding/contract.html?ref='+encodeURIComponent(ref)+'&token='+encodeURIComponent(token);
   fetch(SEND_CONTRACT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    ref:ref, token:token, contract_url:contract_url,
-    candidate_first:p.FirstName||p.FullName.split(' ')[0],
+    ref:p.OfferReference||p.EmployeeID, candidate_first:p.FirstName||p.FullName.split(' ')[0],
     candidate_last:p.LastName||p.FullName.split(' ').slice(1).join(' '),
     candidate_email:p.PersonalEmail||p.WorkEmail, candidate_id:p.IDNumber,
     candidate_mobile:p.Mobile, candidate_address:p.Address,
