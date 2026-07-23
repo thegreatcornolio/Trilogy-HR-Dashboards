@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilogy BPO — Screening</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Wix+Madefor+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e1e1e;--navy2:#2a2a2a;--green:#4AFD0E;--green-light:#edffd6;--green-dark:#2a8a00;
+  --offwhite:#F7F6F2;--border:#e2e1dd;--border2:#c8c7c3;
+  --surface:#fff;--surface2:#f2f1ed;--bg:#e8e7e3;
+  --text:#1B2A4A;--text2:#4A5568;--text3:#7a8499;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;--red:#c0392b;--amber:#f39c12;
+}
+body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* LOGIN */
+#login-gate{position:fixed;inset:0;background:#1e1e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:#2a2a2a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;text-align:center}
+.login-label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:5px;text-align:left}
+.login-input{width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px}
+.login-btn{width:100%;padding:13px;background:#4AFD0E;color:#111;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.login-err{margin-top:12px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);border-radius:8px;padding:9px 14px;color:#ffa0a0;font-size:13px;display:none}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.4)}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-back{color:rgba(255,255,255,.5);text-decoration:none;font-size:20px;font-weight:700;line-height:1;padding:4px 8px;border-radius:6px}
+.nav-back:hover{color:var(--green);background:rgba(255,255,255,.06)}
+.nav-logo{height:28px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 4px}
+.nav-section{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.nav-link{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-decoration:none}
+.nav-link:hover{color:#fff}
+
+/* HERO */
+.hero{background:var(--navy);padding:2.25rem 2rem 1.75rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-40px;width:340px;height:340px;background:radial-gradient(circle,rgba(74,253,14,.07) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto}
+.hero-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem;opacity:.8}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em}
+.hero-title span{color:var(--green)}
+
+/* SHELL */
+.shell{max-width:1200px;margin:0 auto;padding:2rem}
+
+/* CONTROLS */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.ctl select{padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--offwhite);color:var(--text);min-width:180px}
+.ctl select:focus{outline:none;border-color:var(--navy);background:#fff}
+.ctl-load{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.ctl-load:hover{background:var(--navy2)}
+
+/* CRITERIA FILTER CHIPS */
+.crit{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:1.25rem}
+.crit-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-right:4px}
+.crit-chip{padding:6px 14px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .12s}
+.crit-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.crit-count{margin-left:auto;font-size:12px;color:var(--text3)}
+
+/* BULK BAR */
+.bulk{background:var(--navy);border-radius:var(--radius-lg);padding:.85rem 1.25rem;margin-bottom:1rem;display:none;align-items:center;gap:1rem;flex-wrap:wrap}
+.bulk.show{display:flex}
+.bulk-txt{color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700}
+.bulk-txt b{color:var(--green)}
+.bulk-btns{margin-left:auto;display:flex;gap:8px}
+.bulk-btn{padding:8px 18px;border:none;border-radius:var(--radius);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;cursor:pointer}
+.bulk-short{background:var(--green);color:#111}
+.bulk-short:hover{background:#5fff1a}
+.bulk-regret{background:rgba(255,255,255,.1);color:#ffb0a8;border:1px solid rgba(192,57,43,.4)!important}
+.bulk-regret:hover{background:rgba(192,57,43,.25)}
+
+/* TABLE */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden}
+.table-wrap{overflow-x:auto}
+table.scr{width:100%;border-collapse:collapse;font-size:13px}
+table.scr th{background:var(--navy);color:#fff;padding:11px 12px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+table.scr td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text2)}
+table.scr tr:last-child td{border-bottom:none}
+table.scr tbody tr:hover td{background:var(--offwhite)}
+.scr-name{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text)}
+.scr-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.chk{width:18px;height:18px;accent-color:var(--green-dark);cursor:pointer}
+.yn{display:inline-block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px}
+.yn-yes{background:var(--green-light);color:var(--green-dark)}
+.yn-no{background:#fdf0ef;color:var(--red)}
+.doc-link{color:var(--green-dark);text-decoration:none;font-weight:700;font-size:12px;font-family:'Montserrat',sans-serif;margin-right:8px}
+.doc-link:hover{text-decoration:underline}
+.doc-none{color:var(--text3);font-size:12px}
+.row-act{display:flex;gap:6px}
+.ra-btn{padding:6px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ra-short{color:#004085;border-color:#9cc7f5}.ra-short:hover{background:#cce5ff}
+.ra-regret{color:var(--red);border-color:#f0c8c4}.ra-regret:hover{background:#fdf0ef}
+.empty{text-align:center;padding:3rem;color:var(--text3);font-style:italic}
+.loading-row td{text-align:center;padding:2rem;color:var(--text3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.3);border-left:4px solid var(--green);transform:translateY(20px);opacity:0;transition:all .25s;z-index:9999}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-left-color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-gate">
+  <div class="login-box">
+    <img src="trilogy-logo.png" alt="Trilogy BPO" style="height:36px;margin-bottom:24px">
+    <div style="color:#fff;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px">Recruitment Portal</div>
+    <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-bottom:32px">Screening · Authorised staff only</div>
+    <div style="margin-bottom:14px;text-align:left"><label class="login-label">Username</label>
+      <input id="usr" type="text" class="login-input" placeholder="Username" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()"></div>
+    <div style="margin-bottom:22px;text-align:left"><label class="login-label">Password</label>
+      <input id="pwd" type="password" class="login-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div id="login-err" class="login-err">Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-back" title="Back to Dashboard">←</a>
+    <img src="trilogy-logo.png" alt="Trilogy BPO" class="nav-logo">
+    <div class="nav-divider"></div><div class="nav-section">Recruitment Portal</div>
+    <div class="nav-divider"></div><div class="nav-section" style="color:rgba(255,255,255,.6)">Screening</div>
+  </div>
+  <div class="nav-right"><a href="candidates.html" class="nav-link">Candidate Pipeline</a></div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Trilogy BPO · Recruitment</div>
+    <h1 class="hero-title">Screening &amp; <span>Shortlisting.</span></h1>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctl">
+      <label>Campaign</label>
+      <select id="fCampaign" onchange="onCampaignChange()"><option value="">Select a campaign…</option></select>
+    </div>
+    <div class="ctl">
+      <label>Role</label>
+      <select id="fRole"><option value="">All roles</option></select>
+    </div>
+    <button class="ctl-load" onclick="loadScreening()">Load applicants</button>
+  </div>
+
+  <!-- CRITERIA FILTERS -->
+  <div class="crit" id="critRow" style="display:none">
+    <span class="crit-label">Filter:</span>
+    <div class="crit-chip active" data-f="all" onclick="setCrit('all')">All</div>
+    <div class="crit-chip" data-f="matric" onclick="setCrit('matric')">Matric ✓</div>
+    <div class="crit-chip" data-f="nomatric" onclick="setCrit('nomatric')">No Matric</div>
+    <div class="crit-chip" data-f="sa" onclick="setCrit('sa')">South African ✓</div>
+    <div class="crit-chip" data-f="nonsa" onclick="setCrit('nonsa')">Non-SA</div>
+    <div class="crit-chip" data-f="qualified" onclick="setCrit('qualified')">Matric + SA</div>
+    <span class="crit-count" id="critCount"></span>
+  </div>
+
+  <!-- BULK BAR -->
+  <div class="bulk" id="bulkBar">
+    <div class="bulk-txt"><b id="bulkN">0</b> selected</div>
+    <div class="bulk-btns">
+      <button class="bulk-btn bulk-short" onclick="bulkAction('Shortlisted')">✓ Shortlist selected</button>
+      <button class="bulk-btn bulk-regret" onclick="bulkAction('Regret')">✕ Regret selected</button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table class="scr">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="chk" id="chkAll" onchange="toggleAll()"></th>
+            <th>Candidate</th><th>Role</th><th>Matric</th><th>South African</th>
+            <th>Qualification</th><th>Experience</th><th>Docs</th><th>Decision</th>
+          </tr>
+        </thead>
+        <tbody id="scrBody">
+          <tr class="loading-row"><td colspan="9">Select a campaign and click “Load applicants”.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════
+var FLOW = {
+  getCampaigns:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/30999d04e77e418493c33287aaeed241/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MA7bvni4tuDErrOnJqerKydrEep0bOU05TTh5-X0CSQ',
+  getProgress:     'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/3c8125354a934ee6aab46c0b9dd43012/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oNZQdSci11Buo0p0APEXSgB73sourvpeRkxjJSlaE3o',
+  getScreening:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/08/workflows/e4c2b09b28a341389a7bcf04b275c194/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iIP66xezw4MbkwP66dih3xJC6vw6SkEoDzlQEwB4_mU',
+  updateStatus:    'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/26/workflows/ab86996b221440a4b3670d624979cdec/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OfXPyHTbggNtcXBCFR5W94pemnrzpusccbLtJGsPJmg'
+};
+
+var allRows=[], activeCrit='all';
+
+// ── AUTH ──
+var AUTH_KEY='recruit_auth', AUTH_TOK='trilogy_recruit_2026';
+(function(){
+  var hbs=sessionStorage.getItem('homebase_session');
+  if(hbs){try{var session=JSON.parse(hbs);var mods=(session.modules||'').split(',').map(function(m){return m.trim();});if(session.role==='admin'||mods.indexOf('recruitment')>-1){sessionStorage.setItem(AUTH_KEY,AUTH_TOK);}}catch(e){}}
+})();
+function doLogin(){
+  var u=document.getElementById('usr').value.trim(), p=document.getElementById('pwd').value;
+  if(u==='hradmin'&&p==='YouAreNotWelcome'){ sessionStorage.setItem(AUTH_KEY,AUTH_TOK);
+    var g=document.getElementById('login-gate'); g.style.opacity='0'; g.style.transition='opacity .3s';
+    setTimeout(function(){g.style.display='none';},300); start();
+  } else { document.getElementById('login-err').style.display='block'; document.getElementById('pwd').value=''; }
+}
+
+function parseFlow(txt){
+  var data; try{ data=txt?JSON.parse(txt):{}; }catch(e){ console.error('Raw:',txt); return {rows:[]}; }
+  var rs=data.ResultSets||data; var table=rs.Table1||(Array.isArray(rs)?rs:null);
+  return { rows: table||(Array.isArray(data)?data:[data]) };
+}
+
+function start(){ loadCampaigns(); }
+
+// ── CAMPAIGNS ──
+function loadCampaigns(){
+  fetch(FLOW.getCampaigns,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(function(r){return r.text();}).then(function(txt){
+    var rows=parseFlow(txt).rows||[];
+    var sel=document.getElementById('fCampaign');
+    rows.forEach(function(c){ var o=document.createElement('option'); o.value=c.CampaignID; o.textContent=c.Title; sel.appendChild(o); });
+  }).catch(function(){});
+}
+
+// When a campaign is picked, populate its roles (via progress proc which lists roles)
+function onCampaignChange(){
+  var camp=document.getElementById('fCampaign').value;
+  var roleSel=document.getElementById('fRole');
+  roleSel.innerHTML='<option value="">All roles</option>';
+  if(!camp) return;
+  fetch(FLOW.getProgress,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({CampaignID:camp})})
+  .then(function(r){return r.text();}).then(function(txt){
+    var rows=parseFlow(txt).rows||[];
+    rows.forEach(function(r){ if(r.RoleID){ var o=document.createElement('option'); o.value=r.RoleID; o.textContent=r.RoleTitle+' (target '+(r.Target||'—')+')'; roleSel.appendChild(o); } });
+  }).catch(function(){});
+}
+
+// ── LOAD SCREENING LIST ──
+function loadScreening(){
+  var camp=document.getElementById('fCampaign').value;
+  var role=document.getElementById('fRole').value;
+  if(!camp){ showToast('Pick a campaign first','error'); return; }
+  var body=document.getElementById('scrBody');
+  body.innerHTML='<tr class="loading-row"><td colspan="9">Loading applicants…</td></tr>';
+  document.getElementById('critRow').style.display='none';
+  document.getElementById('bulkBar').classList.remove('show');
+
+  var payload={ CampaignID:camp };
+  if(role) payload.RoleID=role;
+
+  fetch(FLOW.getScreening,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){return r.text();}).then(function(txt){
+    allRows=parseFlow(txt).rows||[];
+    activeCrit='all';
+    document.querySelectorAll('.crit-chip').forEach(function(ch){ ch.classList.toggle('active',ch.getAttribute('data-f')==='all'); });
+    document.getElementById('critRow').style.display=allRows.length?'flex':'none';
+    render();
+  })
+  .catch(function(){ body.innerHTML='<tr class="loading-row"><td colspan="9">Could not load applicants.</td></tr>'; });
+}
+
+// ── CRITERIA FILTER ──
+function setCrit(f){
+  activeCrit=f;
+  document.querySelectorAll('.crit-chip').forEach(function(ch){ ch.classList.toggle('active',ch.getAttribute('data-f')===f); });
+  render();
+}
+function passesCrit(r){
+  var matric=(r.HasMatric===1||r.HasMatric===true||r.HasMatric==='1');
+  var sa=(r.IsSouthAfrican===1||r.IsSouthAfrican===true||r.IsSouthAfrican==='1');
+  switch(activeCrit){
+    case 'matric': return matric;
+    case 'nomatric': return !matric;
+    case 'sa': return sa;
+    case 'nonsa': return !sa;
+    case 'qualified': return matric && sa;
+    default: return true;
+  }
+}
+
+// ── RENDER ──
+function render(){
+  var body=document.getElementById('scrBody');
+  var rows=allRows.filter(passesCrit);
+  document.getElementById('critCount').textContent=rows.length+' of '+allRows.length+' applicant'+(allRows.length===1?'':'s');
+  document.getElementById('chkAll').checked=false;
+  updateBulk();
+  if(!rows.length){ body.innerHTML='<tr><td colspan="9" class="empty">No applicants match this filter.</td></tr>'; return; }
+
+  body.innerHTML=rows.map(function(r){
+    var matric=(r.HasMatric===1||r.HasMatric===true||r.HasMatric==='1');
+    var sa=(r.IsSouthAfrican===1||r.IsSouthAfrican===true||r.IsSouthAfrican==='1');
+    var idDoc=r.IDDocumentURL?'<a class="doc-link" href="'+esc(r.IDDocumentURL)+'" target="_blank" rel="noopener">ID</a>':'';
+    var cvDoc=r.CVDocumentURL?'<a class="doc-link" href="'+esc(r.CVDocumentURL)+'" target="_blank" rel="noopener">CV</a>':'';
+    var docs=(idDoc+cvDoc)||'<span class="doc-none">—</span>';
+    return '<tr>'+
+      '<td><input type="checkbox" class="chk row-chk" value="'+r.ApplicationID+'" onchange="updateBulk()"></td>'+
+      '<td><div class="scr-name">'+esc((r.FirstName||'')+' '+(r.LastName||''))+'</div><div class="scr-sub">'+esc(r.PersonalEmail||'')+' · '+esc(r.Mobile||'')+'</div></td>'+
+      '<td>'+esc(r.RoleTitle||'—')+'</td>'+
+      '<td>'+(matric?'<span class="yn yn-yes">YES</span>':'<span class="yn yn-no">NO</span>')+'</td>'+
+      '<td>'+(sa?'<span class="yn yn-yes">YES</span>':'<span class="yn yn-no">NO</span>')+'</td>'+
+      '<td style="font-size:12px">'+esc(r.HighestQualification||'—')+'</td>'+
+      '<td style="font-size:12px">'+esc(r.MonthsExperience||'—')+'</td>'+
+      '<td>'+docs+'</td>'+
+      '<td><div class="row-act">'+
+        '<button class="ra-btn ra-short" onclick="oneAction('+r.ApplicationID+',\'Shortlisted\')">Shortlist</button>'+
+        '<button class="ra-btn ra-regret" onclick="oneAction('+r.ApplicationID+',\'Regret\')">Regret</button>'+
+      '</div></td>'+
+    '</tr>';
+  }).join('');
+}
+
+// ── SELECTION ──
+function toggleAll(){
+  var on=document.getElementById('chkAll').checked;
+  document.querySelectorAll('.row-chk').forEach(function(c){ c.checked=on; });
+  updateBulk();
+}
+function selectedIDs(){ return Array.prototype.slice.call(document.querySelectorAll('.row-chk:checked')).map(function(c){return c.value;}); }
+function updateBulk(){
+  var n=selectedIDs().length;
+  document.getElementById('bulkN').textContent=n;
+  document.getElementById('bulkBar').classList.toggle('show',n>0);
+}
+
+// ── ACTIONS ──
+function oneAction(appID,status){
+  var verb=status==='Shortlisted'?'shortlist':'regret';
+  if(status==='Regret' && !confirm('Regret this applicant? They will be marked as rejected.')) return;
+  pushStatus([appID],status,function(){
+    showToast((status==='Shortlisted'?'Shortlisted':'Regretted')+' 1 applicant');
+    removeRows([appID]);
+  });
+}
+function bulkAction(status){
+  var ids=selectedIDs();
+  if(!ids.length) return;
+  var msg=status==='Shortlisted'
+    ? 'Shortlist '+ids.length+' applicant'+(ids.length===1?'':'s')+'? They advance toward interviews.'
+    : 'Regret '+ids.length+' applicant'+(ids.length===1?'':'s')+'? This marks them as rejected.';
+  if(!confirm(msg)) return;
+  pushStatus(ids,status,function(){
+    showToast((status==='Shortlisted'?'Shortlisted':'Regretted')+' '+ids.length+' applicant'+(ids.length===1?'':'s'));
+    removeRows(ids);
+  });
+}
+
+// Fire status updates sequentially, then callback
+function pushStatus(ids,status,done){
+  if(FLOW.updateStatus.indexOf('PASTE')!==-1){ done(); return; }
+  var i=0;
+  function next(){
+    if(i>=ids.length){ done(); return; }
+    fetch(FLOW.updateStatus,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ApplicationID:parseInt(ids[i],10),NewStatus:status,TriggeredBy:'recruiter',Notes:'Screening decision'})})
+    .then(function(){ i++; next(); })
+    .catch(function(){ i++; next(); });
+  }
+  next();
+}
+
+// Remove decided rows from the local list so the screen reflects work done
+function removeRows(ids){
+  var set={}; ids.forEach(function(id){ set[String(id)]=1; });
+  allRows=allRows.filter(function(r){ return !set[String(r.ApplicationID)]; });
+  render();
+}
+
+// ── HELPERS ──
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type==='error'?' error':'');void t.offsetWidth;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+
+// ── BOOT ──
+if(sessionStorage.getItem(AUTH_KEY)===AUTH_TOK){ document.getElementById('login-gate').style.display='none'; start(); }
+</script>
+</body>
+</html>
