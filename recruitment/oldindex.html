@@ -389,8 +389,7 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 //  CONFIG — replace with real Power Automate flow URLs
 // ══════════════════════════════════════════════════════════
 var FLOW = {
-  getDashboard: 'PASTE_GET_DASHBOARD_FLOW_URL_HERE',
-  getPipelineCounts: 'PASTE_GET_PIPELINE_COUNTS_FLOW_URL_HERE'
+  getDashboard: 'PASTE_GET_DASHBOARD_FLOW_URL_HERE'
 };
 
 // ── PIPELINE BAR — REAL STAGE COUNTS ──────────────────────
@@ -444,24 +443,6 @@ function loadPipelineCounts() {
     var onboarded = rows.filter(function(r){ return r.OnboardingComplete === 'yes'; });
     document.getElementById('pOnboarded').textContent = onboarded.length;
   });
-
-  // Recruitment-side stages (Applied / Shortlisted / Interview / BGV) from Rec_GetPipelineCounts
-  if (FLOW.getPipelineCounts.indexOf('PASTE') === -1) {
-    fetch(FLOW.getPipelineCounts, {
-      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({})
-    })
-    .then(function(r){ return r.text(); })
-    .then(function(txt){
-      var data; try { data = txt ? JSON.parse(txt) : {}; } catch(e){ return; }
-      var rs = data.ResultSets || data;
-      var row = (rs.Table1 && rs.Table1[0]) || (Array.isArray(rs) ? rs[0] : rs) || {};
-      document.getElementById('pApplied').textContent     = row.Applied     || 0;
-      document.getElementById('pShortlisted').textContent = row.Shortlisted || 0;
-      document.getElementById('pInterview').textContent   = row.Interview   || 0;
-      document.getElementById('pBGV').textContent         = row.BGV         || 0;
-    })
-    .catch(function(){});
-  }
 }
 
 // ── AUTH ──────────────────────────────────────────────────
