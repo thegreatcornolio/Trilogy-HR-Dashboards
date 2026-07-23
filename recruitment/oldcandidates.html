@@ -66,23 +66,6 @@ body{font-family:'Wix Madefor Text',sans-serif;background:var(--bg);color:var(--
 
 /* STATUS CHIPS */
 .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
-/* CAMPAIGN TRACKER */
-.trk-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin:0 0 .75rem}
-.trk-role{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
-.trk-role-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.85rem;flex-wrap:wrap;gap:6px}
-.trk-role-name{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--text)}
-.trk-target{font-size:12px;color:var(--text3);font-family:'Montserrat',sans-serif;font-weight:600}
-.trk-target b{color:var(--green-dark);font-size:14px}
-.trk-blocks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-@media(max-width:600px){.trk-blocks{grid-template-columns:repeat(2,1fr)}}
-.trk-block{background:var(--offwhite);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
-.trk-block-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;line-height:1;color:var(--text)}
-.trk-block-lbl{font-size:10px;font-weight:700;font-family:'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);margin-top:5px}
-.trk-block.b-applied{border-top:3px solid #7a8499}
-.trk-block.b-short{border-top:3px solid #004085}
-.trk-block.b-interview{border-top:3px solid #0c5460}
-.trk-block.b-offer{border-top:3px solid var(--green-dark)}
-.trk-block.b-offer .trk-block-num{color:var(--green-dark)}
 .chip{padding:6px 14px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .12s}
 .chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .chip .count{opacity:.6;margin-left:4px}
@@ -213,9 +196,6 @@ table.cand tbody tr:hover td{background:var(--offwhite)}
   <!-- STATUS CHIPS -->
   <div class="chip-row" id="chipRow"></div>
 
-  <!-- CAMPAIGN TARGET TRACKER (shows when a campaign is selected) -->
-  <div id="progressPanel" style="display:none"></div>
-
   <!-- TABLE -->
   <div class="table-card">
     <div class="table-wrap">
@@ -256,11 +236,10 @@ table.cand tbody tr:hover td{background:var(--offwhite)}
 //  CONFIG
 // ══════════════════════════════════════════════════════════
 var FLOW = {
-  getCandidates: 'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/06/workflows/b692b0dc83be44a4a58af06a99988179/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MsqXHPUiW60dnvJ4lXdfwVjIJq0Dum4ZNTQSxK1xsoM',
-  getDetail:     'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/086f723f3ea440609158ec3a7ec1a717/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Xk7b3_7YNvXk5i6v4Ib6qMRq-mLPCs7AxMWBDtKBAYg',
-  updateStatus:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/26/workflows/ab86996b221440a4b3670d624979cdec/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OfXPyHTbggNtcXBCFR5W94pemnrzpusccbLtJGsPJmg',
-  getCampaigns:  'https://default77cde95f930f495e89c64d2c30f6df.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/30999d04e77e418493c33287aaeed241/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MA7bvni4tuDErrOnJqerKydrEep0bOU05TTh5-X0CSQ',
-  getCampaignProgress: 'PASTE_GET_CAMPAIGN_PROGRESS_FLOW_URL_HERE'
+  getCandidates: 'PASTE_GET_CANDIDATES_FLOW_URL_HERE',
+  getDetail:     'PASTE_GET_CANDIDATE_DETAIL_FLOW_URL_HERE',
+  updateStatus:  'PASTE_UPDATE_APPLICATION_STATUS_FLOW_URL_HERE',
+  getCampaigns:  'PASTE_GET_CAMPAIGNS_FLOW_URL_HERE'
 };
 
 var ALL_STATUSES=['Applied','EE Complete','Assessment Sent','Assessment Complete','Shortlisted','Interview Scheduled','Interview Complete','Verbal Offer Made','BGV In Progress','BGV Complete','Docs Complete','File Complete','Contract Sent','Contract Signed','HR Approved','Handed Over','Regret','Withdrawn'];
@@ -366,56 +345,7 @@ function applyFilters(){
     return true;
   });
   renderTable(rows);
-  loadCampaignProgress();   // show/hide the target tracker for the selected campaign
 }
-
-// ── CAMPAIGN TARGET TRACKER ──
-function loadCampaignProgress(){
-  var panel=document.getElementById('progressPanel');
-  var camp=document.getElementById('fCampaign').value;
-  // Only show when a specific campaign is chosen
-  if(!camp){ panel.style.display='none'; panel.innerHTML=''; return; }
-  if(FLOW.getCampaignProgress.indexOf('PASTE')!==-1){ panel.style.display='none'; return; }
-
-  panel.style.display='block';
-  panel.innerHTML='<div class="trk-title">Loading campaign targets…</div>';
-
-  fetch(FLOW.getCampaignProgress,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({CampaignID:camp})})
-  .then(function(r){return r.text();})
-  .then(function(txt){
-    var rows=parseFlow(txt).rows||[];
-    renderProgress(rows);
-  })
-  .catch(function(){ panel.style.display='none'; });
-}
-
-function renderProgress(rows){
-  var panel=document.getElementById('progressPanel');
-  if(!rows.length){ panel.style.display='none'; return; }
-  var campTitle=rows[0].CampaignTitle||'Campaign';
-  var html='<div class="trk-title">'+esc(campTitle)+' — targets &amp; progress</div>';
-  rows.forEach(function(r){
-    var applied=r.AppliedCount||0, short=r.ShortlistedCount||0, intv=r.InterviewedCount||0, offer=r.ReadyForOfferCount||0;
-    var target=r.Target!=null?r.Target:'—';
-    html+='<div class="trk-role">'+
-      '<div class="trk-role-head">'+
-        '<div class="trk-role-name">'+esc(r.RoleTitle||'Role')+'</div>'+
-        '<div class="trk-target">Target: <b>'+esc(String(target))+'</b></div>'+
-      '</div>'+
-      '<div class="trk-blocks">'+
-        block('b-applied',applied,'Applied')+
-        block('b-short',short,'Shortlisted')+
-        block('b-interview',intv,'Interviewed')+
-        block('b-offer',offer,'Ready for Offer')+
-      '</div>'+
-    '</div>';
-  });
-  panel.innerHTML=html;
-}
-function block(cls,num,lbl){
-  return '<div class="trk-block '+cls+'"><div class="trk-block-num">'+num+'</div><div class="trk-block-lbl">'+lbl+'</div></div>';
-}
-
 
 function renderTable(rows){
   var body=document.getElementById('candBody');
